@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, maximum-scale=1, minimum-scale=1, user-scalable=no'>
+    <title>chipped</title>
+    <style>
+      :root {
+        --palette-black80: #282828;
+
+        /* hack: 100vh is broken on native android. */
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box; /* dimensions include any border and padding. */
+        -webkit-tap-highlight-color: transparent;
+        outline: none; /* disable focus outline. */
+      }
+
+      body {
+        background-color: var(--palette-black80);
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      canvas {
+        cursor: none;
+        display: block; /* no line height spacing. */
+        display: none; /* hide until assets are available. */
+        image-rendering: pixelated;
+        /* update on each pointermove *touch* Event like *mouse* Events. */
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- hack: set tabIndex to propagate key events. -->
+    <canvas tabIndex='0'></canvas>
+    <script src='index.js' type='module'></script>
+  </body>
+</html>

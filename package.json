@@ -1,0 +1,30 @@
+{
+  "author": "Stephen Niedzielski <stephen@oidoid.com> (https://oidoid.com)",
+  "description": "",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "22.9.1",
+    "esbuild": "0.24.0",
+    "typescript": "5.7.1-rc",
+    "vitest": "2.1.5"
+  },
+  "engines": {
+    "node": ">=22.6"
+  },
+  "license": "BSD-3-Clause",
+  "name": "chipped",
+  "private": true,
+  "scripts": {
+    "build": "esbuild --bundle --format=esm --log-level=info --outfile=webroot/index.js src/iframe/index.ts",
+    "clean": "rm -rf dist webroot/index.js",
+    "format": "npm run formatter -- --fix",
+    "formatter": "biome check --error-on-warnings",
+    "start": "npm run build -- --banner:js='new globalThis.EventSource(\"/esbuild\").addEventListener(\"change\", () => location.reload());' --serve=1234 --servedir=webroot --watch=forever --serve",
+    "test": "npm run test:format && npm run test:types && npm run test:unit",
+    "test:format": "npm run formatter",
+    "test:types": "tsc --build",
+    "test:unit": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

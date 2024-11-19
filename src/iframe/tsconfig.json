@@ -1,0 +1,15 @@
+// TypeScript config for all iframe code.
+{
+  "extends": "../../tsconfig-base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "ES2020"],
+
+    "outDir": "../../dist/iframe",
+
+    "tsBuildInfoFile": "../../dist/iframe/tsconfig.tsbuildinfo"
+  },
+  // https://github.com/Microsoft/TypeScript/issues/25636
+  "include": ["**/*", "**/*.json"],
+  "exclude": ["**/*.test.ts"],
+  "references": [{ "path": "../shared" }]
+}

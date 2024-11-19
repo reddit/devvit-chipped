@@ -1,0 +1,10 @@
+{
+  // only build references.
+  "files": [],
+  "references": [
+    { "path": "src" },
+    { "path": "src/iframe" },
+    { "path": "src/shared" },
+    { "path": "src/test" }
+  ]
+}
