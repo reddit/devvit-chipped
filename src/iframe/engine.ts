@@ -71,60 +71,7 @@ export class Engine {
     }
     this.#canvas.width = innerWidth
     this.#canvas.height = innerHeight
-    const voronoi = new Voronoi()
-    const sites = []
-    for (let i = 0; i < 100; i++) {
-      sites.push({
-        x: Math.round(w * Math.random()),
-        y: Math.round(h * Math.random())
-      })
-    }
-    const box = {xl: 0, xr: w, yb: h, yt: 0}
-    const diagram = voronoi.compute(sites, box)
-    console.log(diagram)
-    this.#facets = diagram.cells.map(cell => ({
-      cell,
-      edges: [],
-      specimen: false,
-      state: 'Solid'
-    }))
-    for (const edge of diagram.edges) {
-      if (!edge.rSite) continue
-      this.#facets[edge.lSite.voronoiId]!.edges.push(
-        this.#facets[edge.rSite.voronoiId]!
-      )
-      this.#facets[edge.rSite.voronoiId]!.edges.push(
-        this.#facets[edge.lSite.voronoiId]!
-      )
-    }
-    for (let x = box.xl; x < box.xr; x++)
-      if (x === 1 || x === box.xr - 1)
-        for (let y = box.yt; y < box.yb; y++) {
-          const facet = this.#facetAtXY(x, y)
-          if (facet) facet.state = 'Invisible'
-        }
-      else {
-        {
-          const facet = this.#facetAtXY(x, 1)
-          if (facet) facet.state = 'Invisible'
-        }
-        const facet = this.#facetAtXY(x, box.yb - 1)
-        if (facet) facet.state = 'Invisible'
-      }
-    for (;;) {
-      const i = Math.trunc(Math.random() * this.#facets.length)
-      const facet = this.#facets[i]!
-      if (facet.state === 'Invisible') continue
-
-      const skipPerimeter = facet.edges.some(edge => {
-        if (this.#facets[edge.cell.site.voronoiId]!.state === 'Invisible')
-          return Math.random() < 0.8
-      })
-      if (skipPerimeter) continue
-
-      facet.specimen = true
-      break
-    }
+    this.#facets = newFacets(w, h)
     this.#draw()
   }
 
@@ -150,7 +97,7 @@ export class Engine {
   }
 
   #facetAtXY(x: number, y: number): Facet | undefined {
-    return this.#facets.find(facet => facet.cell.pointIntersection(x, y) > 0)
+    return facetAtXY(this.#facets, x, y)
   }
 
   #drawFacet(
@@ -287,4 +234,66 @@ function newPattern(
   tileCtx.drawImage(tile9Canvas, tileW, tileH, tileW, tileH, 0, 0, tileW, tileH)
 
   return dstC2D.createPattern(tileCanvas, 'repeat') ?? undefined
+}
+
+function newFacets(w: number, h: number): Facet[] {
+  const voronoi = new Voronoi()
+  const sites = []
+  for (let i = 0; i < 100; i++) {
+    sites.push({
+      x: Math.round(w * Math.random()),
+      y: Math.round(h * Math.random())
+    })
+  }
+
+  const box = {xl: 0, xr: w, yb: h, yt: 0}
+  const diagram = voronoi.compute(sites, box)
+  const facets: Facet[] = diagram.cells.map(cell => ({
+    cell,
+    edges: [],
+    specimen: false,
+    state: 'Solid'
+  }))
+  for (const edge of diagram.edges) {
+    if (!edge.rSite) continue
+    facets[edge.lSite.voronoiId]!.edges.push(facets[edge.rSite.voronoiId]!)
+    facets[edge.rSite.voronoiId]!.edges.push(facets[edge.lSite.voronoiId]!)
+  }
+  for (let x = box.xl; x < box.xr; x++)
+    if (x === 1 || x === box.xr - 1)
+      for (let y = box.yt; y < box.yb; y++) {
+        const facet = facetAtXY(facets, x, y)
+        if (facet) facet.state = 'Invisible'
+      }
+    else {
+      {
+        const facet = facetAtXY(facets, x, 1)
+        if (facet) facet.state = 'Invisible'
+      }
+      const facet = facetAtXY(facets, x, box.yb - 1)
+      if (facet) facet.state = 'Invisible'
+    }
+  for (;;) {
+    const i = Math.trunc(Math.random() * facets.length)
+    const facet = facets[i]!
+    if (facet.state === 'Invisible') continue
+
+    const skipPerimeter = facet.edges.some(edge => {
+      if (facets[edge.cell.site.voronoiId]!.state === 'Invisible')
+        return Math.random() < 0.8
+    })
+    if (skipPerimeter) continue
+
+    facet.specimen = true
+    break
+  }
+  return facets
+}
+
+function facetAtXY(
+  facets: readonly Readonly<Facet>[],
+  x: number,
+  y: number
+): Facet | undefined {
+  return facets.find(facet => facet.cell.pointIntersection(x, y) > 0)
 }
