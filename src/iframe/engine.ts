@@ -100,52 +100,6 @@ export class Engine {
     return facetAtXY(this.#facets, x, y)
   }
 
-  #drawFacet(
-    facet: Readonly<Facet>,
-    fillStyle: string | CanvasPattern,
-    strokeStyle: string
-  ): void {
-    if (facet.state === 'Invisible') return
-
-    const ctx = this.#canvas.getContext('2d')
-    if (!ctx) return
-
-    const sx = innerWidth / w
-    const sy = innerHeight / h
-
-    ctx.beginPath()
-    const halfedges = facet.cell.halfedges
-    const nHalfedges = halfedges.length
-    let v = halfedges[0]!.getStartpoint()
-    ctx.moveTo(sx * v.x, sy * v.y)
-    for (let iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
-      v = halfedges[iHalfedge]!.getEndpoint()
-      ctx.lineTo(sx * v.x, sy * v.y)
-    }
-    switch (facet.state) {
-      case 'Solid':
-        ctx.fillStyle = fillStyle
-        break
-      case 'Cracked':
-        ctx.fillStyle = facet.specimen
-          ? paletteBlack
-          : this.#patterns[facet.cell.site.voronoiId % this.#patterns.length]!
-        break
-      case 'Chipped':
-        ctx.fillStyle = paletteBlack2
-        break
-      case 'Shattered':
-        ctx.fillStyle = paletteBlack3
-        break
-      default:
-        facet.state satisfies never
-    }
-    ctx.lineWidth = 3
-    ctx.strokeStyle = paletteBlack2
-    ctx.fill()
-    if (facet.state === 'Cracked') ctx.stroke()
-  }
-
   #draw(): void {
     const ctx = this.#canvas.getContext('2d')
     if (!ctx) return
@@ -160,17 +114,13 @@ export class Engine {
     const sx = innerWidth / w
     const sy = innerHeight / h
 
-    const clicked = this.#facetAtXY(this.#x / sx, this.#y / sy)
+    const pointed = this.#facetAtXY(this.#x / sx, this.#y / sy)
 
     ctx.save()
     // ctx.scale(sx, sy)
 
     for (const facet of this.#facets)
-      this.#drawFacet(
-        facet,
-        facet === clicked ? 'red' : paletteWhite,
-        paletteBlack
-      )
+      facetDraw(facet, ctx, this.#patterns, pointed)
 
     ctx.restore()
   }
@@ -296,4 +246,48 @@ function facetAtXY(
   y: number
 ): Facet | undefined {
   return facets.find(facet => facet.cell.pointIntersection(x, y) > 0)
+}
+
+function facetDraw(
+  facet: Readonly<Facet>,
+  c2d: CanvasRenderingContext2D,
+  patterns: readonly CanvasPattern[],
+  pointed: Facet | undefined
+): void {
+  if (facet.state === 'Invisible') return
+
+  const sx = innerWidth / w
+  const sy = innerHeight / h
+
+  c2d.beginPath()
+  const halfedges = facet.cell.halfedges
+  const nHalfedges = halfedges.length
+  let v = halfedges[0]!.getStartpoint()
+  c2d.moveTo(sx * v.x, sy * v.y)
+  for (let iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
+    v = halfedges[iHalfedge]!.getEndpoint()
+    c2d.lineTo(sx * v.x, sy * v.y)
+  }
+  switch (facet.state) {
+    case 'Solid':
+      c2d.fillStyle = facet === pointed ? 'red' : paletteWhite
+      break
+    case 'Cracked':
+      c2d.fillStyle = facet.specimen
+        ? paletteBlack
+        : patterns[facet.cell.site.voronoiId % patterns.length]!
+      break
+    case 'Chipped':
+      c2d.fillStyle = paletteBlack2
+      break
+    case 'Shattered':
+      c2d.fillStyle = paletteBlack3
+      break
+    default:
+      facet.state satisfies never
+  }
+  c2d.lineWidth = 3
+  c2d.strokeStyle = paletteBlack2
+  c2d.fill()
+  if (facet.state === 'Cracked') c2d.stroke()
 }
