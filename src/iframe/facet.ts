@@ -4,7 +4,8 @@ import {
   paletteBlack,
   paletteBlack2,
   paletteBlack3,
-  paletteWhite
+  paletteWhite,
+  paletteWhitest
 } from '../shared/palette.ts'
 import {levelWH} from './level.ts'
 
@@ -93,7 +94,7 @@ export function facetDraw(
   }
   switch (facet.state) {
     case 'Solid':
-      c2d.fillStyle = facet === pointed ? 'red' : paletteWhite
+      c2d.fillStyle = facet === pointed ? paletteWhitest : paletteWhite
       break
     case 'Cracked':
       c2d.fillStyle = facet.specimen
