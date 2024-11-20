@@ -59,7 +59,8 @@ export class Engine {
       const sx = innerWidth / levelWH.w
       const sy = innerHeight / levelWH.h
       const facet = this.#facetAtXY(ev.x / sx, ev.y / sy)
-      if (facet) facetHammer(facet)
+      if (!facet) return
+      facetHammer(facet)
     })
   }
 

@@ -9,6 +9,7 @@ import {
 import {levelWH} from './level.ts'
 
 export type Facet = {
+  area: number
   cell: Cell
   edges: Facet[]
   /** true if the target mineral, false if the host matrix. */
@@ -29,6 +30,7 @@ export function newFacets(w: number, h: number): Facet[] {
   const box = {xl: 0, xr: w, yb: h, yt: 0}
   const diagram = voronoi.compute(sites, box)
   const facets: Facet[] = diagram.cells.map(cell => ({
+    area: cellArea(cell),
     cell,
     edges: [],
     specimen: false,
@@ -83,10 +85,9 @@ export function facetDraw(
 
   c2d.beginPath()
   const halfedges = facet.cell.halfedges
-  const nHalfedges = halfedges.length
   let v = halfedges[0]!.getStartpoint()
   c2d.moveTo(sx * v.x, sy * v.y)
-  for (let iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
+  for (let iHalfedge = 0; iHalfedge < halfedges.length; iHalfedge++) {
     v = halfedges[iHalfedge]!.getEndpoint()
     c2d.lineTo(sx * v.x, sy * v.y)
   }
@@ -114,16 +115,37 @@ export function facetDraw(
   if (facet.state === 'Cracked') c2d.stroke()
 }
 
+const kaputState: {readonly [state in Facet['state']]: boolean} = {
+  Invisible: true,
+  Solid: false,
+  Cracked: false,
+  Chipped: true,
+  Shattered: true
+}
+
 export function facetHammer(facet: Facet): void {
   switch (facet.state) {
     case 'Invisible':
       break
-    case 'Solid':
-      facet.state = 'Cracked'
+    case 'Solid': {
+      const exposed = facet.edges.some(edge => kaputState[edge.state])
+      if (exposed) facet.state = 'Cracked'
       break
-    case 'Cracked':
-      facet.state = 'Chipped'
+    }
+    case 'Cracked': {
+      const smallest = facet.edges.every(
+        edge => kaputState[edge.state] || edge.area >= facet.area
+      )
+      if (smallest) facet.state = 'Chipped'
+      else {
+        facet.state = 'Shattered'
+        for (const edge of facet.edges) {
+          if (kaputState[edge.state]) continue
+          edge.state = 'Shattered'
+        }
+      }
       break
+    }
     case 'Chipped':
       break
     case 'Shattered':
@@ -139,4 +161,17 @@ export function facetAtXY(
   y: number
 ): Facet | undefined {
   return facets.find(facet => facet.cell.pointIntersection(x, y) > 0)
+}
+
+function cellArea(cell: Readonly<Cell>): number {
+  let area = 0
+
+  let v = cell.halfedges[0]!.getStartpoint()
+  for (let iHalfedge = 0; iHalfedge < cell.halfedges.length; iHalfedge++) {
+    const next = cell.halfedges[iHalfedge]!.getEndpoint()
+    area += v.x * next.y - v.y * next.x
+    v = next
+  }
+
+  return Math.abs(area) / 2
 }
