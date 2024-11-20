@@ -3,3 +3,6 @@ export const paletteBlack2: string = '#a8a8a8'
 export const paletteBlack3: string = '#888888'
 export const paletteWhite: string = '#f2f2f2'
 export const paletteWhitest: string = '#fdfdfd'
+
+// #eaeaea
+// #111

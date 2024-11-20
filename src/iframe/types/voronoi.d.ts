@@ -1,47 +1,6 @@
 declare module 'voronoi' {
   export = Voronoi
   class Voronoi {
-    vertices: Voronoi.Vertex[]
-    edges: Voronoi.Edge[]
-    cells: Voronoi.Cell[]
-    // toRecycle: {}
-    // beachsectionJunkyard: BeachSection[]
-    // circleEventJunkyard: CircleEvent[]
-    // vertexJunkyard: Vertex[]
-    // edgeJunkyard: Edge[]
-    // cellJunkyard: Cell[]
-    reset(): void
-    // beachline: any
-    // circleEvents: CircleEvent[]
-    // firstCircleEvent: any
-    // sqrt: (x: number) => number
-    // abs: (x: number) => number
-    // ε: number
-    // invε: number
-    // equalWithEpsilon(a: any, b: any): boolean
-    // greaterThanWithEpsilon(a: any, b: any): boolean
-    // greaterThanOrEqualWithEpsilon(a: any, b: any): boolean
-    // lessThanWithEpsilon(a: any, b: any): boolean
-    // lessThanOrEqualWithEpsilon(a: any, b: any): boolean
-    // RBTree(): void
-    // root: any
-    site: Voronoi.Site
-    halfedges: Voronoi.Halfedge[]
-    closeMe: boolean
-    // createCell(site: Site): Cell
-    x: number
-    y: number
-    lSite: Voronoi.Site
-    rSite: Voronoi.Site
-    // va: any
-    // vb: any
-    edge: Voronoi.Edge
-    angle: number
-    // createHalfedge(edge: Edge, lSite: Site, rSite: Site): Halfedge
-    // createVertex(x: number, y: number): Vertex
-    // createEdge(lSite: Site, rSite: Site, va: Vertex, vb: Vertex): Edge
-    // createBorderEdge(lSite: Site, va: Vertex, vb: Vertex): Edge
-
     Cell: {new (site: Voronoi.Site): Voronoi.Cell}
     Diagram: {new (site: Voronoi.Site): Voronoi.Diagram}
     Edge: {new (lSite: Voronoi.Site, rSite: Voronoi.Site): Voronoi.Edge}
@@ -53,47 +12,10 @@ declare module 'voronoi' {
       ): Voronoi.Halfedge
     }
     Vertex: {new (x: number, y: number): Voronoi.Vertex}
-
-    setEdgeStartpoint(
-      edge: Voronoi.Edge,
-      lSite: Voronoi.Site,
-      rSite: Voronoi.Site,
-      vertex: Voronoi.Vertex
-    ): void
-    setEdgeEndpoint(
-      edge: Voronoi.Edge,
-      lSite: Voronoi.Site,
-      rSite: Voronoi.Site,
-      vertex: Voronoi.Vertex
-    ): void
-    // createBeachsection(site: Site): any
-    // leftBreakPoint(arc: any, directrix: any): any
-    // rightBreakPoint(arc: any, directrix: any): any
-    // detachBeachsection(beachsection: BeachSection): void
-    // removeBeachsection(beachsection: BeachSection): void
-    // addBeachsection(site: Site): void
-    // arc: any
-    // rbLeft: any
-    // rbNext: any
-    // rbParent: any
-    // rbPrevious: any
-    // rbRed: boolean
-    // rbRight: any
-    ycenter: number
-    // attachCircleEvent(arc: any): void
-    // detachCircleEvent(arc: any): void
-    connectEdge(edge: Voronoi.Edge, bbox: Voronoi.Bbox): boolean
-    clipEdge(edge: Voronoi.Edge, bbox: Voronoi.Bbox): boolean
-    clipEdges(bbox: Voronoi.Bbox): void
-    closeCells(bbox: Voronoi.Bbox): void
-    quantizeSites(sites: Voronoi.Vertex[]): void
     recycle(diagram: Voronoi.Diagram): void
     compute(sites: Voronoi.Vertex[], bbox: Voronoi.Bbox): Voronoi.Diagram
   }
   namespace Voronoi {
-    let ε: number
-    let invε: number
-
     type Bbox = {
       /** left. */
       xl: number
@@ -105,8 +27,6 @@ declare module 'voronoi' {
       yb: number
     }
 
-    // class BeachSection {}
-
     class Cell {
       /** the Voronoi site object associated with the Voronoi cell. */
       site: Site
@@ -116,8 +36,6 @@ declare module 'voronoi' {
       private constructor(site: Site)
       pointIntersection(x: number, y: number): number
     }
-
-    // class CircleEvent {}
 
     class Diagram {
       cells: Cell[]

@@ -21,7 +21,8 @@ export type Facet = {
 export function newFacets(w: number, h: number): Facet[] {
   const voronoi = new Voronoi()
   const sites = []
-  for (let i = 0; i < 100; i++) {
+  // const ez = 60, medium = 100, hard = 500, hardest = 1500
+  for (let i = 0; i < 60; i++) {
     sites.push({
       x: Math.round(w * Math.random()),
       y: Math.round(h * Math.random())
