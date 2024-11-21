@@ -1,7 +1,7 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
-import {paletteBlack} from '../shared/theme.js'
+import {paletteWhite} from '../shared/theme.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import type {Player} from '../shared/types/player.js'
 import {T2, T3, anonSnoovatarURL, anonUsername} from '../shared/types/tid.js'
@@ -49,7 +49,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
       width='100%'
       height='100%'
       alignment='top center'
-      backgroundColor={paletteBlack}
+      backgroundColor={paletteWhite}
       gap='large'
       padding='large'
     >
@@ -64,7 +64,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
       <vstack
         width='100%'
         alignment='middle center'
-        backgroundColor={paletteBlack}
+        backgroundColor={paletteWhite}
         gap='medium'
         padding='large'
       >
@@ -115,7 +115,7 @@ function WebView(
       width='100%'
       height='100%'
       alignment='middle center'
-      backgroundColor={paletteBlack}
+      backgroundColor={paletteWhite}
     >
       {/* to-do: migrate to no-ID postMessage(). */}
       <webview
