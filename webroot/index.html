@@ -6,7 +6,7 @@
     <title>chipped</title>
     <style>
       :root {
-        --palette-black80: #282828;
+        --palette-white: #f2f2f2;
 
         /* hack: 100vh is broken on native android. */
         position: fixed;
@@ -23,7 +23,7 @@
       }
 
       body {
-        background-color: var(--palette-black80);
+        background-color: var(--palette-white);
         margin: 0;
         width: 100%;
         height: 100%;
@@ -31,10 +31,10 @@
       }
 
       canvas {
-        /* cursor: none; */
+        cursor: none;
         display: block; /* no line height spacing. */
-        /* display: none; hide until assets are available. */
-        image-rendering: pixelated;
+        display: none; /* hide until assets are available. */
+        /* image-rendering: pixelated; */
         /* update on each pointermove *touch* Event like *mouse* Events. */
         touch-action: none;
       }

@@ -1,13 +1,7 @@
 import type {Cell} from 'voronoi'
 import Voronoi from 'voronoi'
-import {
-  paletteBlack,
-  paletteBlack2,
-  paletteBlack3,
-  paletteWhite,
-  paletteWhitest
-} from '../shared/palette.ts'
-import {levelWH} from './level.ts'
+import {minCanvasWH} from '../../shared/theme.ts'
+import type {Random} from '../../shared/types/random.ts'
 
 export type Facet = {
   area: number
@@ -15,21 +9,28 @@ export type Facet = {
   edges: Facet[]
   /** true if the target mineral, false if the host matrix. */
   specimen: boolean
-  state: 'Invisible' | 'Solid' | 'Cracked' | 'Chipped' | 'Shattered'
+  state: FacetState
 }
 
-export function newFacets(w: number, h: number): Facet[] {
+export type FacetState =
+  | 'Invisible'
+  | 'Solid'
+  | 'Cracked'
+  | 'Chipped'
+  | 'Shattered'
+
+export function newFacets(rnd: Random): Facet[] {
   const voronoi = new Voronoi()
   const sites = []
-  // const ez = 60, medium = 100, hard = 500, hardest = 1500
+  // to-do: const ez = 60, medium = 100, hard = 500, hardest = 1500
   for (let i = 0; i < 60; i++) {
     sites.push({
-      x: Math.round(w * Math.random()),
-      y: Math.round(h * Math.random())
+      x: Math.round(minCanvasWH.w * rnd.num),
+      y: Math.round(minCanvasWH.h * rnd.num)
     })
   }
 
-  const box = {xl: 0, xr: w, yb: h, yt: 0}
+  const box = {xl: 0, xr: minCanvasWH.w, yb: minCanvasWH.h, yt: 0}
   const diagram = voronoi.compute(sites, box)
   const facets: Facet[] = diagram.cells.map(cell => ({
     area: cellArea(cell),
@@ -58,13 +59,13 @@ export function newFacets(w: number, h: number): Facet[] {
       if (facet) facet.state = 'Invisible'
     }
   for (;;) {
-    const i = Math.trunc(Math.random() * facets.length)
+    const i = Math.trunc(rnd.num * facets.length)
     const facet = facets[i]!
     if (facet.state === 'Invisible') continue
 
     const skipPerimeter = facet.edges.some(edge => {
       if (facets[edge.cell.site.voronoiId]!.state === 'Invisible')
-        return Math.random() < 0.8
+        return rnd.num < 0.8
     })
     if (skipPerimeter) continue
 
@@ -72,49 +73,6 @@ export function newFacets(w: number, h: number): Facet[] {
     break
   }
   return facets
-}
-
-export function facetDraw(
-  facet: Readonly<Facet>,
-  c2d: CanvasRenderingContext2D,
-  patterns: readonly CanvasPattern[],
-  pointed: Facet | undefined
-): void {
-  if (facet.state === 'Invisible') return
-
-  const sx = innerWidth / levelWH.w
-  const sy = innerHeight / levelWH.h
-
-  c2d.beginPath()
-  const halfedges = facet.cell.halfedges
-  let v = halfedges[0]!.getStartpoint()
-  c2d.moveTo(sx * v.x, sy * v.y)
-  for (let iHalfedge = 0; iHalfedge < halfedges.length; iHalfedge++) {
-    v = halfedges[iHalfedge]!.getEndpoint()
-    c2d.lineTo(sx * v.x, sy * v.y)
-  }
-  switch (facet.state) {
-    case 'Solid':
-      c2d.fillStyle = facet === pointed ? paletteWhitest : paletteWhite
-      break
-    case 'Cracked':
-      c2d.fillStyle = facet.specimen
-        ? paletteBlack
-        : patterns[facet.cell.site.voronoiId % patterns.length]!
-      break
-    case 'Chipped':
-      c2d.fillStyle = paletteBlack2
-      break
-    case 'Shattered':
-      c2d.fillStyle = paletteBlack3
-      break
-    default:
-      facet.state satisfies never
-  }
-  c2d.lineWidth = 3
-  c2d.strokeStyle = paletteBlack2
-  c2d.fill()
-  if (facet.state === 'Cracked') c2d.stroke()
 }
 
 const kaputState: {readonly [state in Facet['state']]: boolean} = {
@@ -125,13 +83,22 @@ const kaputState: {readonly [state in Facet['state']]: boolean} = {
   Shattered: true
 }
 
+export function facetKaput(facet: Readonly<Facet>): boolean {
+  return kaputState[facet.state]
+}
+
+export function facetHitable(facet: Facet): boolean {
+  return (
+    !kaputState[facet.state] && facet.edges.some(edge => kaputState[edge.state])
+  )
+}
+
 export function facetHammer(facet: Facet): void {
   switch (facet.state) {
     case 'Invisible':
       break
     case 'Solid': {
-      const exposed = facet.edges.some(edge => kaputState[edge.state])
-      if (exposed) facet.state = 'Cracked'
+      if (facetHitable(facet)) facet.state = 'Cracked'
       break
     }
     case 'Cracked': {
@@ -157,7 +124,7 @@ export function facetHammer(facet: Facet): void {
   }
 }
 
-export function facetAtXY(
+function facetAtXY(
   facets: readonly Readonly<Facet>[],
   x: number,
   y: number

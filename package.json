@@ -3,7 +3,9 @@
   "description": "",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@devvit/public-api": "0.11.3",
     "@types/node": "22.9.1",
+    "devvit": "0.11.3",
     "esbuild": "0.24.0",
     "typescript": "5.7.1-rc",
     "vitest": "2.1.5",
@@ -18,8 +20,12 @@
   "scripts": {
     "build": "esbuild --bundle --format=esm --log-level=info --outfile=webroot/index.js src/iframe/index.ts",
     "clean": "rm -rf dist webroot/index.js",
+    "devvit:install": "npm run clean && npm run build && devvit upload && devvit install r/chippedgame",
+    "devvit:logs": "devvit logs --log-runtime r/chippeddev",
+    "devvit:playtest": "devvit playtest --log-runtime r/chippeddev|grep --invert --line-buffered '\\[api\\]'",
     "format": "npm run formatter -- --fix",
     "formatter": "biome check --error-on-warnings",
+    "playtest": "trap 'kill 0' exit; npm start& npm run build -- --watch=forever& npm run devvit:playtest& wait",
     "start": "npm run build -- --banner:js='new globalThis.EventSource(\"/esbuild\").addEventListener(\"change\", () => location.reload());' --serve=1234 --servedir=webroot --watch=forever --serve",
     "test": "npm run test:format && npm run test:types && npm run test:unit",
     "test:format": "npm run formatter",

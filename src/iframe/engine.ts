@@ -1,160 +1,159 @@
-import {paletteBlack, paletteBlack2, paletteWhite} from '../shared/palette.ts'
-import {
-  type Facet,
-  facetAtXY,
-  facetDraw,
-  facetHammer,
-  newFacets
-} from './facet.ts'
-import {levelWH} from './level.ts'
+import {minCanvasWH} from '../shared/theme.ts'
+import type {
+  DevvitSystemMessage,
+  WebViewMessage
+} from '../shared/types/message.ts'
+import {Random} from '../shared/types/random.ts'
+import {type UTCMillis, utcMillisNow} from '../shared/types/time.ts'
+import {CursorEnt} from './ents/cursor-ent.ts'
+import {EIDFactory} from './ents/eid.ts'
+import {MineLevelEnt} from './ents/levels/mine-level-ent.ts'
+import {Zoo} from './ents/zoo.ts'
+import {Input} from './input/input.ts'
+import {Looper} from './looper.ts'
+import {Assets} from './types/assets.ts'
+import {Audio} from './types/audio.ts'
+import {Cam, camScale} from './types/cam.ts'
+import {drawClear} from './types/draw.ts'
+import {newFacets} from './types/facet.ts'
+import {type LoadedGame, isGame, isInitGame} from './types/game.ts'
+import {P1} from './types/p1.ts'
 
-export class Engine {
-  static async new(): Promise<Engine> {
-    return new Engine()
-  }
-
-  readonly #facets: Facet[]
-  readonly #canvas: HTMLCanvasElement
-  #x: number = 0
-  #y: number = 0
-
-  #bg: CanvasPattern
-  #patterns: CanvasPattern[] = []
-
-  constructor() {
-    this.#canvas = document.querySelector('canvas')!
-    this.#bg = newPattern(
-      this.#canvas.getContext('2d')!,
-      6,
-      130,
-      paletteBlack2,
-      1
-    )!
-    for (let i = 0; i < 32; i++) {
-      this.#patterns.push(
-        newPattern(
-          this.#canvas.getContext('2d')!,
-          6 + Math.random() * 12,
-          Math.random() * 360,
-          paletteBlack,
-          1 + Math.random() * 2
-        )!
-      )
-    }
-    this.#canvas.width = innerWidth
-    this.#canvas.height = innerHeight
-    this.#facets = newFacets(levelWH.w, levelWH.h)
-    this.#draw()
-  }
-
-  start(): void {
-    addEventListener('pointermove', ev => {
-      this.#x = ev.x
-      this.#y = ev.y
-    })
-
-    requestAnimationFrame(() => this.#loop())
-
-    addEventListener('pointerdown', ev => {
-      const sx = innerWidth / levelWH.w
-      const sy = innerHeight / levelWH.h
-      const facet = this.#facetAtXY(ev.x / sx, ev.y / sy)
-      if (!facet || Math.random() < 0.6) return
-      facetHammer(facet)
-    })
-  }
-
-  #loop(): void {
-    this.#draw()
-    requestAnimationFrame(() => this.#loop())
-  }
-
-  #facetAtXY(x: number, y: number): Facet | undefined {
-    return facetAtXY(this.#facets, x, y)
-  }
-
-  #draw(): void {
-    const ctx = this.#canvas.getContext('2d')
-    if (!ctx) return
-
-    ctx.beginPath()
-    ctx.rect(0, 0, this.#canvas.width, this.#canvas.height)
-    ctx.fillStyle = paletteWhite
-    ctx.fill()
-    ctx.fillStyle = this.#bg
-    ctx.fill()
-
-    const sx = innerWidth / levelWH.w
-    const sy = innerHeight / levelWH.h
-
-    const pointed = this.#facetAtXY(this.#x / sx, this.#y / sy)
-
-    ctx.save()
-    // ctx.scale(sx, sy)
-
-    for (const facet of this.#facets)
-      facetDraw(facet, ctx, this.#patterns, pointed)
-
-    ctx.restore()
+declare global {
+  // hack: fix type.
+  interface FontFaceSet {
+    add(font: FontFace): FontFaceSet
   }
 }
 
-function newPattern(
-  dstC2D: CanvasRenderingContext2D,
-  spacing: number,
-  degrees: number,
-  style: string,
-  width: number
-): CanvasPattern | undefined {
-  const rads = (degrees * Math.PI) / 180
-  const sin = Math.abs(Math.sin(rads))
-  const cos = Math.abs(Math.cos(rads))
-
-  const tileW = sin > 0.01 ? spacing / sin : spacing
-  const tileH = cos > 0.01 ? spacing / cos : spacing
-
-  const tile9Canvas = document.createElement('canvas')
-  tile9Canvas.width = tileW * 3
-  tile9Canvas.height = tileH * 3
-
-  const tile9C2D = tile9Canvas.getContext('2d')
-  if (!tile9C2D) return
-
-  tile9C2D.rect(0, 0, tile9Canvas.width, tile9Canvas.height)
-  tile9C2D.fillStyle = paletteWhite
-  tile9C2D.fill()
-
-  tile9C2D.save()
-  tile9C2D.translate(tile9Canvas.width / 2, tile9Canvas.height / 2)
-  tile9C2D.rotate(rads)
-
-  const diagonal = Math.sqrt(
-    tile9Canvas.width * tile9Canvas.width +
-      tile9Canvas.height * tile9Canvas.height
-  )
-  const lineCount = 1 + Math.trunc(diagonal / spacing)
-
-  tile9C2D.beginPath()
-  for (let i = -lineCount; i < 2 * lineCount; i++) {
-    const y = i * spacing
-    tile9C2D.moveTo(-diagonal, y)
-    tile9C2D.lineTo(diagonal, y)
+export class Engine {
+  static async new(): Promise<Engine> {
+    const assets = await Assets()
+    return new Engine(assets, await Audio(assets))
   }
-  tile9C2D.strokeStyle = style
-  tile9C2D.lineWidth = width
-  tile9C2D.lineCap = 'butt'
-  tile9C2D.stroke()
 
-  tile9C2D.restore()
+  _game: LoadedGame
+  #looper: Looper
 
-  const tileCanvas = document.createElement('canvas')
-  tileCanvas.width = tileW
-  tileCanvas.height = tileH
+  private constructor(assets: Assets, audio: Audio) {
+    const canvas = document.querySelector('canvas')
+    if (!canvas) throw Error('no canvas')
+    document.fonts.add(assets.font)
 
-  const tileCtx = tileCanvas.getContext('2d')
-  if (!tileCtx) return
+    const cam = new Cam()
+    cam.minWH = {w: minCanvasWH.w, h: minCanvasWH.h}
+    const ctrl = new Input(cam, canvas)
+    ctrl.mapDefault()
+    const eid = new EIDFactory()
+    this._game = {
+      audio: audio.ctx,
+      debug: false,
+      cam,
+      canvas,
+      ctrl,
+      cursor: CursorEnt(assets, eid),
+      eid,
+      img: assets.img,
+      now: 0 as UTCMillis,
+      sound: audio,
+      p1: P1(),
+      zoo: new Zoo()
+    }
 
-  tileCtx.drawImage(tile9Canvas, tileW, tileH, tileW, tileH, 0, 0, tileW, tileH)
+    this.#looper = new Looper(
+      assets,
+      this._game.canvas,
+      this._game.cam,
+      this._game.ctrl
+    )
+    this.#looper.onPause = this.#onPause
+    this.#looper.onResize = this.#onResize
+    this.#looper.onResume = this.#onResume
+  }
 
-  return dstC2D.createPattern(tileCanvas, 'repeat') ?? undefined
+  start(): void {
+    addEventListener('message', this._onMsg)
+    postMessage({type: 'Loaded'})
+    this._game.ctrl.register('add')
+  }
+
+  #onLoop = (): void => {
+    this.#looper.loop = this.#onLoop
+
+    if (this._game.ctrl.pointOn && this._game.audio.state !== 'running')
+      void this._game.audio.resume() // don't await; this can hang.
+
+    if (this.#looper.draw) {
+      this._game.draw = this.#looper.draw // to-do: we should give looper Draw.
+      this._game.c2d = this.#looper.draw.c2d
+    } else {
+      delete this._game.draw
+      delete this._game.c2d
+    }
+    this._game.now = utcMillisNow()
+
+    if (!isGame(this._game)) return
+
+    drawClear(this._game.draw, this._game.c2d, this._game.cam)
+
+    this._game.zoo.update(this._game)
+    this._game.zoo.draw(this._game)
+  }
+
+  _onMsg = (ev: MessageEvent<DevvitSystemMessage>): void => {
+    // hack: filter unknown messages.
+    if (ev.data.type !== 'devvit-message') return
+
+    const msg = ev.data.data.message
+    if (this._game.debug || msg.debug)
+      console.log(`iframe received msg=${JSON.stringify(msg)}`)
+
+    switch (msg.type) {
+      case 'Init':
+        this._game.debug = msg.debug
+        // to-do: isolate seeded state so it's clear what's predetermined.
+        this._game.rnd = new Random(msg.seed)
+        this._game.facets = newFacets(this._game.rnd)
+        if (!isInitGame(this._game)) throw Error('no init game')
+
+        this._game.zoo.replace(MineLevelEnt(this._game))
+        this.#looper.register('add', this._game.rnd)
+        this.#looper.loop = this.#onLoop
+        this._game.canvas.style.display = 'block'
+        break
+
+      default:
+        msg.type satisfies never
+    }
+  }
+
+  #onPause = (): void => {
+    console.log('paused')
+  }
+
+  #onResize = (): void => {
+    const {cam} = this._game
+
+    cam.minWH = {
+      w: innerWidth * devicePixelRatio,
+      h: innerHeight * devicePixelRatio
+    }
+
+    // don't truncate xy to avoid sawtooth movement.
+    // cam.x = p1.x - Math.trunc(canvas.width / 2)
+    // cam.y = p1.y - Math.trunc(canvas.height / 2)
+
+    cam.x =
+      -cam.w / 2 + (minCanvasWH.w * camScale(minCanvasWH, 1, 0, false)) / 2
+    cam.y =
+      -cam.h / 2 + (minCanvasWH.h * camScale(minCanvasWH, 1, 0, false)) / 2
+  }
+
+  #onResume = (): void => {
+    console.log('resume')
+  }
+}
+
+function postMessage(msg: WebViewMessage): void {
+  parent.postMessage(msg, document.referrer)
 }
