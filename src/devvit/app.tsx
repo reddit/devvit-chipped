@@ -1,9 +1,11 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
-import {paletteWhite} from '../shared/theme.js'
+import {minCanvasWH, paletteWhite} from '../shared/theme.js'
+import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import type {Player} from '../shared/types/player.js'
+import {Random} from '../shared/types/random.js'
 import {T2, T3, anonSnoovatarURL, anonUsername} from '../shared/types/tid.js'
 import {Leaderboard} from './leaderboard.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
@@ -41,65 +43,85 @@ export function App(ctx: Devvit.Context): JSX.Element {
   const [loading, setLoading] = useState2(false)
   const [leaderboard, setLeaderboard] = useState2(false)
 
+  // hack: this is big. if you get a 36 and no logs, it's likely a context
+  //       overflow and needs to be computed on every render instead. also, the
+  //       SVG parser is fickle. needs an unencoded <svg prefix and no single
+  //       quotes. lastly, the compute logger will truncate the URL if you try
+  //       to log it.
+  const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
+
   if (launch) return WebView(ctx, debug, [p1, setP1], [play, setPlay], post)
   if (leaderboard) return <Leaderboard onBack={() => setLeaderboard(false)} />
 
   return (
-    <vstack
-      width='100%'
-      height='100%'
+    <zstack
       alignment='top center'
       backgroundColor={paletteWhite}
-      gap='large'
-      padding='large'
+      width='100%'
+      height='100%'
     >
-      {/* hack: blocks doesn't support webp translucency. */}
+      <vstack width='100%'>
+        <spacer height='32px' />
+        {/* hack: blocks doesn't support webp translucency. */}
+        <image
+          url='logo.png'
+          imageWidth='452px'
+          imageHeight='62px'
+          resizeMode='fit'
+          width='100%'
+        />
+      </vstack>
       <image
-        url='logo.png'
-        imageWidth='452px'
-        imageHeight='62px'
-        resizeMode='fit'
-        width='100%'
+        url={svg}
+        imageWidth={`${minCanvasWH.w}px`}
+        imageHeight={`${minCanvasWH.h}px`}
       />
       <vstack
-        width='100%'
         alignment='middle center'
-        backgroundColor={paletteWhite}
-        gap='medium'
+        gap='large'
         padding='large'
+        width='100%'
+        height='100%'
       >
-        {/* biome-ignore lint/a11y/useButtonType: */}
-        <button
-          appearance='primary'
-          disabled={loading}
-          size='large'
-          minWidth='160px'
-          icon={play == null ? 'play-fill' : 'new-fill'}
-          onPress={async () => {
-            setLoading(true)
-            if (loading) return // hack: disabled isn't fast enough.
-            if (play == null) setLaunch(true)
-            else await createPost(ctx, [p1, setP1])
-          }}
+        <vstack
+          width='100%'
+          alignment='middle center'
+          gap='medium'
+          padding='large'
         >
-          {play == null ? 'play' : 'new game'}
-        </button>
-        {/* biome-ignore lint/a11y/useButtonType: */}
-        <button
-          appearance='media'
-          disabled={loading}
-          size='large'
-          minWidth='160px'
-          icon={'dashboard-fill'}
-          onPress={() => {
-            if (loading) return // hack: disabled isn't fast enough.
-            setLeaderboard(true) // to-do: why is this circuit breaking?
-          }}
-        >
-          leaderboard
-        </button>
+          {/* biome-ignore lint/a11y/useButtonType: */}
+          <button
+            appearance='primary'
+            disabled={loading}
+            size='large'
+            minWidth='160px'
+            icon={play == null ? 'play-fill' : 'new-fill'}
+            onPress={async () => {
+              setLoading(true)
+              if (loading) return // hack: disabled isn't fast enough.
+              if (play == null) setLaunch(true)
+              else await createPost(ctx, [p1, setP1])
+            }}
+          >
+            {play == null ? 'play' : 'new game'}
+          </button>
+          {/* biome-ignore lint/a11y/useButtonType: */}
+          <button
+            appearance='media'
+            disabled={loading}
+            size='large'
+            minWidth='160px'
+            icon={'dashboard-fill'}
+            onPress={() => {
+              if (loading) return // hack: disabled isn't fast enough.
+              setLeaderboard(true) // to-do: why is this circuit breaking?
+            }}
+          >
+            leaderboard
+          </button>
+        </vstack>
       </vstack>
-    </vstack>
+    </zstack>
   )
 }
 
@@ -161,18 +183,18 @@ async function onMsg(
       setPlay(play)
       await redisCreatePlay(ctx.redis, play, p1.t2)
       const author = await ctx.reddit.getUserById(post.author)
-      // to-do: migrate to no-ID postMessage().
+
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
-        created: post.created,
-        debug,
         author: {
           snoovatarURL: (await author?.getSnoovatarUrl()) ?? anonSnoovatarURL,
           t2: post.author,
           username: author?.username ?? anonUsername
         },
-        seed: post.seed,
+        created: post.created,
+        debug,
         p1,
+        seed: post.seed,
         t3: post.t3
       })
       break

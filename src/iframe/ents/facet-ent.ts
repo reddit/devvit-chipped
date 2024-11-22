@@ -5,14 +5,14 @@ import {
   paletteBlack3,
   paletteWhite
 } from '../../shared/theme.js'
-import {audioPlay} from '../types/audio.js'
-import {camScale} from '../types/cam.js'
 import {
   type Facet,
   facetHammer,
   facetHitable,
   facetKaput
-} from '../types/facet.js'
+} from '../../shared/types/facet.js'
+import {audioPlay} from '../types/audio.js'
+import {camScale} from '../types/cam.js'
 import type {Game, LoadedGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
 import type {EID} from './eid.js'

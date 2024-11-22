@@ -1,7 +1,8 @@
 import type {Cell} from 'voronoi'
 import Voronoi from 'voronoi'
-import {minCanvasWH} from '../../shared/theme.ts'
-import type {Random} from '../../shared/types/random.ts'
+import {minCanvasWH, paletteBlack} from '../theme.ts'
+import type {XY} from './2d.ts'
+import type {Random} from './random.ts'
 
 export type Facet = {
   area: number
@@ -19,7 +20,7 @@ export type FacetState =
   | 'Chipped'
   | 'Shattered'
 
-export function newFacets(rnd: Random): Facet[] {
+export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
   const voronoi = new Voronoi()
   const sites = []
   // to-do: const ez = 60, medium = 100, hard = 500, hardest = 1500
@@ -72,7 +73,23 @@ export function newFacets(rnd: Random): Facet[] {
     facet.specimen = true
     break
   }
-  return facets
+
+  // to-do: component terminology?
+  const edges = diagram.edges
+    .filter(
+      edge =>
+        (facets[edge.lSite.voronoiId]!.state === 'Invisible' ||
+          edge.rSite == null ||
+          facets[edge.rSite.voronoiId]!.state === 'Invisible') &&
+        (facets[edge.lSite.voronoiId]!.state !== 'Invisible' ||
+          (edge.rSite && facets[edge.rSite.voronoiId]!.state !== 'Invisible'))
+    )
+    .map(edge => [
+      {x: edge.va.x, y: edge.va.y},
+      {x: edge.vb.x, y: edge.vb.y}
+    ])
+
+  return {facets, svg: newRockSVG(edges)}
 }
 
 const kaputState: {readonly [state in Facet['state']]: boolean} = {
@@ -143,4 +160,16 @@ function cellArea(cell: Readonly<Cell>): number {
   }
 
   return Math.abs(area) / 2
+}
+
+function newRockSVG(edges: readonly (readonly Readonly<XY>[])[]): string {
+  const paths = edges
+    .map(edge => {
+      const path = edge
+        .map(({x, y}, index) => (index ? `L${x},${y}` : `M${x},${y}`))
+        .join(' ')
+      return `<path d="${path}" stroke="${paletteBlack}" />`
+    })
+    .join('')
+  return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${minCanvasWH.w} ${minCanvasWH.h}">${paths}</svg>`
 }

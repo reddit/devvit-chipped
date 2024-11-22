@@ -1,4 +1,5 @@
 import {minCanvasWH} from '../shared/theme.ts'
+import {newFacets} from '../shared/types/facet.ts'
 import type {
   DevvitSystemMessage,
   WebViewMessage
@@ -15,7 +16,6 @@ import {Assets} from './types/assets.ts'
 import {Audio} from './types/audio.ts'
 import {Cam, camScale} from './types/cam.ts'
 import {drawClear} from './types/draw.ts'
-import {newFacets} from './types/facet.ts'
 import {type LoadedGame, isGame, isInitGame} from './types/game.ts'
 import {P1} from './types/p1.ts'
 
@@ -109,11 +109,12 @@ export class Engine {
       console.log(`iframe received msg=${JSON.stringify(msg)}`)
 
     switch (msg.type) {
-      case 'Init':
+      case 'Init': {
         this._game.debug = msg.debug
         // to-do: isolate seeded state so it's clear what's predetermined.
         this._game.rnd = new Random(msg.seed)
-        this._game.facets = newFacets(this._game.rnd)
+        const {facets} = newFacets(this._game.rnd)
+        this._game.facets = facets
         if (!isInitGame(this._game)) throw Error('no init game')
 
         this._game.zoo.replace(MineLevelEnt(this._game))
@@ -121,6 +122,7 @@ export class Engine {
         this.#looper.loop = this.#onLoop
         this._game.canvas.style.display = 'block'
         break
+      }
 
       default:
         msg.type satisfies never
