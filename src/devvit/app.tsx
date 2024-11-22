@@ -48,8 +48,8 @@ export function App(ctx: Devvit.Context): JSX.Element {
   //       overflow and needs to be computed on every render instead. also, the
   //       SVG parser is fickle. needs an unencoded <svg prefix and no single
   //       quotes. also, the compute logger will truncate the URL if you try to
-  //       log it. finally, post previews don't support Context.postId or
-  //       useState() so you have to pass by prop.
+  //       log it. finally, post previews don't support Context or useState() so
+  //       you have to pass by prop.
   const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
 
   if (launch) return WebView(ctx, debug, [p1, setP1], [play, setPlay], post)
