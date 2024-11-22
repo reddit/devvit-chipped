@@ -4,6 +4,8 @@ import {
   type JobContext,
   type Post
 } from '@devvit/public-api'
+import {newFacets} from '../shared/types/facet.ts'
+import {Random} from '../shared/types/random.ts'
 import {Preview} from './preview.tsx'
 import type {PostRecord} from './record.ts'
 
@@ -18,9 +20,11 @@ export async function r2CreatePost(
 
   const hex = seed.toString(16)
 
+  const {svg} = newFacets(new Random(seed))
+
   // requires special permission: post as viewer.
   const post = await ctx.reddit.submitPost({
-    preview: <Preview />,
+    preview: <Preview svg={svg} />,
     subredditName: ctx.subredditName,
     title: `Rock ${hex}`
   })

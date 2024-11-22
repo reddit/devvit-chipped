@@ -1,7 +1,7 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
-import {minCanvasWH, paletteWhite} from '../shared/theme.js'
+import {paletteWhite} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import type {Player} from '../shared/types/player.js'
@@ -20,12 +20,13 @@ import {
   redisSetPlayer,
   redisSetPost
 } from './redis.js'
+import {Title} from './title.js'
 import {useState2} from './use-state2.js'
 
 export function App(ctx: Devvit.Context): JSX.Element {
   const debug = 'chipped' in ctx.debug
 
-  if (!ctx.postId) throw Error('no T2')
+  if (!ctx.postId) throw Error('no T3')
   const [post] = useState2(redisQueryPost(ctx.redis, T3(ctx.postId)))
   if (!post) throw Error('no post record')
 
@@ -46,82 +47,47 @@ export function App(ctx: Devvit.Context): JSX.Element {
   // hack: this is big. if you get a 36 and no logs, it's likely a context
   //       overflow and needs to be computed on every render instead. also, the
   //       SVG parser is fickle. needs an unencoded <svg prefix and no single
-  //       quotes. lastly, the compute logger will truncate the URL if you try
-  //       to log it.
+  //       quotes. also, the compute logger will truncate the URL if you try to
+  //       log it. finally, post previews don't support Context.postId or
+  //       useState() so you have to pass by prop.
   const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
 
   if (launch) return WebView(ctx, debug, [p1, setP1], [play, setPlay], post)
   if (leaderboard) return <Leaderboard onBack={() => setLeaderboard(false)} />
 
   return (
-    <zstack
-      alignment='top center'
-      backgroundColor={paletteWhite}
-      width='100%'
-      height='100%'
-    >
-      <vstack width='100%'>
-        <spacer height='32px' />
-        {/* hack: blocks doesn't support webp translucency. */}
-        <image
-          url='logo.png'
-          imageWidth='452px'
-          imageHeight='62px'
-          resizeMode='fit'
-          width='100%'
-        />
-      </vstack>
-      <image
-        url={svg}
-        imageWidth={`${minCanvasWH.w}px`}
-        imageHeight={`${minCanvasWH.h}px`}
-      />
-      <vstack
-        alignment='middle center'
-        gap='large'
-        padding='large'
-        width='100%'
-        height='100%'
+    <Title svg={svg}>
+      {/* biome-ignore lint/a11y/useButtonType: */}
+      <button
+        appearance='primary'
+        disabled={loading}
+        size='large'
+        minWidth='160px'
+        icon={play == null ? 'play-fill' : 'new-fill'}
+        onPress={async () => {
+          setLoading(true)
+          if (loading) return // hack: disabled isn't fast enough.
+          if (play == null) setLaunch(true)
+          else await createPost(ctx, [p1, setP1])
+        }}
       >
-        <vstack
-          width='100%'
-          alignment='middle center'
-          gap='medium'
-          padding='large'
-        >
-          {/* biome-ignore lint/a11y/useButtonType: */}
-          <button
-            appearance='primary'
-            disabled={loading}
-            size='large'
-            minWidth='160px'
-            icon={play == null ? 'play-fill' : 'new-fill'}
-            onPress={async () => {
-              setLoading(true)
-              if (loading) return // hack: disabled isn't fast enough.
-              if (play == null) setLaunch(true)
-              else await createPost(ctx, [p1, setP1])
-            }}
-          >
-            {play == null ? 'play' : 'new game'}
-          </button>
-          {/* biome-ignore lint/a11y/useButtonType: */}
-          <button
-            appearance='media'
-            disabled={loading}
-            size='large'
-            minWidth='160px'
-            icon={'dashboard-fill'}
-            onPress={() => {
-              if (loading) return // hack: disabled isn't fast enough.
-              setLeaderboard(true) // to-do: why is this circuit breaking?
-            }}
-          >
-            leaderboard
-          </button>
-        </vstack>
-      </vstack>
-    </zstack>
+        {play == null ? 'play' : 'new game'}
+      </button>
+      {/* biome-ignore lint/a11y/useButtonType: */}
+      <button
+        appearance='media'
+        disabled={loading}
+        size='large'
+        minWidth='160px'
+        icon={'dashboard-fill'}
+        onPress={() => {
+          if (loading) return // hack: disabled isn't fast enough.
+          setLeaderboard(true) // to-do: why is this circuit breaking?
+        }}
+      >
+        leaderboard
+      </button>
+    </Title>
   )
 }
 

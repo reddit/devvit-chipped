@@ -1,19 +1,17 @@
-import {Devvit} from '@devvit/public-api'
-import {paletteBlack} from '../shared/theme.js'
+import {type Context, Devvit} from '@devvit/public-api'
+import {Title} from './title.js'
 
 export const previewVersion: number = 0
 
-export function Preview(): JSX.Element {
-  // to-do: get initial state here so the seed style is correct.
+export function Preview(props: {svg: string}, _ctx: Context): JSX.Element {
+  // hack: ctx.postId and useState() are busted in preview.
+  // const [post] = useState2(async () => {
+  //   if (ctx.postId) return await redisQueryPost(ctx.redis, T3(ctx.postId))
+  // })
+
   // hack: no way to pass initial state from preview to app.
-  // to-do: this should be a golf bag silhouette or tiled pattern.
   return (
-    <vstack
-      width='100%'
-      height='100%'
-      alignment='center middle'
-      backgroundColor={paletteBlack}
-    >
+    <Title svg={props.svg}>
       <image
         url='loading.gif'
         description='loading…'
@@ -22,6 +20,6 @@ export function Preview(): JSX.Element {
         imageHeight='240px'
         imageWidth='240px'
       />
-    </vstack>
+    </Title>
   )
 }
