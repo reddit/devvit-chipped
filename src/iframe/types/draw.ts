@@ -8,7 +8,7 @@ import {
   paletteWhite,
   spacePx
 } from '../../shared/theme.ts'
-import type {Box, XY} from '../../shared/types/2d.ts'
+import type {Box, WH, XY} from '../../shared/types/2d.ts'
 import type {Random} from '../../shared/types/random.ts'
 import type {Cam} from './cam.ts'
 
@@ -86,6 +86,7 @@ export function drawText(
       fill?: string
       size?: number
       stroke?: string
+      pad?: Partial<WH> | undefined
     }
   >
 ): Box {
@@ -98,43 +99,50 @@ export function drawText(
   let x = opts.x
   let y = opts.y
   const justify = opts.justify ?? 'TopLeft'
+  const padW = opts?.pad?.w ?? 0
+  const padH = opts?.pad?.h ?? 0
   switch (justify) {
     case 'BottomLeft':
-      x += c2d.lineWidth
-      y -= c2d.lineWidth
+      x += c2d.lineWidth + padW
+      y -= c2d.lineWidth + padH
       break
     case 'BottomRight':
-      x -= metrics.width + c2d.lineWidth
-      y -= c2d.lineWidth
+      x -= metrics.width + c2d.lineWidth + padW
+      y -= c2d.lineWidth + padH
       break
     case 'Center':
-      x -= Math.trunc(metrics.width / 2)
+      x -= Math.trunc(metrics.width / 2 + padW)
       y -= Math.trunc(
         (metrics.actualBoundingBoxAscent +
           metrics.actualBoundingBoxDescent +
           c2d.lineWidth * 2) /
-          2
+          2 +
+          padH
       )
       break
     case 'TopLeft':
+      x += padW
       y +=
         metrics.actualBoundingBoxAscent +
         metrics.actualBoundingBoxDescent +
-        c2d.lineWidth
+        c2d.lineWidth +
+        padH
       break
     case 'TopCenter':
-      x -= Math.trunc((metrics.width + c2d.lineWidth) / 2)
+      x -= Math.trunc((metrics.width + c2d.lineWidth) / 2) + padW
       y +=
         metrics.actualBoundingBoxAscent +
         metrics.actualBoundingBoxDescent +
-        c2d.lineWidth
+        c2d.lineWidth +
+        padH
       break
     case 'TopRight':
-      x -= metrics.width + c2d.lineWidth
+      x -= metrics.width + c2d.lineWidth + padW
       y +=
         metrics.actualBoundingBoxAscent +
         metrics.actualBoundingBoxDescent +
-        c2d.lineWidth
+        c2d.lineWidth +
+        padH
       break
     default:
       justify satisfies never

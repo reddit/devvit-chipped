@@ -44,17 +44,21 @@ export function toolbeltEntDraw(
   c2d.strokeStyle = paletteBlack
   c2d.stroke()
 
+  const pad = {w: spacePx, h: spacePx}
   drawText(c2d, (p1.chips / 1024).toFixed(1), {
     x: toolbelt.x,
     y: toolbelt.y,
     fill: paletteBlack,
-    justify: 'TopLeft'
+    justify: 'TopLeft',
+    pad
   })
   drawText(c2d, 'chips', {
     x: toolbelt.x,
-    y: toolbelt.y + fontDefaultSize,
+    y: toolbelt.y + (5 * fontDefaultSize) / 8,
     fill: paletteBlack,
-    justify: 'TopLeft'
+    justify: 'TopLeft',
+    size: 12,
+    pad
   })
 
   c2d.restore()

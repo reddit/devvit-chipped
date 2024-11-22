@@ -73,7 +73,7 @@ export async function redisSetPlayer(
 ): Promise<void> {
   await Promise.all([
     redis.hSet(playerByT2Key, {[player.t2]: JSON.stringify(player)}),
-    redis.zAdd(t2SpecimenZKey, {member: player.t2, score: 0}) // to-do: compute player lifetime specimen aggregation from inven.
+    redis.zAdd(t2SpecimenZKey, {member: player.t2, score: player.minerals})
   ])
 }
 

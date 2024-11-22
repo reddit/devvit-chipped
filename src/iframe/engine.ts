@@ -1,9 +1,6 @@
 import {minCanvasWH} from '../shared/theme.ts'
 import {newFacets} from '../shared/types/facet.ts'
-import type {
-  DevvitSystemMessage,
-  WebViewMessage
-} from '../shared/types/message.ts'
+import type {DevvitSystemMessage} from '../shared/types/message.ts'
 import {Random} from '../shared/types/random.ts'
 import {type UTCMillis, utcMillisNow} from '../shared/types/time.ts'
 import {CursorEnt} from './ents/cursor-ent.ts'
@@ -12,12 +9,12 @@ import {MineLevelEnt} from './ents/levels/mine-level-ent.ts'
 import {Zoo} from './ents/zoo.ts'
 import {Input} from './input/input.ts'
 import {Looper} from './looper.ts'
+import {postMessage} from './mail.ts'
 import {Assets} from './types/assets.ts'
 import {Audio} from './types/audio.ts'
 import {Cam, camScale} from './types/cam.ts'
 import {drawClear} from './types/draw.ts'
 import {type LoadedGame, isGame, isInitGame} from './types/game.ts'
-import {P1} from './types/p1.ts'
 
 declare global {
   // hack: fix type.
@@ -56,7 +53,6 @@ export class Engine {
       img: assets.img,
       now: 0 as UTCMillis,
       sound: audio,
-      p1: P1(),
       zoo: new Zoo()
     }
 
@@ -115,6 +111,7 @@ export class Engine {
         this._game.rnd = new Random(msg.seed)
         const {facets} = newFacets(this._game.rnd)
         this._game.facets = facets
+        this._game.p1 = msg.p1
         if (!isInitGame(this._game)) throw Error('no init game')
 
         this._game.zoo.replace(MineLevelEnt(this._game))
@@ -154,8 +151,4 @@ export class Engine {
   #onResume = (): void => {
     console.log('resume')
   }
-}
-
-function postMessage(msg: WebViewMessage): void {
-  parent.postMessage(msg, document.referrer)
 }

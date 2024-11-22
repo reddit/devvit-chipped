@@ -6,6 +6,7 @@ export type Player = Profile & {
   chips: number
   /** rocks / posts created. */
   mined: T3[]
+  minerals: number
   // inven: Inven
 }
 
@@ -22,6 +23,7 @@ export function Player(profile: Readonly<Profile>): Player {
   return {
     chips: 0,
     mined: [],
+    minerals: 0,
     snoovatarURL: profile.snoovatarURL,
     t2: profile.t2,
     username: profile.username

@@ -11,6 +11,7 @@ import {
   facetHitable,
   facetKaput
 } from '../../shared/types/facet.js'
+import {postMessage} from '../mail.js'
 import {audioPlay} from '../types/audio.js'
 import {camScale} from '../types/cam.js'
 import type {Game, LoadedGame} from '../types/game.js'
@@ -105,7 +106,10 @@ export function facetEntUpdate(facet: FacetEnt, game: Game): void {
       if (priorState !== facet.facet.state) {
         fx = sound.hammerHit[Math.trunc(rnd.num * sound.hammerHit.length)]!
         if (facet.facet.specimen) {
+          // to-do: collect specimen in inven.
+          game.p1.minerals += facet.facet.area
         } else game.p1.chips += facet.facet.area
+        postMessage({type: 'Save', p1: game.p1})
       }
       break
     case 'Shattered':

@@ -166,20 +166,23 @@ async function onMsg(
       break
     }
     case 'EndGame':
-      if (!p1) throw Error('no P1')
+      setP1(msg.p1)
       // to-do: exit iframe for perf.
-      await redisSetPlayer(ctx.redis, p1)
+      await redisSetPlayer(ctx.redis, msg.p1)
       break
     case 'NewGame': {
-      if (!p1) throw Error('no P1')
-      const post = await createPost(ctx, [p1, setP1])
-      p1.mined.push(post.t3)
-      await redisSetPlayer(ctx.redis, p1)
-      setP1(p1)
+      const post = await createPost(ctx, [msg.p1, setP1])
+      msg.p1.mined.push(post.t3)
+      await redisSetPlayer(ctx.redis, msg.p1)
+      setP1(msg.p1)
       // to-do: exit iframe for perf.
       // to-do: notify in game UI too and disable button.
       break
     }
+    case 'Save':
+      setP1(msg.p1)
+      await redisSetPlayer(ctx.redis, msg.p1)
+      break
     default:
       msg satisfies never
       break

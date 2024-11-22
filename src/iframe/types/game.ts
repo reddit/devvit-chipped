@@ -1,4 +1,5 @@
 import type {Facet} from '../../shared/types/facet.ts'
+import type {Player} from '../../shared/types/player.ts'
 import type {Random} from '../../shared/types/random.ts'
 import type {UTCMillis} from '../../shared/types/time.ts'
 import type {CursorEnt} from '../ents/cursor-ent.ts'
@@ -9,7 +10,6 @@ import type {Assets} from './assets.ts'
 import type {AudioBufferByName} from './audio.ts'
 import type {Cam} from './cam.ts'
 import type {C2D, Canvas, Draw} from './draw.ts'
-import type {P1} from './p1.ts'
 
 /** assets are loaded, then LoadedGame is sent, and InitGame is received. */
 
@@ -24,14 +24,13 @@ export type LoadedGame = Pick<Assets, 'img'> &
     debug: boolean
     eid: EIDFactory
     now: UTCMillis
-    p1: P1
     sound: AudioBufferByName
     zoo: Zoo
   }
 export type InitGame = LoadedGame & Init
 export type Game = LoadedGame & Init & Drawable
 
-type Init = {facets: Facet[]; rnd: Random}
+type Init = {facets: Facet[]; p1: Player; rnd: Random}
 
 type Drawable = {c2d: C2D; draw: Omit<Draw, 'c2d'>}
 

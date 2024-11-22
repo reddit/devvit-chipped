@@ -92,7 +92,8 @@ function Table(props: {
         snoovatarURL={player.snoovatarURL}
         hammered={0 /* to-do: fix me. */}
         mined={player.mined.length}
-        chips={player.chips}
+        chips={(player.chips / 1024).toFixed(1)}
+        minerals={(player.minerals / 1024).toFixed(1)}
         style={i & 1 ? 'Odd' : 'Even'}
       />
     )
@@ -101,9 +102,10 @@ function Table(props: {
     <vstack width='100%' grow>
       <Row
         name='name'
-        chips='level'
+        chips='chips'
         hammered='rocks hammered'
         mined='rocks mined'
+        minerals='minerals'
         style='Heading'
         snoovatarURL=''
       />
@@ -119,6 +121,7 @@ function Row(props: {
   style: 'Heading' | 'Even' | 'Odd'
   mined: number | string
   hammered: number | string
+  minerals: number | string
 }): JSX.Element {
   const weight = props.style === 'Heading' ? 'bold' : 'regular'
   const style = props.style === 'Heading' ? 'heading' : 'body'
@@ -134,7 +137,7 @@ function Row(props: {
       height='48px'
     >
       <spacer size='xsmall' />
-      <hstack alignment='middle' width={100 / 2}>
+      <hstack alignment='middle' width={100 / 3}>
         {props.snoovatarURL ? (
           <image
             url={props.snoovatarURL}
@@ -149,15 +152,18 @@ function Row(props: {
       </hstack>
       <spacer grow />
       <text weight={weight} style={style} width={100 / 6}>
-        {props.hammered}
+        {props.mined}
       </text>
       <spacer grow />
       <text weight={weight} style={style} width={100 / 6}>
-        {props.mined}
+        {props.hammered}
       </text>
       <spacer grow />
       <text weight='bold' style={style} width={100 / 6}>
         {props.chips}
+      </text>
+      <text weight='bold' style={style} width={100 / 6}>
+        {props.minerals}
       </text>
       <spacer size='xsmall' />
     </hstack>
