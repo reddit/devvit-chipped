@@ -33,9 +33,13 @@
         "noInferrableTypes": "off",
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
-        "useNumberNamespace": "off"
+        "useNumberNamespace": "off",
+        "useImportType": "warn"
       },
-      "suspicious": { "noImplicitAnyLet": "off" }
+      "suspicious": {
+        "noAssignInExpressions": "off",
+        "noImplicitAnyLet": "off"
+      }
     }
   },
   "vcs": { "enabled": true, "clientKind": "git" }
