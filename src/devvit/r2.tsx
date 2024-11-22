@@ -22,7 +22,7 @@ export async function r2CreatePost(
   const post = await ctx.reddit.submitPost({
     preview: <Preview />,
     subredditName: ctx.subredditName,
-    title: `Chipped Rock ${hex}`
+    title: `Rock ${hex}`
   })
 
   console.log(`rock ${hex} posted by ${ctx.userId ?? 'chippedgame'}`)

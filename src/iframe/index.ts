@@ -16,7 +16,6 @@ if (noDevvit) {
   const delay = Math.random() * 1_000
   const seed = Date.now() % randomEndSeed
   console.log(`delay=${delay} seed=${seed}`)
-
   setTimeout(
     () =>
       engine._onMsg(

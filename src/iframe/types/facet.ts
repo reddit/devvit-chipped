@@ -103,7 +103,7 @@ export function facetHammer(facet: Facet): void {
     }
     case 'Cracked': {
       const smallest = facet.edges.every(
-        edge => kaputState[edge.state] || edge.area >= facet.area
+        edge => kaputState[edge.state] || facet.area < edge.area
       )
       if (smallest) facet.state = 'Chipped'
       else {

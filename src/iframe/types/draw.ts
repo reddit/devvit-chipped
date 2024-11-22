@@ -52,7 +52,7 @@ export function drawClear(
 
   c2d.beginPath()
   c2d.roundRect(0, 0, cam.w, cam.h, spacePx)
-  c2d.fillStyle = paletteWhite
+  c2d.fillStyle = paletteBlack
   c2d.fill()
 
   c2d.beginPath()
