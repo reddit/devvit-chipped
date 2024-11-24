@@ -8,7 +8,9 @@
     },
     "linter": { "enabled": true }
   },
-  "files": { "ignore": ["webroot/index.js"] },
+  "files": {
+    "ignore": ["webroot/index.js", "src/shared/mineral-cat/mineral-cat.json"]
+  },
   "formatter": { "indentStyle": "space" },
   "javascript": {
     "formatter": {

@@ -77,9 +77,9 @@ function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MineralCat {
       ima,
       localities: unique(cat[ima]?.localities, binding.localityLabel?.value),
       name: binding.mineralLabel.value,
-      q: binding.mineral.value.slice(
-        'http://www.wikidata.org/entity/'.length
-      ) as Q,
+      q: Q(
+        binding.mineral.value.slice('http://www.wikidata.org/entity/'.length)
+      ),
       streaks: unique(cat[ima]?.streaks, binding.streakColorLabel?.value)
     }
   }
@@ -90,33 +90,19 @@ function unique<T>(lhs: T[] | undefined, rhs: T | undefined): T[] {
   return [...new Set([...(lhs ?? []), ...(rhs ? [rhs] : [])])]
 }
 
-// hack: instead of supporting CSV escapes, reserve % and | for splitting.
-function mineralCatToCSV(cat: Readonly<MineralCat>): string {
-  let csv = ''
-  for (const mineral of Object.values(cat)) {
-    if (
-      mineral.crystalSystems.some(val => /\|/.test(val)) ||
-      mineral.localities.some(val => /\|/.test(val)) ||
-      mineral.streaks.some(val => /\|/.test(val))
-    )
-      throw Error(`${mineral.ima} contains |; ${JSON.stringify(mineral)}`)
-    const vals = [
-      mineral.ima,
-      mineral.name,
-      mineral.q,
-      mineral.crystalSystems.join('|'),
-      mineral.formula,
-      mineral.localities.join('|'),
-      mineral.streaks.join('|')
-    ]
-    if (vals.some(val => val.includes('%')))
-      throw Error(`${mineral.ima} contains %; ${JSON.stringify(mineral)}`)
-    csv += `${vals.join('%')}\n`
-  }
-  return csv
+// hack: this should be in mineral-cat.ts next to the type but blocked by Node /
+//       tsc import incompatibility.
+// biome-ignore lint/suspicious/noRedeclare:
+function Q(q: string): Q {
+  if (!q.startsWith('Q')) throw Error(`${q} must start with Q`)
+  return q as Q
 }
 
 writeFileSync(
-  'src/shared/mineral-cat/mineral-cat.csv',
-  mineralCatToCSV(parseMineralWikidata(await fetchMineralWikidata()))
+  'src/shared/mineral-cat/mineral-cat.json', // CSV saves ~60 KiB gzipped.
+  JSON.stringify(
+    parseMineralWikidata(await fetchMineralWikidata()),
+    undefined,
+    2
+  )
 )

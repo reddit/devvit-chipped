@@ -15,11 +15,11 @@ export const anonSnoovatarURL: string =
 export const anonUsername: string = 'anon'
 
 export function T2(t2: string): T2 {
-  if (!t2.startsWith('t2_')) throw Error(`${t2} must start with t2_.`)
-  return <T2>t2
+  if (!t2.startsWith('t2_')) throw Error(`${t2} must start with t2_`)
+  return t2 as T2
 }
 
 export function T3(t3: string): T3 {
-  if (!t3.startsWith('t3_')) throw Error(`${t3} must start with t3_.`)
-  return <T3>t3
+  if (!t3.startsWith('t3_')) throw Error(`${t3} must start with t3_`)
+  return t3 as T3
 }
