@@ -9,7 +9,7 @@
     "linter": { "enabled": true }
   },
   "files": {
-    "ignore": ["webroot/index.js", "src/shared/mineral-cat/mineral-cat.json"]
+    "ignore": ["webroot/index.js", "src/shared/min-cat/min-cat.json"]
   },
   "formatter": { "indentStyle": "space" },
   "javascript": {

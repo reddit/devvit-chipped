@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --experimental-strip-types --no-warnings=ExperimentalWarning
 
 import {writeFileSync} from 'node:fs'
-import type {MineralCat, Q} from '../src/shared/mineral-cat/mineral-cat.js'
+import type {MinCat, Q} from '../src/shared/min-cat/min-cat.js'
 
 type MineralWikidata = {results: {bindings: QueryBinding[]}}
 type QueryBinding = {
@@ -64,8 +64,8 @@ async function fetchMineralWikidata(): Promise<MineralWikidata> {
   return (await rsp.json()) as MineralWikidata
 }
 
-function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MineralCat {
-  const cat: MineralCat = {}
+function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MinCat {
+  const cat: MinCat = {}
   for (const binding of rsp.results.bindings) {
     const ima = binding.imaSymbol.value
     cat[ima] = {
@@ -90,8 +90,8 @@ function unique<T>(lhs: T[] | undefined, rhs: T | undefined): T[] {
   return [...new Set([...(lhs ?? []), ...(rhs ? [rhs] : [])])]
 }
 
-// hack: this should be in mineral-cat.ts next to the type but blocked by Node /
-//       tsc import incompatibility.
+// hack: this should be in min-cat.ts next to the type but blocked by Node / tsc
+// import incompatibility.
 // biome-ignore lint/suspicious/noRedeclare:
 function Q(q: string): Q {
   if (!q.startsWith('Q')) throw Error(`${q} must start with Q`)
@@ -99,7 +99,7 @@ function Q(q: string): Q {
 }
 
 writeFileSync(
-  'src/shared/mineral-cat/mineral-cat.json', // CSV saves ~60 KiB gzipped.
+  'src/shared/min-cat/min-cat.json', // CSV saves ~60 KiB gzipped.
   JSON.stringify(
     parseMineralWikidata(await fetchMineralWikidata()),
     undefined,

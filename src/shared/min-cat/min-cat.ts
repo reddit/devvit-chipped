@@ -1,4 +1,4 @@
-export type MineralCat = {[ima: string]: Mineral}
+export type MinCat = {[ima: string]: Mineral}
 export type Mineral = {
   formula: string
   crystalSystems: string[]
