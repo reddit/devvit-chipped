@@ -1,11 +1,11 @@
-import {type Context, Devvit} from '@devvit/public-api'
+import {Devvit} from '@devvit/public-api'
 import {newFacets} from '../shared/types/facet.js'
 import {Random} from '../shared/types/random.js'
 import {Title} from './title.js'
 
 export const previewVersion: number = 0
 
-export function Preview(props: {seed: number}, _ctx: Context): JSX.Element {
+export function Preview(props: {seed: number}): JSX.Element {
   const svg = newFacets(new Random(props.seed)).svg
   return (
     <Title svg={svg}>

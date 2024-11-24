@@ -1,6 +1,7 @@
 #!/usr/bin/env -S node --experimental-strip-types --no-warnings=ExperimentalWarning
 
 import {writeFileSync} from 'node:fs'
+import pkg from '../package.json' with {type: 'json'}
 import type {MinCat, Q} from '../src/shared/min-cat/min-cat.js'
 
 type MineralWikidata = {results: {bindings: QueryBinding[]}}
@@ -56,8 +57,7 @@ async function fetchMineralWikidata(): Promise<MineralWikidata> {
   const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}`
   const headers = {
     Accept: 'application/json',
-    'User-Agent':
-      'chipped/0.0.0 (https://reddit.com/r/chippedgame; stephen.niedzielski@reddit.com)'
+    'User-Agent': `${pkg.name}/${pkg.version} (https://reddit.com/r/chippedgame; stephen.niedzielski@reddit.com)`
   }
   const rsp = await fetch(url, {headers})
   if (!rsp.ok) throw Error(`HTTP error ${rsp.status}: ${rsp.statusText}`)

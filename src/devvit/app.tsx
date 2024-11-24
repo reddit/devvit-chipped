@@ -40,20 +40,29 @@ export function App(ctx: Devvit.Context): JSX.Element {
     redisQueryPlay(ctx.redis, T3T2(post.t3, t2))
   )
 
-  const [launch, setLaunch] = useState2(false)
-  const [loading, setLoading] = useState2(false)
-  const [leaderboard, setLeaderboard] = useState2(false)
+  let [launch, setLaunch] = useState2(false)
+  let [loading, setLoading] = useState2(false)
+  let [leaderboard, setLeaderboard] = useState2(false)
 
   // hack: this is big. if you get a 36 and no logs, it's likely a context
-  //       overflow and needs to be computed on every render instead. also, the
-  //       SVG parser is fickle. needs an unencoded <svg prefix and no single
-  //       quotes. also, the compute logger will truncate the URL if you try to
-  //       log it. finally, post previews don't support Context or useState() so
-  //       you have to pass by prop.
+  //       overflow (DXC-916) and needs to be computed on every render instead.
+  //       also, the SVG parser needs an unencoded `<svg` prefix (DXC-914) and
+  //       no single quotes (DXC-912). also, the compute logger will truncate
+  //       the URL if you try to log it. finally, post previews don't support
+  //       Context or useState() so you have to pass by prop.
   const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
 
-  if (launch) return WebView(ctx, debug, [p1, setP1], [play, setPlay], post)
-  if (leaderboard) return <Leaderboard onBack={() => setLeaderboard(false)} />
+  if (launch)
+    return WebView(
+      ctx,
+      debug,
+      [launch, setLaunch],
+      [p1, setP1],
+      [play, setPlay],
+      post
+    )
+  if (leaderboard)
+    return <Leaderboard onBack={() => setLeaderboard((leaderboard = false))} />
 
   return (
     <Title svg={svg}>
@@ -65,9 +74,9 @@ export function App(ctx: Devvit.Context): JSX.Element {
         minWidth='160px'
         icon={play == null ? 'play-fill' : 'new-fill'}
         onPress={async () => {
-          setLoading(true)
           if (loading) return // hack: disabled isn't fast enough.
-          if (play == null) setLaunch(true)
+          setLoading((loading = true))
+          if (play == null) setLaunch((launch = true))
           else await createPost(ctx, [p1, setP1])
         }}
       >
@@ -82,7 +91,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
         icon={'dashboard-fill'}
         onPress={() => {
           if (loading) return // hack: disabled isn't fast enough.
-          setLeaderboard(true) // to-do: why is this circuit breaking?
+          setLeaderboard((leaderboard = true))
         }}
       >
         leaderboard
@@ -94,6 +103,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
 function WebView(
   ctx: Devvit.Context,
   debug: boolean,
+  [launch, setLaunch]: UseStateResult<boolean>,
   [p1, setP1]: UseStateResult<Player | undefined>,
   [play, setPlay]: UseStateResult<PlayRecord | undefined>,
   post: PostRecord
@@ -112,6 +122,7 @@ function WebView(
           onMsg(
             ctx,
             debug,
+            [launch, setLaunch],
             [p1, setP1],
             [play, setPlay],
             post,
@@ -129,6 +140,7 @@ function WebView(
 async function onMsg(
   ctx: Context,
   debug: boolean,
+  [_launch, setLaunch]: UseStateResult<boolean>,
   [p1, setP1]: UseStateResult<Player | undefined>,
   [play, setPlay]: UseStateResult<PlayRecord | undefined>,
   post: PostRecord,
@@ -141,12 +153,10 @@ async function onMsg(
 
   switch (msg.type) {
     case 'Loaded': {
-      // hack: state setter isn't working.
       p1 = await redisQueryP1(ctx)
       p1.mined.push(post.t3)
       setP1(p1)
-      play = PlayRecord(p1.t2, post.t3)
-      setPlay(play)
+      setPlay((play = PlayRecord(p1.t2, post.t3)))
       await redisCreatePlay(ctx.redis, play, p1.t2)
       const author = await ctx.reddit.getUserById(post.author)
 
@@ -166,22 +176,21 @@ async function onMsg(
       break
     }
     case 'EndGame':
-      setP1(msg.p1)
-      // to-do: exit iframe for perf.
+      setLaunch((_launch = false))
+      setP1((p1 = msg.p1))
       await redisSetPlayer(ctx.redis, msg.p1)
       break
     case 'NewGame': {
       const post = await createPost(ctx, [msg.p1, setP1])
       msg.p1.mined.push(post.t3)
       await redisSetPlayer(ctx.redis, msg.p1)
-      setP1(msg.p1)
-      // to-do: exit iframe for perf.
+      setP1((p1 = msg.p1))
       // to-do: notify in game UI too and disable button.
       break
     }
     case 'Save':
-      setP1(msg.p1)
       await redisSetPlayer(ctx.redis, msg.p1)
+      setP1((p1 = msg.p1))
       break
     default:
       msg satisfies never

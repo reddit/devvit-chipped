@@ -45,6 +45,7 @@ export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
     facets[edge.lSite.voronoiId]!.edges.push(facets[edge.rSite.voronoiId]!)
     facets[edge.rSite.voronoiId]!.edges.push(facets[edge.lSite.voronoiId]!)
   }
+  // hack: facets don't seem to intersect at 0.
   for (let x = box.xl; x < box.xr; x++)
     if (x === 1 || x === box.xr - 1)
       for (let y = box.yt; y < box.yb; y++) {

@@ -1,4 +1,4 @@
-import pkg from '../../package.json'
+import pkg from '../../package.json' with {type: 'json'}
 import type {DevvitSystemMessage} from '../shared/types/message.js'
 import {Player} from '../shared/types/player.js'
 import {randomEndSeed} from '../shared/types/random.js'
@@ -10,7 +10,7 @@ engine.start()
 
 const noDevvit = location.port === '1234'
 
-console.log(`chipped v${pkg.version}`)
+console.log(`${pkg.name} v${pkg.version}`)
 
 if (noDevvit) {
   const delay = Math.random() * 1_000
