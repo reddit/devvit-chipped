@@ -1,6 +1,6 @@
 // TypeScript config for test code under src/**/*.test.ts and src/test/**/*.
 {
-  "extends": "../../tsconfig-base.json",
+  "extends": "../../tools/tsconfig-base.json",
   "compilerOptions": {
     "lib": ["DOM", "ES2023"],
 
@@ -14,7 +14,7 @@
   },
   "include": ["**/*", "../**/*.test.ts"],
   "references": [
-    { "path": ".." },
+    { "path": "../devvit" },
     { "path": "../iframe" },
     { "path": "../shared" }
   ]
