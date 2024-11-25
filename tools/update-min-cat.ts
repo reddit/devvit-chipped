@@ -7,6 +7,7 @@ import type {MinCat, Q} from '../src/shared/min-cat/min-cat.js'
 type MineralWikidata = {results: {bindings: QueryBinding[]}}
 type QueryBinding = {
   crystalSystemLabel?: {value: string}
+  description?: {value: string}
   formula?: {value: string}
   imaStatusLabel: {value: string}
   imaSymbol: {value: string}
@@ -25,6 +26,7 @@ const query: string = `
     ?mineralLabel
     ?imaSymbol
     ?imaStatusLabel
+    ?description
     ?streakColorLabel
     ?localityLabel
     ?formula
@@ -37,11 +39,14 @@ const query: string = `
              wdt:P10113 ?imaSymbol;
              wdt:P579   ?imaStatus;
 
-    optional {?mineral wdt:P534  ?streakColor  .}
-    optional {?mineral wdt:P2695 ?locality     .}
-    optional {?mineral wdt:P274  ?formula      .}
-    optional {?mineral wdt:P556  ?crystalSystem.}
-    optional {?mineral wdt:P527  ?hasParts     .}
+    optional {?mineral schema:description ?description    .}
+    optional {?mineral wdt:P534           ?streakColor    .}
+    optional {?mineral wdt:P2695          ?locality       .}
+    optional {?mineral wdt:P274           ?formula        .}
+    optional {?mineral wdt:P556           ?crystalSystem  .}
+    optional {?mineral wdt:P527           ?hasParts       .}
+
+    filter(lang(?description) = "en")
 
     service wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".}
   }
@@ -69,18 +74,13 @@ function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MinCat {
   for (const binding of rsp.results.bindings) {
     const ima = binding.imaSymbol.value
     cat[ima] = {
-      crystalSystems: unique(
-        cat[ima]?.crystalSystems,
-        binding.crystalSystemLabel?.value.replace(' crystal system', '')
-      ),
-      formula: binding.formula?.value ?? '', // hack: how to resolve multiple?
+      description: binding.description?.value ?? '',
       ima,
       localities: unique(cat[ima]?.localities, binding.localityLabel?.value),
       name: binding.mineralLabel.value,
       q: Q(
         binding.mineral.value.slice('http://www.wikidata.org/entity/'.length)
-      ),
-      streaks: unique(cat[ima]?.streaks, binding.streakColorLabel?.value)
+      )
     }
   }
   return cat

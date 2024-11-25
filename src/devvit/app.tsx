@@ -44,12 +44,13 @@ export function App(ctx: Devvit.Context): JSX.Element {
   let [loading, setLoading] = useState2(false)
   let [leaderboard, setLeaderboard] = useState2(false)
 
-  // hack: this is big. if you get a 36 and no logs, it's likely a context
-  //       overflow (DXC-916) and needs to be computed on every render instead.
-  //       also, the SVG parser needs an unencoded `<svg` prefix (DXC-914) and
-  //       no single quotes (DXC-912). also, the compute logger will truncate
-  //       the URL if you try to log it. finally, post previews don't support
-  //       Context or useState() so you have to pass by prop.
+  // hack: no meaningful way to distinguish posts without a web view? make a
+  //       data SVG. this is big. if you get a 36 and no logs, it's likely a
+  //       context overflow (DXC-916) and needs to be computed on every render
+  //       instead. also, the SVG parser needs an unencoded `<svg` prefix
+  //       (DXC-914) and no single quotes (DXC-912). also, the compute logger
+  //       will truncate the URL if you try to log it. finally, post previews
+  //       don't support Context or useState() so you have to pass by prop.
   const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
 
   if (launch)
