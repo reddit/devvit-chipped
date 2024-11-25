@@ -15,3 +15,5 @@ export const minCanvasWH: Readonly<WH> = {w: 288, h: 320}
 
 export const fontFamily: string = 'Patrick Hand Regular'
 export const fontDefaultSize: number = 24
+
+export const playButtonWidth: number = 160

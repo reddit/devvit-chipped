@@ -1,7 +1,7 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
-import {paletteWhite} from '../shared/theme.js'
+import {paletteWhite, playButtonWidth} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import type {Player} from '../shared/types/player.js'
@@ -69,11 +69,11 @@ export function App(ctx: Devvit.Context): JSX.Element {
     <Title svg={svg}>
       {/* biome-ignore lint/a11y/useButtonType: */}
       <button
-        appearance='primary'
+        appearance='bordered'
         disabled={loading}
         size='large'
-        minWidth='160px'
-        icon={play == null ? 'play-fill' : 'new-fill'}
+        minWidth={`${playButtonWidth}px`}
+        icon={play == null ? 'play-outline' : 'new-outline'}
         onPress={async () => {
           if (loading) return // hack: disabled isn't fast enough.
           setLoading((loading = true))

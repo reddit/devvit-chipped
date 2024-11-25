@@ -1,5 +1,5 @@
 import {Devvit} from '@devvit/public-api'
-import {minCanvasWH, paletteWhite} from '../shared/theme.ts'
+import {minCanvasWH, paletteBlack, paletteWhite} from '../shared/theme.ts'
 
 export type Titlerops = {children?: JSX.Children; svg: string}
 
@@ -8,19 +8,17 @@ export function Title(props: Readonly<Titlerops>): JSX.Element {
     <zstack
       alignment='top center'
       backgroundColor={paletteWhite}
+      borderColor={paletteBlack}
       width='100%'
       height='100%'
     >
-      <vstack width='100%'>
-        <spacer height='32px' />
+      <vstack alignment='start' width='100%' padding='medium'>
         {/* hack: DXC-911 blocks doesn't support webp translucency. */}
         <image
           description='chipped'
           url='logo.png'
-          imageWidth='452px'
-          imageHeight='62px'
-          resizeMode='fit'
-          width='100%'
+          imageWidth='171px'
+          imageHeight='40px'
         />
       </vstack>
       <image
@@ -30,20 +28,12 @@ export function Title(props: Readonly<Titlerops>): JSX.Element {
         imageHeight={`${minCanvasWH.h}px`}
       />
       <vstack
-        alignment='middle center'
-        gap='large'
-        padding='large'
+        alignment='bottom end'
+        padding='medium'
         width='100%'
         height='100%'
       >
-        <vstack
-          width='100%'
-          alignment='middle center'
-          gap='medium'
-          padding='large'
-        >
-          {props.children}
-        </vstack>
+        {props.children ?? null}
       </vstack>
     </zstack>
   )
