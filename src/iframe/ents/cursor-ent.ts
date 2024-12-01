@@ -14,7 +14,7 @@ export type CursorEnt = Box & {
 const hitbox: Readonly<Box> = {x: 0, y: 0, w: 8, h: 8}
 
 export function CursorEnt(
-  assets: Readonly<Assets>,
+  _assets: Readonly<Assets>,
   eid: EIDFactory
 ): CursorEnt {
   return {
@@ -24,8 +24,8 @@ export function CursorEnt(
     type: 'Cursor',
     x: 0,
     y: 0,
-    w: assets.img.cursor.naturalWidth / 2,
-    h: assets.img.cursor.naturalHeight
+    w: 1, //assets.img.cursor.naturalWidth / 2,
+    h: 1 //assets.img.cursor.naturalHeight
   }
 }
 
@@ -59,28 +59,28 @@ export function cursorEntHits(
 
 export function cursorEntDraw(
   cursor: Readonly<CursorEnt>,
-  game: Readonly<Game>
+  _game: Readonly<Game>
 ): void {
   if (cursor.hidden) return
-  game.c2d.beginPath()
-  game.c2d.drawImage(
-    game.img.cursor,
-    game.ctrl.isOn('A') ? cursor.w : 0,
-    0,
-    cursor.w,
-    cursor.h,
-    cursor.x,
-    cursor.y,
-    cursor.w,
-    cursor.h
-  )
+  // game.c2d.beginPath()
+  // game.c2d.drawImage(
+  //   game.img.cursor,
+  //   game.ctrl.isOn('A') ? cursor.w : 0,
+  //   0,
+  //   cursor.w,
+  //   cursor.h,
+  //   cursor.x,
+  //   cursor.y,
+  //   cursor.w,
+  //   cursor.h
+  // )
 }
 
 export function cursorEntUpdate(cursor: CursorEnt, game: Game): void {
-  if (game.ctrl.pointOn && game.ctrl.pointType === 'mouse')
-    cursor.hidden = false
-  // to-do: make it possible to detect keyboard distinctly.
-  else if (
+  if (game.ctrl.pointOn && game.ctrl.pointType === 'mouse') {
+    //cursor.hidden = false
+  } else if (
+    // to-do: make it possible to detect keyboard distinctly.
     game.ctrl.isAnyOn('L', 'R', 'U', 'D') ||
     game.ctrl.pointType !== 'mouse'
   )

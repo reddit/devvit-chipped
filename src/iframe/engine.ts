@@ -120,7 +120,7 @@ export class Engine {
         this._game.zoo.replace(RockLevelEnt(this._game))
         this.#looper.register('add', this._game.rnd)
         this.#looper.loop = this.#onLoop
-        this._game.canvas.style.display = 'block'
+        this._game.canvas.style.display = 'block' // no line height spacing.
         break
       }
 

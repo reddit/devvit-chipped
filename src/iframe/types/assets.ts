@@ -14,7 +14,6 @@ export type Assets = {
   font: FontFace
   img: {
     [name in
-      | 'cursor'
       | 'codexButton'
       | 'nextButton'
       | 'prevButton'
@@ -32,7 +31,6 @@ export async function Assets(): Promise<Assets> {
     hammerHit4,
     hammerShattered0,
     hammerUnbreakable0,
-    cursor,
     codexButton,
     nextButton,
     prevButton,
@@ -47,7 +45,6 @@ export async function Assets(): Promise<Assets> {
     loadAudio('assets/audio/hammer-hit-4.ogg'),
     loadAudio('assets/audio/hammer-shattered-0.ogg'),
     loadAudio('assets/audio/hammer-unbreakable-0.ogg'),
-    loadImage('assets/images/cursor.webp'),
     loadImage('assets/images/codex-button.webp'),
     loadImage('assets/images/next-button.webp'),
     loadImage('assets/images/prev-button.webp'),
@@ -66,14 +63,7 @@ export async function Assets(): Promise<Assets> {
       hammerShattered0,
       hammerUnbreakable0
     },
-    img: {
-      cursor,
-      codexButton,
-      nextButton,
-      prevButton,
-      rockButton,
-      rockMinButton
-    },
+    img: {codexButton, nextButton, prevButton, rockButton, rockMinButton},
     font
   }
 }
