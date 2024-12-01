@@ -79,6 +79,9 @@ export function audioPlay(
 
   const src = ctx.createBufferSource()
   src.buffer = buf
+  const min = 0.95
+  const max = 1.05
+  src.playbackRate.value = Math.random() * (max - min) + min // to-do: use rnd.
   src.connect(ctx.destination)
   src.start()
 }

@@ -11,7 +11,7 @@ export type CursorEnt = Box & {
   readonly eid: EID
 }
 
-const hitbox: Readonly<Box> = {x: 0, y: 0, w: 8, h: 8}
+const hitbox: Readonly<Box> = {x: 0, y: 0, w: 2, h: 2}
 
 export function CursorEnt(
   _assets: Readonly<Assets>,
