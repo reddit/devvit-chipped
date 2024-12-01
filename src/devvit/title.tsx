@@ -1,9 +1,9 @@
 import {Devvit} from '@devvit/public-api'
 import {minCanvasWH, paletteBlack, paletteWhite} from '../shared/theme.ts'
 
-export type Titlerops = {children?: JSX.Children; svg: string}
+export type TitleProps = {children?: JSX.Children; svg: string}
 
-export function Title(props: Readonly<Titlerops>): JSX.Element {
+export function Title(props: Readonly<TitleProps>): JSX.Element {
   return (
     <zstack
       alignment='top center'
@@ -18,7 +18,7 @@ export function Title(props: Readonly<Titlerops>): JSX.Element {
           description='chipped'
           url='logo.png'
           imageWidth='171px'
-          imageHeight='40px'
+          imageHeight='49px'
         />
       </vstack>
       <image

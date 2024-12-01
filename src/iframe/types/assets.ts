@@ -12,7 +12,15 @@ export type Assets = {
       | 'hammerUnbreakable0']: ArrayBuffer
   }
   font: FontFace
-  img: {[name in 'cursor']: HTMLImageElement}
+  img: {
+    [name in
+      | 'cursor'
+      | 'codexButton'
+      | 'nextButton'
+      | 'prevButton'
+      | 'rockButton'
+      | 'rockMinButton']: HTMLImageElement
+  }
 }
 
 export async function Assets(): Promise<Assets> {
@@ -25,6 +33,11 @@ export async function Assets(): Promise<Assets> {
     hammerShattered0,
     hammerUnbreakable0,
     cursor,
+    codexButton,
+    nextButton,
+    prevButton,
+    rockButton,
+    rockMinButton,
     font
   ] = await Promise.all([
     loadAudio('assets/audio/hammer-hit-0.ogg'),
@@ -35,6 +48,11 @@ export async function Assets(): Promise<Assets> {
     loadAudio('assets/audio/hammer-shattered-0.ogg'),
     loadAudio('assets/audio/hammer-unbreakable-0.ogg'),
     loadImage('assets/images/cursor.webp'),
+    loadImage('assets/images/codex-button.webp'),
+    loadImage('assets/images/next-button.webp'),
+    loadImage('assets/images/prev-button.webp'),
+    loadImage('assets/images/rock-button.webp'),
+    loadImage('assets/images/rock-min-button.webp'),
     new FontFace(fontFamily, 'url(assets/patrick-hand-regular.ttf)').load()
   ])
 
@@ -48,7 +66,14 @@ export async function Assets(): Promise<Assets> {
       hammerShattered0,
       hammerUnbreakable0
     },
-    img: {cursor},
+    img: {
+      cursor,
+      codexButton,
+      nextButton,
+      prevButton,
+      rockButton,
+      rockMinButton
+    },
     font
   }
 }

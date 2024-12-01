@@ -1,3 +1,4 @@
+import {Specimen} from '../../shared/save.js'
 import {
   minCanvasWH,
   paletteBlack,
@@ -16,6 +17,7 @@ import {audioPlay} from '../types/audio.js'
 import {camScale} from '../types/cam.js'
 import type {Game, LoadedGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
+import {cursorEntHitbox} from './cursor-ent.js'
 import type {EID} from './eid.js'
 
 export type FacetEnt = {
@@ -49,7 +51,7 @@ export function facetEntDraw(
   }
   switch (facet.state) {
     case 'Solid':
-      c2d.fillStyle = paletteWhite
+      c2d.fillStyle = paletteWhite //game.seed.color
       break
     case 'Cracked':
       c2d.fillStyle = facet.specimen
@@ -72,16 +74,15 @@ export function facetEntDraw(
 }
 
 export function facetEntUpdate(facet: FacetEnt, game: Game): void {
-  const {cam, ctrl, cursor, rnd, sound} = game
+  const {ctrl, rnd, sound} = game
 
   const scale = camScale(minCanvasWH, 1, 0, false)
+  const cur = cursorEntHitbox(game)
 
   const hits =
+    !ctrl.handled &&
     ctrl.isOnStart('A') &&
-    facet.facet.cell.pointIntersection(
-      (cam.x + cursor.x) / scale,
-      (cam.y + cursor.y) / scale
-    ) > 0
+    facet.facet.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
   if (!hits) return
   const priorState = facet.facet.state
   if (!facetKaput(facet.facet) && rnd.num > 0.6) facetHammer(facet.facet)
@@ -106,9 +107,31 @@ export function facetEntUpdate(facet: FacetEnt, game: Game): void {
       if (priorState !== facet.facet.state) {
         fx = sound.hammerHit[Math.trunc(rnd.num * sound.hammerHit.length)]!
         if (facet.facet.specimen) {
-          // to-do: collect specimen in inven.
-          game.p1.minerals += facet.facet.area
-        } else game.p1.chips += facet.facet.area
+          const collect =
+            facet.facet.chips > (game.p1.codex[game.seed.ima]?.chips ?? 0)
+          if (collect) {
+            game.p1.minerals +=
+              facet.facet.chips - (game.p1.codex[game.seed.ima]?.chips ?? 0)
+          } else {
+            game.chips += facet.facet.chips
+            game.p1.chips += facet.facet.chips
+          }
+
+          if (collect) {
+            game.p1.codex[game.seed.ima] = Specimen(
+              facet.facet,
+              game.seed,
+              game.t3
+            )
+          }
+          game.codex.found = Object.keys(game.p1.codex)
+            .sort((lhs, rhs) => lhs.localeCompare(rhs))
+            .indexOf(game.seed.ima)
+          game.codex.foundTriggered = true
+        } else {
+          game.chips += facet.facet.chips
+          game.p1.chips += facet.facet.chips
+        }
         postMessage({type: 'Save', p1: game.p1})
       }
       break

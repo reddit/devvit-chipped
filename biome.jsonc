@@ -36,7 +36,8 @@
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "useNumberNamespace": "off",
-        "useImportType": "warn"
+        "useImportType": "warn",
+        "noUnusedTemplateLiteral": "warn"
       },
       "suspicious": {
         "noAssignInExpressions": "off",

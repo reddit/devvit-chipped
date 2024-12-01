@@ -2,7 +2,8 @@
 
 import {writeFileSync} from 'node:fs'
 import pkg from '../package.json' with {type: 'json'}
-import type {MinCat, Q} from '../src/shared/min-cat/min-cat.js'
+import type {MinCat} from '../src/shared/min-cat/min-cat.js'
+import type {IMA} from '../src/shared/types/ima.js'
 
 type MineralWikidata = {results: {bindings: QueryBinding[]}}
 type QueryBinding = {
@@ -17,7 +18,8 @@ type QueryBinding = {
   streakColorLabel?: {value: string}
 }
 
-// query prevalent interesting data. https://query.wikidata.org. spot check with
+// query prevalent interesting small data. https://query.wikidata.org. spot
+// check with
 // https://www.cambridge.org/core/journals/mineralogical-magazine/article/imacnmnc-approved-mineral-symbols/62311F45ED37831D78603C6E6B25EE0A.
 // api.mindat.org is a nonprofit but doesn't have a commercial license.
 const query: string = `
@@ -72,15 +74,11 @@ async function fetchMineralWikidata(): Promise<MineralWikidata> {
 function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MinCat {
   const cat: MinCat = {}
   for (const binding of rsp.results.bindings) {
-    const ima = binding.imaSymbol.value
+    const ima = binding.imaSymbol.value as IMA
     cat[ima] = {
-      description: binding.description?.value ?? '',
       ima,
       localities: unique(cat[ima]?.localities, binding.localityLabel?.value),
-      name: binding.mineralLabel.value,
-      q: Q(
-        binding.mineral.value.slice('http://www.wikidata.org/entity/'.length)
-      )
+      name: binding.mineralLabel.value
     }
   }
   return cat
@@ -88,14 +86,6 @@ function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MinCat {
 
 function unique<T>(lhs: T[] | undefined, rhs: T | undefined): T[] {
   return [...new Set([...(lhs ?? []), ...(rhs ? [rhs] : [])])]
-}
-
-// hack: this should be in min-cat.ts next to the type but blocked by Node / tsc
-// import incompatibility.
-// biome-ignore lint/suspicious/noRedeclare:
-function Q(q: string): Q {
-  if (!q.startsWith('Q')) throw Error(`${q} must start with Q`)
-  return q as Q
 }
 
 writeFileSync(

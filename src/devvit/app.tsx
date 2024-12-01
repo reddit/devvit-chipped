@@ -1,17 +1,14 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
+import {PlaySave, type Player, PostSave, PostSeed} from '../shared/save.js'
 import {paletteWhite, playButtonWidth} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
-import type {Player} from '../shared/types/player.js'
-import {Random} from '../shared/types/random.js'
+import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
 import {T2, T3, anonSnoovatarURL, anonUsername} from '../shared/types/tid.js'
-import {Leaderboard} from './leaderboard.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
-import {PlayRecord, PostRecord} from './record.js'
 import {
-  PostSeed,
   T3T2,
   redisCreatePlay,
   redisQueryP1,
@@ -42,7 +39,6 @@ export function App(ctx: Devvit.Context): JSX.Element {
 
   let [launch, setLaunch] = useState2(false)
   let [loading, setLoading] = useState2(false)
-  let [leaderboard, setLeaderboard] = useState2(false)
 
   // hack: no meaningful way to distinguish posts without a web view? make a
   //       data SVG. this is big. if you get a 36 and no logs, it's likely a
@@ -51,7 +47,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
   //       (DXC-914) and no single quotes (DXC-912). also, the compute logger
   //       will truncate the URL if you try to log it. finally, post previews
   //       don't support Context or useState() so you have to pass by prop.
-  const [svg] = useState2(() => newFacets(new Random(post.seed)).svg)
+  const [svg] = useState2(() => newFacets(new Random(post.seed.seed)).svg)
 
   if (launch)
     return WebView(
@@ -62,8 +58,6 @@ export function App(ctx: Devvit.Context): JSX.Element {
       [play, setPlay],
       post
     )
-  if (leaderboard)
-    return <Leaderboard onBack={() => setLeaderboard((leaderboard = false))} />
 
   return (
     <Title svg={svg}>
@@ -83,20 +77,6 @@ export function App(ctx: Devvit.Context): JSX.Element {
       >
         {play == null ? 'play' : 'new game'}
       </button>
-      {/* biome-ignore lint/a11y/useButtonType: */}
-      <button
-        appearance='media'
-        disabled={loading}
-        size='large'
-        minWidth='160px'
-        icon={'dashboard-fill'}
-        onPress={() => {
-          if (loading) return // hack: disabled isn't fast enough.
-          setLeaderboard((leaderboard = true))
-        }}
-      >
-        leaderboard
-      </button>
     </Title>
   )
 }
@@ -106,10 +86,12 @@ function WebView(
   debug: boolean,
   [launch, setLaunch]: UseStateResult<boolean>,
   [p1, setP1]: UseStateResult<Player | undefined>,
-  [play, setPlay]: UseStateResult<PlayRecord | undefined>,
-  post: PostRecord
+  [play, setPlay]: UseStateResult<PlaySave | undefined>,
+  post: PostSave
 ): JSX.Element {
   return (
+    // to-do: zstack with loading gif or even title screen until Loaded message
+    //        is received. as long as webview isn't torn down.
     <vstack
       width='100%'
       height='100%'
@@ -143,22 +125,22 @@ async function onMsg(
   debug: boolean,
   [_launch, setLaunch]: UseStateResult<boolean>,
   [p1, setP1]: UseStateResult<Player | undefined>,
-  [play, setPlay]: UseStateResult<PlayRecord | undefined>,
-  post: PostRecord,
+  [play, setPlay]: UseStateResult<PlaySave | undefined>,
+  post: PostSave,
   msg: WebViewMessage
 ): Promise<void> {
   if (debug)
     console.log(
-      `${p1?.username ?? anonUsername} app received msg=${JSON.stringify(msg)}`
+      `${p1?.profile.username ?? anonUsername} app received msg=${JSON.stringify(msg)}`
     )
 
   switch (msg.type) {
     case 'Loaded': {
       p1 = await redisQueryP1(ctx)
-      p1.mined.push(post.t3)
+      p1.rocks.push(post.t3)
       setP1(p1)
-      setPlay((play = PlayRecord(p1.t2, post.t3)))
-      await redisCreatePlay(ctx.redis, play, p1.t2)
+      setPlay((play = PlaySave(p1.profile.t2, post.t3)))
+      await redisCreatePlay(ctx.redis, play, p1.profile.t2)
       const author = await ctx.reddit.getUserById(post.author)
 
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
@@ -183,7 +165,7 @@ async function onMsg(
       break
     case 'NewGame': {
       const post = await createPost(ctx, [msg.p1, setP1])
-      msg.p1.mined.push(post.t3)
+      msg.p1.rocks.push(post.t3)
       await redisSetPlayer(ctx.redis, msg.p1)
       setP1((p1 = msg.p1))
       // to-do: notify in game UI too and disable button.
@@ -203,12 +185,14 @@ async function onMsg(
 async function createPost(
   ctx: Context,
   [p1, setP1]: UseStateResult<Player | undefined>
-): Promise<PostRecord> {
-  const seed = PostSeed()
+): Promise<PostSave> {
+  const seed = PostSeed(
+    new Random(Math.trunc(Math.random() * randomEndSeed) as Seed)
+  )
   const r2Post = await r2CreatePost(ctx, seed)
-  const post = PostRecord(r2Post, seed)
+  const post = PostSave(r2Post, seed)
   if (!p1) p1 = await redisQueryP1(ctx)
-  p1.mined.push(post.t3)
+  p1.rocks.push(post.t3)
   setP1(p1)
   await Promise.all([
     redisSetPost(ctx.redis, post),

@@ -1,6 +1,7 @@
+import type {Player, PostSeed} from '../../shared/save.ts'
 import type {Facet} from '../../shared/types/facet.ts'
-import type {Player} from '../../shared/types/player.ts'
 import type {Random} from '../../shared/types/random.ts'
+import type {T3} from '../../shared/types/tid.ts'
 import type {UTCMillis} from '../../shared/types/time.ts'
 import type {CursorEnt} from '../ents/cursor-ent.ts'
 import type {EIDFactory} from '../ents/eid.ts'
@@ -19,6 +20,8 @@ export type LoadedGame = Pick<Assets, 'img'> &
     audio: AudioContext
     cam: Cam
     canvas: Canvas
+    chips: number
+    codex: {index: number; found: number | undefined; foundTriggered: boolean}
     ctrl: Input<DefaultButton>
     cursor: CursorEnt
     debug: boolean
@@ -30,7 +33,14 @@ export type LoadedGame = Pick<Assets, 'img'> &
 export type InitGame = LoadedGame & Init
 export type Game = LoadedGame & Init & Drawable
 
-type Init = {facets: Facet[]; p1: Player; rnd: Random}
+type Init = {
+  /** rock color. */
+  facets: Facet[]
+  p1: Player
+  rnd: Random
+  seed: PostSeed
+  t3: T3
+}
 
 type Drawable = {c2d: C2D; draw: Omit<Draw, 'c2d'>}
 

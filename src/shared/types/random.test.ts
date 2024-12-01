@@ -1,5 +1,5 @@
 import {expect, test} from 'vitest'
-import {Random} from './random.js'
+import {Random, type Seed} from './random.js'
 
 // 0 is same as 1
 // 1 is same as official
@@ -28,9 +28,9 @@ for (const [name, seed, expected] of [
   ['iteration 2147483645', 1475608308, 1407677000]
 ] as const) {
   test(name, () => {
-    const random = new Random(seed)
+    const rnd = new Random(seed as Seed)
     // Test seed instead of integer since we have a hack to give better
     // initial values not in the paper.
-    expect(random.seed).toBe(expected)
+    expect(rnd.seed).toBe(expected)
   })
 }

@@ -1,4 +1,4 @@
-import type {Player, Profile} from './player.ts'
+import type {Player, PostSeed, Profile} from '../save.ts'
 import type {T3} from './tid.ts'
 import type {UTCMillis} from './time.ts'
 
@@ -14,8 +14,7 @@ export type DevvitMessage = {
    */
   debug: boolean
   p1: Player
-  /** random number seed. */
-  seed: number
+  seed: PostSeed
   /** post / rock ID. */
   t3: T3
   readonly type: 'Init'

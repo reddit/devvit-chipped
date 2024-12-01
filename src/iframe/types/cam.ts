@@ -26,8 +26,8 @@ export class Cam {
     orientation: FollowCamOrientation,
     opts?: {
       readonly fill?: 'X' | 'Y' | 'XY'
-      readonly modulo?: Partial<XY> | undefined
-      readonly pad?: Partial<WH> | undefined
+      readonly modulo?: Partial<Readonly<XY>> | undefined
+      readonly pad?: Partial<Readonly<WH>> | undefined
     }
   ): Box {
     const padW = opts?.pad?.w ?? 0

@@ -1,7 +1,6 @@
-import {spacePx} from '../../shared/theme.js'
 import {type Box, type WH, type XY, boxHits} from '../../shared/types/2d.js'
 import type {Assets} from '../types/assets.js'
-import type {Game} from '../types/game.js'
+import type {Game, InitGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
 import type {EID, EIDFactory} from './eid.js'
 
@@ -30,30 +29,32 @@ export function CursorEnt(
   }
 }
 
-export function cursorEntHits(
-  cursor: Readonly<CursorEnt>,
-  box: Readonly<XY & Partial<WH>>,
-  game: Readonly<Game>
-): boolean {
-  if (cursor.hidden)
-    return boxHits(
-      {
-        x: game.ctrl.point.x - spacePx / 2,
-        y: game.ctrl.point.y - spacePx / 2,
-        w: spacePx,
-        h: spacePx
-      },
-      box
-    )
-  return boxHits(
-    {
-      x: cursor.x + hitbox.x,
-      y: cursor.y + hitbox.y,
+export function cursorEntHitbox(
+  game: Readonly<InitGame>,
+  coords: 'Level' | 'Client' = 'Level'
+): Box {
+  const lvl = coords === 'Level'
+  if (game.cursor.hidden)
+    return {
+      x: game.ctrl[lvl ? 'point' : 'clientPoint'].x - hitbox.w / 2,
+      y: game.ctrl[lvl ? 'point' : 'clientPoint'].y - hitbox.h / 2,
       w: hitbox.w,
       h: hitbox.h
-    },
-    box
-  )
+    }
+  return {
+    x: game.cursor.x + (lvl ? game.cam.x : 0) + hitbox.x,
+    y: game.cursor.y + (lvl ? game.cam.y : 0) + hitbox.y,
+    w: hitbox.w,
+    h: hitbox.h
+  }
+}
+
+export function cursorEntHits(
+  game: Readonly<InitGame>,
+  box: Readonly<XY & Partial<WH>>,
+  coords: 'Level' | 'Client' = 'Level'
+): boolean {
+  return boxHits(cursorEntHitbox(game, coords), box)
 }
 
 export function cursorEntDraw(
@@ -84,7 +85,8 @@ export function cursorEntUpdate(cursor: CursorEnt, game: Game): void {
     game.ctrl.pointType !== 'mouse'
   )
     cursor.hidden = true
-  const pt = game.cam.toLevelXY(game.ctrl.clientPoint)
-  cursor.x = Math.round(pt.x) - game.cam.x - (hitbox.x + hitbox.w / 2)
-  cursor.y = Math.round(pt.y) - game.cam.y - (hitbox.y + hitbox.h / 2)
+  cursor.x =
+    Math.round(game.ctrl.point.x) - game.cam.x - (hitbox.x + hitbox.w / 2)
+  cursor.y =
+    Math.round(game.ctrl.point.y) - game.cam.y - (hitbox.y + hitbox.h / 2)
 }

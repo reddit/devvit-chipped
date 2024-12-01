@@ -5,8 +5,8 @@ import type {XY} from './2d.ts'
 import type {Random} from './random.ts'
 
 export type Facet = {
-  area: number
   cell: Cell
+  chips: number
   edges: Facet[]
   /** true if the target mineral, false if the host matrix. */
   specimen: boolean
@@ -34,8 +34,8 @@ export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
   const box = {xl: 0, xr: minCanvasWH.w, yb: minCanvasWH.h, yt: 0}
   const diagram = voronoi.compute(sites, box)
   const facets: Facet[] = diagram.cells.map(cell => ({
-    area: cellArea(cell),
     cell,
+    chips: cellArea(cell),
     edges: [],
     specimen: false,
     state: 'Solid'
@@ -121,7 +121,7 @@ export function facetHammer(facet: Facet): void {
     }
     case 'Cracked': {
       const smallest = facet.edges.every(
-        edge => kaputState[edge.state] || facet.area < edge.area
+        edge => kaputState[edge.state] || facet.chips < edge.chips
       )
       if (smallest) facet.state = 'Chipped'
       else {
@@ -150,14 +150,15 @@ function facetAtXY(
   return facets.find(facet => facet.cell.pointIntersection(x, y) > 0)
 }
 
-function cellArea(cell: Readonly<Cell>): number {
+/** @internal */
+export function cellArea(cell: Readonly<Cell>): number {
   let area = 0
 
-  let v = cell.halfedges[0]!.getStartpoint()
-  for (let iHalfedge = 0; iHalfedge < cell.halfedges.length; iHalfedge++) {
-    const next = cell.halfedges[iHalfedge]!.getEndpoint()
-    area += v.x * next.y - v.y * next.x
-    v = next
+  let prev = cell.halfedges[0]!.getStartpoint()
+  for (const half of cell.halfedges) {
+    const xy = half.getEndpoint()
+    area += prev.x * xy.y - prev.y * xy.x
+    prev = xy
   }
 
   return Math.abs(area) / 2

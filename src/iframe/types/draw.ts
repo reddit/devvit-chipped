@@ -3,7 +3,8 @@ import {
   fontFamily,
   paletteAnotherWhite,
   paletteBlack,
-  paletteBlack3,
+  paletteBlack2,
+  paletteBlack22,
   paletteGrey,
   paletteWhite,
   spacePx
@@ -22,7 +23,7 @@ export function Draw(canvas: HTMLCanvasElement, rnd: Random): Draw | undefined {
     canvas.getContext('2d', {alpha: false, willReadFrequently: false}) ??
     undefined
   if (!c2d) return
-  const bg = newPattern(c2d, 6, 130, paletteBlack3, 1)
+  const bg = newPattern(c2d, 6, 130, paletteBlack2, 1, paletteWhite)
   if (!bg) return
   const facets = []
   // to-do: more variation. explore halftones and dither patterns.
@@ -50,8 +51,10 @@ export function drawClear(
   c2d.fillStyle = paletteAnotherWhite
   c2d.fillRect(cam.x, cam.y, cam.w, cam.h)
 
+  const radius = 16
+
   c2d.beginPath()
-  c2d.roundRect(0, 0, cam.w, cam.h, spacePx)
+  c2d.roundRect(0, 0, cam.w, cam.h, radius)
   c2d.fillStyle = paletteBlack
   c2d.fill()
 
@@ -62,7 +65,7 @@ export function drawClear(
     c2d.lineWidth,
     cam.w - 2 * c2d.lineWidth,
     cam.h - 2 * c2d.lineWidth,
-    spacePx
+    radius
   )
   c2d.strokeStyle = paletteGrey
   c2d.stroke()
@@ -78,8 +81,10 @@ export function drawText(
     XY & {
       justify?:
         | 'Center'
+        | 'BottomCenter'
         | 'BottomLeft'
         | 'BottomRight'
+        | 'MidLeft'
         | 'TopLeft'
         | 'TopRight'
         | 'TopCenter' // to-do: rethink terminology.
@@ -102,6 +107,10 @@ export function drawText(
   const padW = opts?.pad?.w ?? 0
   const padH = opts?.pad?.h ?? 0
   switch (justify) {
+    case 'BottomCenter':
+      x -= Math.trunc(metrics.width / 2 + padW)
+      y -= c2d.lineWidth + padH
+      break
     case 'BottomLeft':
       x += c2d.lineWidth + padW
       y -= c2d.lineWidth + padH
@@ -111,13 +120,15 @@ export function drawText(
       y -= c2d.lineWidth + padH
       break
     case 'Center':
-      x -= Math.trunc(metrics.width / 2 + padW)
-      y -= Math.trunc(
-        (metrics.actualBoundingBoxAscent +
-          metrics.actualBoundingBoxDescent +
-          c2d.lineWidth * 2) /
-          2 +
-          padH
+      x -= Math.trunc((metrics.width + c2d.lineWidth) / 2) + padW
+      y += Math.trunc(
+        (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
+      )
+      break
+    case 'MidLeft':
+      x += padW
+      y += Math.trunc(
+        (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
       )
       break
     case 'TopLeft':
@@ -130,11 +141,7 @@ export function drawText(
       break
     case 'TopCenter':
       x -= Math.trunc((metrics.width + c2d.lineWidth) / 2) + padW
-      y +=
-        metrics.actualBoundingBoxAscent +
-        metrics.actualBoundingBoxDescent +
-        c2d.lineWidth +
-        padH
+      y += metrics.actualBoundingBoxAscent + c2d.lineWidth + padH
       break
     case 'TopRight':
       x -= metrics.width + c2d.lineWidth + padW
@@ -149,10 +156,8 @@ export function drawText(
   }
   if (opts.stroke) c2d.strokeText(text, x, y)
   if (opts.fill) c2d.fillText(text, x, y)
-  const h =
-    metrics.actualBoundingBoxAscent +
-    metrics.actualBoundingBoxDescent +
-    c2d.lineWidth * 2
+  const h = metrics.actualBoundingBoxAscent + c2d.lineWidth * 2
+  // to-do: decide what to do about not wanting descent generally.
   // to-do: declare w/h above and use there and here. figure out if I need
   // different x/y offsets for each case too.
   return {x, y: y - h, w: c2d.lineWidth * 2 + metrics.width, h}
@@ -163,7 +168,8 @@ function newPattern(
   spacing: number,
   degrees: number,
   style: string,
-  width: number
+  width: number,
+  style2: string = paletteWhite
 ): CanvasPattern | undefined {
   const rads = (degrees * Math.PI) / 180
   const sin = Math.abs(Math.sin(rads))
@@ -179,8 +185,9 @@ function newPattern(
   const tile9C2D = tile9Canvas.getContext('2d')
   if (!tile9C2D) return
 
+  tile9C2D.beginPath()
   tile9C2D.rect(0, 0, tile9Canvas.width, tile9Canvas.height)
-  tile9C2D.fillStyle = paletteWhite
+  tile9C2D.fillStyle = style2
   tile9C2D.fill()
 
   tile9C2D.save()
@@ -213,6 +220,7 @@ function newPattern(
   const tileCtx = tileCanvas.getContext('2d')
   if (!tileCtx) return
 
+  tileCtx.beginPath()
   tileCtx.drawImage(tile9Canvas, tileW, tileH, tileW, tileH, 0, 0, tileW, tileH)
 
   return dstC2D.createPattern(tileCanvas, 'repeat') ?? undefined

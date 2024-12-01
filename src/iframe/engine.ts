@@ -5,7 +5,7 @@ import {Random} from '../shared/types/random.ts'
 import {type UTCMillis, utcMillisNow} from '../shared/types/time.ts'
 import {CursorEnt} from './ents/cursor-ent.ts'
 import {EIDFactory} from './ents/eid.ts'
-import {MineLevelEnt} from './ents/levels/mine-level-ent.ts'
+import {RockLevelEnt} from './ents/levels/rock-level-ent.ts'
 import {Zoo} from './ents/zoo.ts'
 import {Input} from './input/input.ts'
 import {Looper} from './looper.ts'
@@ -47,6 +47,8 @@ export class Engine {
       debug: false,
       cam,
       canvas,
+      chips: 0,
+      codex: {found: undefined, foundTriggered: false, index: 0},
       ctrl,
       cursor: CursorEnt(assets, eid),
       eid,
@@ -107,14 +109,15 @@ export class Engine {
     switch (msg.type) {
       case 'Init': {
         this._game.debug = msg.debug
-        // to-do: isolate seeded state so it's clear what's predetermined.
-        this._game.rnd = new Random(msg.seed)
+        this._game.seed = msg.seed
+        this._game.rnd = new Random(msg.seed.seed)
         const {facets} = newFacets(this._game.rnd)
         this._game.facets = facets
         this._game.p1 = msg.p1
+        this._game.t3 = msg.t3
         if (!isInitGame(this._game)) throw Error('no init game')
 
-        this._game.zoo.replace(MineLevelEnt(this._game))
+        this._game.zoo.replace(RockLevelEnt(this._game))
         this.#looper.register('add', this._game.rnd)
         this.#looper.loop = this.#onLoop
         this._game.canvas.style.display = 'block'

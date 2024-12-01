@@ -1,38 +1,59 @@
 import {
-  fontDefaultSize,
-  minCanvasWH,
   paletteBlack,
   paletteWhite,
-  spacePx
+  spacePx,
+  toolbeltSmallSide
 } from '../../shared/theme.js'
 import type {Box} from '../../shared/types/2d.js'
+import type {Cam} from '../types/cam.js'
 import {drawText} from '../types/draw.js'
 import type {Game, LoadedGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
+import {cursorEntHits} from './cursor-ent.js'
 import type {EID} from './eid.js'
+import {CodexLevelEnt} from './levels/codex-level-ent.js'
+import {RockLevelEnt} from './levels/rock-level-ent.js'
 
 export type ToolbeltEnt = Box & {
   layer: Layer
+  codex: Box
+  rock: Box
   readonly type: 'Toolbelt'
   readonly eid: EID
 }
 
+const chipsW: number = 64
 export function ToolbeltEnt(game: LoadedGame): ToolbeltEnt {
-  return {
+  const toolbelt: ToolbeltEnt = {
     eid: game.eid.new(),
     layer: 'UI',
+    codex: {
+      x: 0,
+      y: 0,
+      w: game.img.codexButton.naturalWidth,
+      h: game.img.codexButton.naturalHeight
+    },
+    rock: {
+      x: 0,
+      y: 0,
+      w: game.img.rockButton.naturalWidth,
+      h: game.img.rockButton.naturalHeight
+    },
     type: 'Toolbelt',
     x: 0,
     y: 0,
     w: 0,
     h: 0
   }
+  updateBox(toolbelt, game.cam)
+  return toolbelt
 }
 
 export function toolbeltEntDraw(
   toolbelt: Readonly<ToolbeltEnt>,
-  {c2d, cam, p1}: Readonly<Game>
+  game: Readonly<Game>
 ): void {
+  const {c2d, cam, codex, img, chips} = game
   c2d.save()
   c2d.translate(-cam.x, -cam.y)
 
@@ -45,35 +66,73 @@ export function toolbeltEntDraw(
   c2d.stroke()
 
   const pad = {w: spacePx, h: spacePx}
-  drawText(c2d, (p1.chips / 1024).toFixed(1), {
-    x: toolbelt.x,
-    y: toolbelt.y,
+  drawText(c2d, `${(chips / 1024).toFixed(1)} c`, {
+    x: Math.round(toolbelt.x + (spacePx * 2 + chipsW) / 2),
+    y: Math.round(toolbelt.y + toolbeltSmallSide / 2),
     fill: paletteBlack,
-    justify: 'TopLeft',
-    pad
-  })
-  drawText(c2d, 'chips', {
-    x: toolbelt.x,
-    y: toolbelt.y + (5 * fontDefaultSize) / 8,
-    fill: paletteBlack,
-    justify: 'TopLeft',
-    size: 12,
+    justify: 'Center',
     pad
   })
 
+  c2d.beginPath()
+  c2d.drawImage(
+    codex.found == null ? img.rockButton : img.rockMinButton,
+    toolbelt.rock.x,
+    toolbelt.rock.y,
+    toolbelt.rock.w,
+    toolbelt.rock.h
+  )
+  c2d.beginPath()
+  c2d.drawImage(
+    img.codexButton,
+    toolbelt.codex.x,
+    toolbelt.codex.y,
+    toolbelt.codex.w,
+    toolbelt.codex.h
+  )
   c2d.restore()
 }
 
 export function toolbeltEntUpdate(toolbelt: ToolbeltEnt, game: Game): void {
-  const {cam} = game
-  // to-do: want to use cam.minWH not levelWH.
+  const {cam, ctrl, zoo} = game
+  updateBox(toolbelt, cam)
+
+  if (!ctrl.isOnStart('A')) return
+
+  if (cursorEntHits(game, toolbelt.rock) && zoo.lvl?.type !== 'RockLevel') {
+    ctrl.handled = true
+    zoo.replace(RockLevelEnt(game))
+    return
+  }
+
+  if (cursorEntHits(game, toolbelt.codex) && zoo.lvl?.type !== 'CodexLevel') {
+    ctrl.handled = true
+    zoo.replace(CodexLevelEnt(game))
+    return
+  }
+
+  if (cursorEntHits(game, toolbelt)) ctrl.handled = true
+}
+
+function updateBox(toolbelt: ToolbeltEnt, cam: Readonly<Cam>): void {
   const pad = {w: spacePx, h: spacePx}
+  // to-do: want to use cam.minWH not minCanvasWH.
   const wh = cam.portrait
-    ? {w: minCanvasWH.w - pad.w * 2, h: 64}
-    : {w: 64, h: minCanvasWH.h - pad.h * 2}
+    ? {w: 177, h: toolbeltSmallSide}
+    : {w: toolbeltSmallSide, h: 177}
   const lead = cam.lead(wh, cam.portrait ? 'South' : 'West', {pad})
   toolbelt.x = lead.x
   toolbelt.y = lead.y
   toolbelt.w = lead.w
   toolbelt.h = lead.h
+
+  toolbelt.rock.x =
+    toolbelt.x + (cam.portrait ? chipsW : 0) + (cam.portrait ? 0 : spacePx)
+  toolbelt.rock.y =
+    toolbelt.y + (cam.portrait ? 0 : chipsW) + (cam.portrait ? spacePx : 0)
+
+  toolbelt.codex.x =
+    toolbelt.rock.x + (cam.portrait ? toolbelt.rock.w + spacePx : 0)
+  toolbelt.codex.y =
+    toolbelt.rock.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
 }

@@ -1,0 +1,34 @@
+integrate with mindat if license permits.
+  currently not licensed for commercial use.
+  access the API.
+    https://www.mindat.org/a/how_to_get_my_mindat_api_key
+    https://github.com/ChuBL/How-to-Use-Mindat-API/blob/main/How_to_Use_Mindat_API.ipynb
+    https://github.com/ChuBL/How-to-Use-Mindat-API
+  show more information about each crystal; IMA status approved only.
+    colour
+    crystal system
+    Dana-8
+    density range
+    elements
+    description_short
+    mindat ID
+    IMA symbol
+    name
+    occurrence?
+    discovery_year
+    luminescence
+    lustre/lustretype
+    magnetism
+    thermalbehaviour
+    localisties (country, pick a random or most prevalent?)
+    minerals_ima_list
+    https://api.mindat.org
+    https://api.mindat.org/schema/redoc
+    https://pypi.org/project/openmindat/?utm_source=chatgpt.com
+  unclear if they're doing image analysis for this color matcher: https://www.mindat.org/colorwheel.php.
+  unclear how they're doing rarity for this quiz: https://www.mindat.org/minquiz.php.
+rework to Wikidataish.
+  need navigateTo() to support open in new tab.
+  add Q code to cards.
+  cards become Qards.
+  codex becomes Qodex.
