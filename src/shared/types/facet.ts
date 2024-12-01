@@ -93,7 +93,7 @@ export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
   return {facets, svg: newRockSVG(edges)}
 }
 
-const kaputState: {readonly [state in Facet['state']]: boolean} = {
+export const kaputState: {readonly [state in Facet['state']]: boolean} = {
   Invisible: true,
   Solid: false,
   Cracked: false,

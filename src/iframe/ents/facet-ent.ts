@@ -10,7 +10,8 @@ import {
   type Facet,
   facetHammer,
   facetHitable,
-  facetKaput
+  facetKaput,
+  kaputState
 } from '../../shared/types/facet.js'
 import {postMessage} from '../mail.js'
 import {audioPlay} from '../types/audio.js'
@@ -45,10 +46,12 @@ export function facetEntDraw(
   const halfedges = facet.cell.halfedges
   let v = halfedges[0]!.getStartpoint()
   c2d.moveTo(scale * v.x, scale * v.y)
-  for (let iHalfedge = 0; iHalfedge < halfedges.length; iHalfedge++) {
-    v = halfedges[iHalfedge]!.getEndpoint()
+  c2d.lineWidth = 3
+  for (const half of halfedges) {
+    v = half.getEndpoint()
     c2d.lineTo(scale * v.x, scale * v.y)
   }
+  c2d.strokeStyle = paletteBlack
   switch (facet.state) {
     case 'Solid':
       c2d.fillStyle = paletteWhite //game.seed.color
@@ -67,10 +70,28 @@ export function facetEntDraw(
     default:
       facet.state satisfies never
   }
-  c2d.lineWidth = 3
-  c2d.strokeStyle = paletteBlack
   c2d.fill()
   if (facet.state === 'Cracked') c2d.stroke()
+
+  if (facet.state === 'Solid' || kaputState[facet.state]) {
+    c2d.beginPath()
+    let v = halfedges[0]!.getStartpoint()
+    c2d.moveTo(scale * v.x, scale * v.y)
+
+    c2d.lineWidth = 2
+    c2d.strokeStyle = paletteBlack
+    for (const half of halfedges) {
+      v = half.getEndpoint()
+      if (
+        game.facets[half.edge.lSite.voronoiId]!.state === 'Invisible' ||
+        half.edge.rSite == null ||
+        game.facets[half.edge.rSite.voronoiId]!.state === 'Invisible'
+      )
+        c2d.lineTo(scale * v.x, scale * v.y)
+      else c2d.moveTo(scale * v.x, scale * v.y)
+    }
+    c2d.stroke()
+  }
 }
 
 export function facetEntUpdate(facet: FacetEnt, game: Game): void {

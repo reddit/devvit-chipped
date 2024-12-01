@@ -36,6 +36,7 @@
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "useNumberNamespace": "off",
+        // https://github.com/biomejs/biome/discussions/3106
         "useImportType": "warn",
         "noUnusedTemplateLiteral": "warn"
       },
