@@ -114,20 +114,17 @@ export function facetEntUpdate(facet: FacetEnt, game: Game): void {
       return
     case 'Solid':
       if (facetHitable(facet.facet))
-        fx = sound.hammerHit[Math.trunc(rnd.num * sound.hammerHit.length)]!
-      else
-        fx =
-          sound.hammerUnbreakable[
-            Math.trunc(rnd.num * sound.hammerUnbreakable.length)
-          ]!
+        fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
+      else fx = sound.miss[Math.trunc(rnd.num * sound.miss.length)]!
       break
     case 'Cracked':
-      fx = sound.hammerHit[Math.trunc(rnd.num * sound.hammerHit.length)]!
+      fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
       break
     case 'Chipped':
       if (priorState !== facet.facet.state) {
-        fx = sound.hammerHit[Math.trunc(rnd.num * sound.hammerHit.length)]!
+        fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
         if (facet.facet.specimen) {
+          fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
           const collect =
             facet.facet.chips > (game.p1.codex[game.seed.ima]?.chips ?? 0)
           if (collect) {
@@ -158,10 +155,7 @@ export function facetEntUpdate(facet: FacetEnt, game: Game): void {
       break
     case 'Shattered':
       if (priorState !== facet.facet.state)
-        fx =
-          sound.hammerShattered[
-            Math.trunc(rnd.num * sound.hammerShattered.length)
-          ]!
+        fx = sound.break[Math.trunc(rnd.num * sound.break.length)]!
       break
     default:
       facet.facet.state satisfies never

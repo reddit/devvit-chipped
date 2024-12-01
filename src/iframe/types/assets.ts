@@ -3,13 +3,30 @@ import {fontFamily} from '../../shared/theme.ts'
 export type Assets = {
   audio: {
     [name in
-      | 'hammerHit0'
-      | 'hammerHit1'
-      | 'hammerHit2'
-      | 'hammerHit3'
-      | 'hammerHit4'
-      | 'hammerShattered0'
-      | 'hammerUnbreakable0']: ArrayBuffer
+      | 'hit0'
+      | 'hit1'
+      | 'hit2'
+      | 'hit3'
+      | 'hit4'
+      | 'hit5'
+      | 'hit6'
+      | 'break0'
+      | 'break1'
+      | 'break2'
+      | 'break3'
+      | 'break4'
+      | 'break5'
+      | 'collect0'
+      | 'collect1'
+      | 'collect2'
+      | 'collect3'
+      | 'collect4'
+      | 'collect5'
+      | 'miss0'
+      | 'miss1'
+      | 'miss2'
+      | 'miss3'
+      | 'miss4']: ArrayBuffer
   }
   font: FontFace
   img: {
@@ -24,13 +41,30 @@ export type Assets = {
 
 export async function Assets(): Promise<Assets> {
   const [
-    hammerHit0,
-    hammerHit1,
-    hammerHit2,
-    hammerHit3,
-    hammerHit4,
-    hammerShattered0,
-    hammerUnbreakable0,
+    break0,
+    break1,
+    break2,
+    break3,
+    break4,
+    break5,
+    collect0,
+    collect1,
+    collect2,
+    collect3,
+    collect4,
+    collect5,
+    hit0,
+    hit1,
+    hit2,
+    hit3,
+    hit4,
+    hit5,
+    hit6,
+    miss0,
+    miss1,
+    miss2,
+    miss3,
+    miss4,
     codexButton,
     nextButton,
     prevButton,
@@ -38,13 +72,30 @@ export async function Assets(): Promise<Assets> {
     rockMinButton,
     font
   ] = await Promise.all([
-    loadAudio('assets/audio/hammer-hit-0.ogg'),
-    loadAudio('assets/audio/hammer-hit-1.ogg'),
-    loadAudio('assets/audio/hammer-hit-2.ogg'),
-    loadAudio('assets/audio/hammer-hit-3.ogg'),
-    loadAudio('assets/audio/hammer-hit-4.ogg'),
-    loadAudio('assets/audio/hammer-shattered-0.ogg'),
-    loadAudio('assets/audio/hammer-unbreakable-0.ogg'),
+    loadAudio('assets/audio/break-0.ogg'),
+    loadAudio('assets/audio/break-1.ogg'),
+    loadAudio('assets/audio/break-2.ogg'),
+    loadAudio('assets/audio/break-3.ogg'),
+    loadAudio('assets/audio/break-4.ogg'),
+    loadAudio('assets/audio/break-5.ogg'),
+    loadAudio('assets/audio/collect-0.ogg'),
+    loadAudio('assets/audio/collect-1.ogg'),
+    loadAudio('assets/audio/collect-2.ogg'),
+    loadAudio('assets/audio/collect-3.ogg'),
+    loadAudio('assets/audio/collect-4.ogg'),
+    loadAudio('assets/audio/collect-5.ogg'),
+    loadAudio('assets/audio/hit-0.ogg'),
+    loadAudio('assets/audio/hit-1.ogg'),
+    loadAudio('assets/audio/hit-2.ogg'),
+    loadAudio('assets/audio/hit-3.ogg'),
+    loadAudio('assets/audio/hit-4.ogg'),
+    loadAudio('assets/audio/hit-5.ogg'),
+    loadAudio('assets/audio/hit-6.ogg'),
+    loadAudio('assets/audio/miss-0.ogg'),
+    loadAudio('assets/audio/miss-1.ogg'),
+    loadAudio('assets/audio/miss-2.ogg'),
+    loadAudio('assets/audio/miss-3.ogg'),
+    loadAudio('assets/audio/miss-4.ogg'),
     loadImage('assets/images/codex-button.webp'),
     loadImage('assets/images/next-button.webp'),
     loadImage('assets/images/prev-button.webp'),
@@ -55,13 +106,30 @@ export async function Assets(): Promise<Assets> {
 
   return {
     audio: {
-      hammerHit0,
-      hammerHit1,
-      hammerHit2,
-      hammerHit3,
-      hammerHit4,
-      hammerShattered0,
-      hammerUnbreakable0
+      break0,
+      break1,
+      break2,
+      break3,
+      break4,
+      break5,
+      collect0,
+      collect1,
+      collect2,
+      collect3,
+      collect4,
+      collect5,
+      hit0,
+      hit1,
+      hit2,
+      hit3,
+      hit4,
+      hit5,
+      hit6,
+      miss0,
+      miss1,
+      miss2,
+      miss3,
+      miss4
     },
     img: {codexButton, nextButton, prevButton, rockButton, rockMinButton},
     font
