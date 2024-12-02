@@ -1,10 +1,13 @@
 import {Specimen} from '../../shared/save.js'
 import {
   minCanvasWH,
+  paletteAnotherWhite,
   paletteBlack,
   paletteBlack2,
   paletteBlack3,
-  paletteWhite
+  paletteBlack22,
+  paletteWhite,
+  paletteWhitest
 } from '../../shared/theme.js'
 import {
   type Facet,
@@ -54,7 +57,7 @@ export function facetEntDraw(
   c2d.strokeStyle = paletteBlack
   switch (facet.state) {
     case 'Solid':
-      c2d.fillStyle = paletteWhite //game.seed.color
+      c2d.fillStyle = draw.bg //game.seed.color
       break
     case 'Cracked':
       c2d.fillStyle = facet.specimen
@@ -62,10 +65,10 @@ export function facetEntDraw(
         : draw.facets[facet.cell.site.voronoiId % draw.facets.length]!
       break
     case 'Chipped':
-      c2d.fillStyle = paletteBlack2
+      c2d.fillStyle = '#0000'
       break
     case 'Shattered':
-      c2d.fillStyle = paletteBlack3
+      c2d.fillStyle = paletteBlack22
       break
     default:
       facet.state satisfies never

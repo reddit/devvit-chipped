@@ -70,7 +70,7 @@ export function drawClear(
   c2d.strokeStyle = paletteGrey
   c2d.stroke()
 
-  c2d.fillStyle = draw.bg
+  c2d.fillStyle = paletteWhite
   c2d.fill()
 }
 
@@ -208,7 +208,7 @@ function newPattern(
   }
   tile9C2D.strokeStyle = style
   tile9C2D.lineWidth = width
-  tile9C2D.lineCap = 'butt'
+  tile9C2D.lineCap = 'round'
   tile9C2D.stroke()
 
   tile9C2D.restore()
