@@ -92,7 +92,7 @@ export class Engine {
 
     if (!isGame(this._game)) return
 
-    drawClear(this._game.draw, this._game.c2d, this._game.cam)
+    drawClear(this._game.c2d, this._game.cam)
 
     this._game.zoo.update(this._game)
     this._game.zoo.draw(this._game)

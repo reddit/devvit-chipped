@@ -11,19 +11,14 @@ export type RockLevelEnt = {
 }
 
 export function RockLevelEnt(game: InitGame): RockLevelEnt {
-  const {zoo} = game
+  const {cursor, facets, zoo} = game
   // state.ctrl.allowContextMenu = false
   zoo.clear()
-
   zoo.replace(
-    game.cursor,
+    cursor,
     ToolbeltEnt(game),
-    ...game.facets.map(facet => FacetEnt(game, facet))
+    ...facets.map(facet => FacetEnt(game, facet))
   )
-  // state.p1.hp = playerDefaultHP
-  // state.p1.score = 0
-  // state.p1.x = state.p1.y = 4800
-
   return {eid: game.eid.new(), layer: 'Level', type: 'RockLevel'}
 }
 

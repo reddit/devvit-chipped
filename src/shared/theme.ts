@@ -10,8 +10,6 @@ export const paletteAnotherWhite: string = '#eaeaea'
 export const paletteGrey: string = '#111'
 export const spacePx: number = 8
 
-export const paletteBackground: string = paletteBlack
-
 export const minCanvasWH: Readonly<WH> = {w: 288, h: 320}
 
 export const fontFamily: string = 'Patrick Hand Regular'
@@ -19,4 +17,6 @@ export const fontDefaultSize: number = 24
 
 export const playButtonWidth: number = 160
 
-export const toolbeltSmallSide: number = 64
+export const toolbeltSmallIconSize: number = 48
+
+export const lineWidth: number = 4

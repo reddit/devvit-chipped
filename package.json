@@ -3,9 +3,9 @@
   "description": "",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@devvit/public-api": "0.11.4-next-2024-12-02-20e3198cb.0",
+    "@devvit/public-api": "0.11.4-next-2024-12-02-478a01669.0",
     "@types/node": "22.10.1",
-    "devvit": "0.11.4-next-2024-12-02-20e3198cb.0",
+    "devvit": "0.11.4-next-2024-12-02-478a01669.0",
     "esbuild": "0.24.0",
     "typescript": "5.7.2",
     "vitest": "2.1.8",

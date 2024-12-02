@@ -1,13 +1,10 @@
 import {
   fontDefaultSize,
   fontFamily,
-  paletteAnotherWhite,
   paletteBlack,
   paletteBlack2,
-  paletteBlack22,
   paletteGrey,
-  paletteWhite,
-  spacePx
+  paletteWhite
 } from '../../shared/theme.ts'
 import type {Box, WH, XY} from '../../shared/types/2d.ts'
 import type {Random} from '../../shared/types/random.ts'
@@ -42,24 +39,15 @@ export function Draw(canvas: HTMLCanvasElement, rnd: Random): Draw | undefined {
   return {bg, c2d, facets}
 }
 
-export function drawClear(
-  draw: Omit<Draw, 'c2d'>,
-  c2d: C2D,
-  cam: Readonly<Cam>
-): void {
+export function drawClear(c2d: C2D, cam: Readonly<Cam>): void {
   c2d.beginPath()
-  c2d.fillStyle = paletteAnotherWhite
+  c2d.fillStyle = paletteBlack
   c2d.fillRect(cam.x, cam.y, cam.w, cam.h)
 
   const radius = 16
 
   c2d.beginPath()
-  c2d.roundRect(0, 0, cam.w, cam.h, radius)
-  c2d.fillStyle = paletteBlack
-  c2d.fill()
-
-  c2d.beginPath()
-  c2d.lineWidth = 2
+  c2d.lineWidth = 4
   c2d.roundRect(
     c2d.lineWidth,
     c2d.lineWidth,

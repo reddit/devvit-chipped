@@ -1,5 +1,6 @@
 import {Specimen} from '../../shared/save.js'
 import {
+  lineWidth,
   minCanvasWH,
   paletteAnotherWhite,
   paletteBlack,
@@ -81,7 +82,7 @@ export function facetEntDraw(
     let v = halfedges[0]!.getStartpoint()
     c2d.moveTo(scale * v.x, scale * v.y)
 
-    c2d.lineWidth = 2
+    c2d.lineWidth = lineWidth
     c2d.strokeStyle = paletteBlack
     for (const half of halfedges) {
       v = half.getEndpoint()

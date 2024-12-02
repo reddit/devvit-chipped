@@ -14,6 +14,11 @@ import {
   rockLevelEntUpdate
 } from './levels/rock-level-ent.ts'
 import {
+  type ScoreboardLevelEnt,
+  scoreboardLevelEntDraw,
+  scoreboardLevelEntUpdate
+} from './levels/scoreboard-level-ent.ts'
+import {
   type ToolbeltEnt,
   toolbeltEntDraw,
   toolbeltEntUpdate
@@ -24,6 +29,7 @@ export type Ent =
   | FacetEnt
   | CodexLevelEnt
   | RockLevelEnt
+  | ScoreboardLevelEnt
   | ToolbeltEnt
 
 type EntByID = {[eid: EID]: Ent}
@@ -62,6 +68,9 @@ export class Zoo {
             break
           case 'RockLevel':
             rockLevelEntDraw(ent, game)
+            break
+          case 'ScoreboardLevel':
+            scoreboardLevelEntDraw(ent, game)
             break
           case 'Toolbelt':
             toolbeltEntDraw(ent, game)
@@ -107,6 +116,9 @@ export class Zoo {
           break
         case 'RockLevel':
           rockLevelEntUpdate(ent, game)
+          break
+        case 'ScoreboardLevel':
+          scoreboardLevelEntUpdate(ent, game)
           break
         case 'Toolbelt':
           toolbeltEntUpdate(ent, game)

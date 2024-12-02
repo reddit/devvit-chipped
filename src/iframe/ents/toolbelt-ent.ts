@@ -1,11 +1,11 @@
 import {
+  minCanvasWH,
   paletteBlack,
-  paletteWhite,
   spacePx,
-  toolbeltSmallSide
+  toolbeltSmallIconSize
 } from '../../shared/theme.js'
 import type {Box} from '../../shared/types/2d.js'
-import type {Cam} from '../types/cam.js'
+import {type Cam, camScale} from '../types/cam.js'
 import {drawText} from '../types/draw.js'
 import type {Game, LoadedGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
@@ -45,7 +45,7 @@ export function ToolbeltEnt(game: LoadedGame): ToolbeltEnt {
     w: 0,
     h: 0
   }
-  updateBox(toolbelt, game.cam)
+  updateBox(toolbelt, game)
   return toolbelt
 }
 
@@ -54,12 +54,14 @@ export function toolbeltEntDraw(
   game: Readonly<Game>
 ): void {
   const {c2d, cam, codex, img, chips} = game
+  const zoom = Math.min(2, camScale(minCanvasWH, 1, 0, false))
+
   c2d.save()
   c2d.translate(-cam.x, -cam.y)
 
   c2d.beginPath()
   c2d.roundRect(toolbelt.x, toolbelt.y, toolbelt.w, toolbelt.h, spacePx)
-  c2d.fillStyle = paletteWhite
+  c2d.fillStyle = game.draw.bg
   c2d.fill()
   c2d.lineWidth = 1
   c2d.strokeStyle = paletteBlack
@@ -67,8 +69,11 @@ export function toolbeltEntDraw(
 
   const pad = {w: spacePx, h: spacePx}
   drawText(c2d, `${(chips / 1024).toFixed(1)} c`, {
-    x: Math.round(toolbelt.x + (spacePx * 2 + chipsW) / 2),
-    y: Math.round(toolbelt.y + toolbeltSmallSide / 2),
+    x: Math.round(toolbelt.x + (spacePx * 2 + chipsW * zoom) / 2),
+    y: Math.round(
+      toolbelt.y + (toolbeltSmallIconSize * zoom + spacePx * 2) / 2
+    ),
+    size: 24 * zoom,
     fill: paletteBlack,
     justify: 'Center',
     pad
@@ -95,7 +100,7 @@ export function toolbeltEntDraw(
 
 export function toolbeltEntUpdate(toolbelt: ToolbeltEnt, game: Game): void {
   const {cam, ctrl, zoo} = game
-  updateBox(toolbelt, cam)
+  updateBox(toolbelt, game)
 
   if (!ctrl.isOnStart('A')) return
 
@@ -114,12 +119,17 @@ export function toolbeltEntUpdate(toolbelt: ToolbeltEnt, game: Game): void {
   if (cursorEntHits(game, toolbelt)) ctrl.handled = true
 }
 
-function updateBox(toolbelt: ToolbeltEnt, cam: Readonly<Cam>): void {
+function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
+  const {cam} = game
+  const zoom = Math.min(2, camScale(minCanvasWH, 1, 0, false))
+  const shrink = 1 / (3 - zoom)
+
   const pad = {w: spacePx, h: spacePx}
   // to-do: want to use cam.minWH not minCanvasWH.
+  const toolbeltSmallSide = toolbeltSmallIconSize * zoom + 2 * spacePx
   const wh = cam.portrait
-    ? {w: 177, h: toolbeltSmallSide}
-    : {w: toolbeltSmallSide, h: 177}
+    ? {w: 177 * zoom, h: toolbeltSmallSide}
+    : {w: toolbeltSmallSide, h: 177 * zoom}
   const lead = cam.lead(wh, cam.portrait ? 'South' : 'West', {pad})
   toolbelt.x = lead.x
   toolbelt.y = lead.y
@@ -127,12 +137,20 @@ function updateBox(toolbelt: ToolbeltEnt, cam: Readonly<Cam>): void {
   toolbelt.h = lead.h
 
   toolbelt.rock.x =
-    toolbelt.x + (cam.portrait ? chipsW : 0) + (cam.portrait ? 0 : spacePx)
+    toolbelt.x +
+    (cam.portrait ? chipsW * zoom : 0) +
+    (cam.portrait ? 0 : spacePx)
   toolbelt.rock.y =
-    toolbelt.y + (cam.portrait ? 0 : chipsW) + (cam.portrait ? spacePx : 0)
+    toolbelt.y +
+    (cam.portrait ? 0 : chipsW * zoom) +
+    (cam.portrait ? spacePx : 0)
+  toolbelt.rock.w = game.img.codexButton.naturalWidth * shrink
+  toolbelt.rock.h = game.img.codexButton.naturalHeight * shrink
 
   toolbelt.codex.x =
     toolbelt.rock.x + (cam.portrait ? toolbelt.rock.w + spacePx : 0)
   toolbelt.codex.y =
     toolbelt.rock.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
+  toolbelt.codex.w = game.img.rockButton.naturalWidth * shrink
+  toolbelt.codex.h = game.img.rockButton.naturalHeight * shrink
 }
