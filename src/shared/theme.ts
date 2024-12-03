@@ -20,3 +20,5 @@ export const playButtonWidth: number = 160
 export const toolbeltSmallIconSize: number = 48
 
 export const lineWidth: number = 4
+
+export const scoreboardSize: number = 10

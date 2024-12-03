@@ -53,7 +53,6 @@ export function codexLevelEntDraw(
   const {cam, c2d, img} = game
 
   const zoom = Math.min(2, camScale(minCanvasWH, 1, 0, false))
-  const shrink = 1 / (3 - zoom)
 
   const cardWH = {w: cardWH1x.w * zoom, h: cardWH1x.h * zoom}
 
@@ -77,8 +76,6 @@ export function codexLevelEntDraw(
     ) {
       if (i >= codex.length) break y
       const min = codex[i]!
-
-      const color = paletteBlack // min.color
 
       c2d.beginPath()
       c2d.roundRect(x + 2, y + 2, cardWH.w - 4, cardWH.h - 4, spacePx)
@@ -116,7 +113,7 @@ export function codexLevelEntDraw(
         fill: paletteBlack,
         stroke: paletteWhite,
         size: 20 * zoom,
-        justify: 'TopCenter'
+        origin: 'TopCenter'
       })
 
       const cat = minCat[min.ima]!
@@ -126,7 +123,7 @@ export function codexLevelEntDraw(
         fill: paletteBlack,
         stroke: paletteWhite,
         size: 14 * zoom,
-        justify: 'TopCenter'
+        origin: 'TopCenter'
       })
       drawText(c2d, `${(min.chips / 1024).toFixed(3)} c`, {
         x: Math.round(x + cardWH.w / 2),
@@ -134,10 +131,9 @@ export function codexLevelEntDraw(
         fill: paletteBlack,
         stroke: paletteWhite,
         size: 24 * zoom,
-        justify: 'BottomCenter'
+        origin: 'BottomCenter'
       })
 
-      if (!cardWH.w) x += min.w
       i++
     }
   }
@@ -145,7 +141,13 @@ export function codexLevelEntDraw(
   c2d.restore()
 
   c2d.beginPath()
-  c2d.roundRect(spacePx, spacePx, 228 * zoom, 48 * zoom + spacePx * 2, spacePx)
+  c2d.roundRect(
+    lvl.prev.x - spacePx,
+    spacePx,
+    228 * zoom,
+    48 * zoom + spacePx * 2,
+    spacePx
+  )
   c2d.fillStyle = game.draw.bg
   c2d.fill()
   c2d.lineWidth = 1
@@ -159,11 +161,11 @@ export function codexLevelEntDraw(
   c2d.drawImage(img.nextButton, lvl.next.x, lvl.next.y, lvl.next.w, lvl.next.h)
 
   drawText(c2d, `${codex.length} / ${Object.keys(minCat).length}`, {
-    x: spacePx * 2 + lvl.prev.w + spacePx + lvl.next.w + spacePx,
+    x: lvl.next.x + lvl.next.w + spacePx,
     y: spacePx + (48 * zoom + spacePx * 2) / 2,
     size: 24 * zoom,
     stroke: paletteWhite,
-    justify: 'MidLeft',
+    origin: 'MidLeft',
     fill: paletteBlack
   })
 }
@@ -191,11 +193,11 @@ function updateGrid(lvl: CodexLevelEnt, game: InitGame): void {
 
   const cardWH = {w: cardWH1x.w * zoom, h: cardWH1x.h * zoom}
 
-  lvl.prev.x = spacePx * 2
+  lvl.prev.x = toolbeltSmallIconSize * zoom + 4 * spacePx
   lvl.prev.y = spacePx * 2
   lvl.prev.w = game.img.prevButton.naturalWidth * shrink
   lvl.prev.h = game.img.prevButton.naturalHeight * shrink
-  lvl.next.x = spacePx * 2 + lvl.prev.w + spacePx
+  lvl.next.x = lvl.prev.x + lvl.prev.w + spacePx
   lvl.next.y = spacePx * 2
   lvl.next.w = game.img.nextButton.naturalWidth * shrink
   lvl.next.h = game.img.nextButton.naturalHeight * shrink

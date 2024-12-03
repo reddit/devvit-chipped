@@ -1,7 +1,7 @@
 import type {Player, PostSeed} from '../../shared/save.ts'
 import type {Facet} from '../../shared/types/facet.ts'
 import type {Random} from '../../shared/types/random.ts'
-import type {T3} from '../../shared/types/tid.ts'
+import type {T2, T3} from '../../shared/types/tid.ts'
 import type {UTCMillis} from '../../shared/types/time.ts'
 import type {CursorEnt} from '../ents/cursor-ent.ts'
 import type {EIDFactory} from '../ents/eid.ts'
@@ -22,11 +22,13 @@ export type LoadedGame = Pick<Assets, 'img'> &
     canvas: Canvas
     chips: number
     codex: {index: number; found: number | undefined; foundTriggered: boolean}
+    scoreboardIndex: number
     ctrl: Input<DefaultButton>
     cursor: CursorEnt
     debug: boolean
     eid: EIDFactory
     now: UTCMillis
+    snoovatar: {[url: string]: HTMLImageElement}
     sound: AudioBufferByName
     zoo: Zoo
   }
@@ -38,6 +40,7 @@ type Init = {
   facets: Facet[]
   p1: Player
   rnd: Random
+  scoreboard: Player[]
   seed: PostSeed
   t3: T3
 }

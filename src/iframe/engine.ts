@@ -10,7 +10,7 @@ import {Zoo} from './ents/zoo.ts'
 import {Input} from './input/input.ts'
 import {Looper} from './looper.ts'
 import {postMessage} from './mail.ts'
-import {Assets} from './types/assets.ts'
+import {Assets, loadImage} from './types/assets.ts'
 import {Audio} from './types/audio.ts'
 import {Cam, camScale} from './types/cam.ts'
 import {drawClear} from './types/draw.ts'
@@ -54,6 +54,8 @@ export class Engine {
       eid,
       img: assets.img,
       now: 0 as UTCMillis,
+      scoreboardIndex: 0,
+      snoovatar: {},
       sound: audio,
       zoo: new Zoo()
     }
@@ -115,6 +117,23 @@ export class Engine {
         this._game.facets = facets
         this._game.p1 = msg.p1
         this._game.t3 = msg.t3
+        this._game.scoreboard = msg.scoreboard
+
+        const urls = [
+          msg.p1.profile.snoovatarURL,
+          ...msg.scoreboard.map(player => player.profile.snoovatarURL)
+        ]
+        Promise.all(urls.map(url => loadImage(url))).then(imgs => {
+          this._game.snoovatar = imgs.reduce(
+            (sum, img) => ({
+              // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+              ...sum,
+              [img.src]: img
+            }),
+            {}
+          )
+        })
+
         if (!isInitGame(this._game)) throw Error('no init game')
 
         this._game.zoo.replace(RockLevelEnt(this._game))

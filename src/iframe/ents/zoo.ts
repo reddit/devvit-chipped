@@ -89,7 +89,7 @@ export class Zoo {
         return this.#entsByLayer[layer as Layer][eid]
   }
 
-  get lvl(): CodexLevelEnt | RockLevelEnt | undefined {
+  get lvl(): CodexLevelEnt | RockLevelEnt | ScoreboardLevelEnt | undefined {
     return this.#lvl
   }
 

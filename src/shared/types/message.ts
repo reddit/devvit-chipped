@@ -15,6 +15,7 @@ export type DevvitMessage = {
   debug: boolean
   p1: Player
   seed: PostSeed
+  scoreboard: Player[]
   /** post / rock ID. */
   t3: T3
   readonly type: 'Init'

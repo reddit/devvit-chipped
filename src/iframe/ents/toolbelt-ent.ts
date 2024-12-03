@@ -13,11 +13,13 @@ import {cursorEntHits} from './cursor-ent.js'
 import type {EID} from './eid.js'
 import {CodexLevelEnt} from './levels/codex-level-ent.js'
 import {RockLevelEnt} from './levels/rock-level-ent.js'
+import {ScoreboardLevelEnt} from './levels/scoreboard-level-ent.js'
 
 export type ToolbeltEnt = Box & {
   layer: Layer
   codex: Box
   rock: Box
+  score: Box
   readonly type: 'Toolbelt'
   readonly eid: EID
 }
@@ -38,6 +40,12 @@ export function ToolbeltEnt(game: LoadedGame): ToolbeltEnt {
       y: 0,
       w: game.img.rockButton.naturalWidth,
       h: game.img.rockButton.naturalHeight
+    },
+    score: {
+      x: 0,
+      y: 0,
+      w: game.img.scoreButton.naturalWidth,
+      h: game.img.scoreButton.naturalHeight
     },
     type: 'Toolbelt',
     x: 0,
@@ -75,7 +83,7 @@ export function toolbeltEntDraw(
     ),
     size: 24 * zoom,
     fill: paletteBlack,
-    justify: 'Center',
+    origin: 'Center',
     pad
   })
 
@@ -94,6 +102,14 @@ export function toolbeltEntDraw(
     toolbelt.codex.y,
     toolbelt.codex.w,
     toolbelt.codex.h
+  )
+  c2d.beginPath()
+  c2d.drawImage(
+    img.scoreButton,
+    toolbelt.score.x,
+    toolbelt.score.y,
+    toolbelt.score.w,
+    toolbelt.score.h
   )
   c2d.restore()
 }
@@ -116,6 +132,15 @@ export function toolbeltEntUpdate(toolbelt: ToolbeltEnt, game: Game): void {
     return
   }
 
+  if (
+    cursorEntHits(game, toolbelt.score) &&
+    zoo.lvl?.type !== 'ScoreboardLevel'
+  ) {
+    ctrl.handled = true
+    zoo.replace(ScoreboardLevelEnt(game))
+    return
+  }
+
   if (cursorEntHits(game, toolbelt)) ctrl.handled = true
 }
 
@@ -127,9 +152,11 @@ function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
   const pad = {w: spacePx, h: spacePx}
   // to-do: want to use cam.minWH not minCanvasWH.
   const toolbeltSmallSide = toolbeltSmallIconSize * zoom + 2 * spacePx
+  const stuff =
+    chipsW * zoom + spacePx + 3 * toolbeltSmallIconSize * zoom + 2 * spacePx
   const wh = cam.portrait
-    ? {w: 177 * zoom, h: toolbeltSmallSide}
-    : {w: toolbeltSmallSide, h: 177 * zoom}
+    ? {w: stuff, h: toolbeltSmallSide}
+    : {w: toolbeltSmallSide, h: stuff}
   const lead = cam.lead(wh, cam.portrait ? 'South' : 'West', {pad})
   toolbelt.x = lead.x
   toolbelt.y = lead.y
@@ -153,4 +180,11 @@ function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
     toolbelt.rock.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
   toolbelt.codex.w = game.img.rockButton.naturalWidth * shrink
   toolbelt.codex.h = game.img.rockButton.naturalHeight * shrink
+
+  toolbelt.score.x =
+    toolbelt.codex.x + (cam.portrait ? toolbelt.rock.w + spacePx : 0)
+  toolbelt.score.y =
+    toolbelt.codex.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
+  toolbelt.score.w = game.img.rockButton.naturalWidth * shrink
+  toolbelt.score.h = game.img.rockButton.naturalHeight * shrink
 }

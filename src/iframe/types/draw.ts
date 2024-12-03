@@ -67,18 +67,20 @@ export function drawText(
   text: string,
   opts: Readonly<
     XY & {
-      justify?:
+      origin?:
         | 'Center'
         | 'BottomCenter'
         | 'BottomLeft'
         | 'BottomRight'
         | 'MidLeft'
+        | 'MidRight'
         | 'TopLeft'
         | 'TopRight'
-        | 'TopCenter' // to-do: rethink terminology.
+        | 'TopCenter' // to-do: align terminology with cam.
       fill?: string
       size?: number
       stroke?: string
+      strokeWidth?: number
       pad?: Partial<WH> | undefined
     }
   >
@@ -86,12 +88,12 @@ export function drawText(
   if (opts.fill) c2d.fillStyle = opts.fill
   c2d.font = `${opts.size ? opts.size : fontDefaultSize}px ${fontFamily}`
   if (opts.stroke) c2d.strokeStyle = opts.stroke
-  c2d.lineWidth = 4
+  c2d.lineWidth = opts.strokeWidth ?? 4
   c2d.beginPath()
   const metrics = c2d.measureText(text)
   let x = opts.x
   let y = opts.y
-  const justify = opts.justify ?? 'TopLeft'
+  const justify = opts.origin ?? 'TopLeft'
   const padW = opts?.pad?.w ?? 0
   const padH = opts?.pad?.h ?? 0
   switch (justify) {
@@ -109,15 +111,15 @@ export function drawText(
       break
     case 'Center':
       x -= Math.trunc((metrics.width + c2d.lineWidth) / 2) + padW
-      y += Math.trunc(
-        (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
-      )
+      y += Math.trunc(metrics.actualBoundingBoxAscent / 2)
       break
     case 'MidLeft':
       x += padW
-      y += Math.trunc(
-        (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
-      )
+      y += Math.trunc(metrics.actualBoundingBoxAscent / 2)
+      break
+    case 'MidRight':
+      x -= metrics.width + c2d.lineWidth + padW
+      y += Math.trunc(metrics.actualBoundingBoxAscent / 2)
       break
     case 'TopLeft':
       x += padW

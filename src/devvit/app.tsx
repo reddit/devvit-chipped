@@ -2,7 +2,7 @@
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
 import {PlaySave, type Player, PostSave, PostSeed} from '../shared/save.js'
-import {paletteWhite, playButtonWidth} from '../shared/theme.js'
+import {paletteWhite, playButtonWidth, scoreboardSize} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
@@ -11,8 +11,10 @@ import {r2CreatePost, r2OpenPost} from './r2.js'
 import {
   T3T2,
   redisCreatePlay,
+  redisQueryLeaderboard,
   redisQueryP1,
   redisQueryPlay,
+  redisQueryPlayer,
   redisQueryPost,
   redisSetPlayer,
   redisSetPost
@@ -143,6 +145,13 @@ async function onMsg(
       await redisCreatePlay(ctx.redis, play, p1.profile.t2)
       const author = await ctx.reddit.getUserById(post.author)
 
+      const t2s = await redisQueryLeaderboard(ctx.redis)
+      const scoreboard = []
+      for (let i = 0; i < scoreboardSize && i < t2s.length; i++) {
+        const player = await redisQueryPlayer(ctx.redis, t2s[i]!)
+        if (player) scoreboard.push(player)
+      }
+
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
         author: {
@@ -153,6 +162,7 @@ async function onMsg(
         created: post.created,
         debug,
         p1,
+        scoreboard,
         seed: post.seed,
         t3: post.t3
       })
