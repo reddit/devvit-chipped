@@ -125,7 +125,7 @@ export function codexLevelEntDraw(
         size: 14 * zoom,
         origin: 'TopCenter'
       })
-      drawText(c2d, `${(min.chips / 1024).toFixed(3)} c`, {
+      drawText(c2d, `${(min.chips / 1024).toFixed(3)} ¢`, {
         x: Math.round(x + cardWH.w / 2),
         y: Math.round(y + cardWH.h - spacePx),
         fill: paletteBlack,

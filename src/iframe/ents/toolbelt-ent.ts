@@ -20,6 +20,7 @@ export type ToolbeltEnt = Box & {
   codex: Box
   rock: Box
   score: Box
+  shop: Box
   readonly type: 'Toolbelt'
   readonly eid: EID
 }
@@ -46,6 +47,12 @@ export function ToolbeltEnt(game: LoadedGame): ToolbeltEnt {
       y: 0,
       w: game.img.scoreButton.naturalWidth,
       h: game.img.scoreButton.naturalHeight
+    },
+    shop: {
+      x: 0,
+      y: 0,
+      w: game.img.shopButton.naturalWidth,
+      h: game.img.shopButton.naturalHeight
     },
     type: 'Toolbelt',
     x: 0,
@@ -76,7 +83,7 @@ export function toolbeltEntDraw(
   c2d.stroke()
 
   const pad = {w: spacePx, h: spacePx}
-  drawText(c2d, `${(chips / 1024).toFixed(1)} c`, {
+  drawText(c2d, `${(chips / 1024).toFixed(1)} ¢`, {
     x: Math.round(toolbelt.x + (spacePx * 2 + chipsW * zoom) / 2),
     y: Math.round(
       toolbelt.y + (toolbeltSmallIconSize * zoom + spacePx * 2) / 2
@@ -110,6 +117,14 @@ export function toolbeltEntDraw(
     toolbelt.score.y,
     toolbelt.score.w,
     toolbelt.score.h
+  )
+  c2d.beginPath()
+  c2d.drawImage(
+    img.shopButton,
+    toolbelt.shop.x,
+    toolbelt.shop.y,
+    toolbelt.shop.w,
+    toolbelt.shop.h
   )
   c2d.restore()
 }
@@ -152,8 +167,7 @@ function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
   const pad = {w: spacePx, h: spacePx}
   // to-do: want to use cam.minWH not minCanvasWH.
   const toolbeltSmallSide = toolbeltSmallIconSize * zoom + 2 * spacePx
-  const stuff =
-    chipsW * zoom + spacePx + 3 * toolbeltSmallIconSize * zoom + 2 * spacePx
+  const stuff = 273 * zoom
   const wh = cam.portrait
     ? {w: stuff, h: toolbeltSmallSide}
     : {w: toolbeltSmallSide, h: stuff}
@@ -182,9 +196,16 @@ function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
   toolbelt.codex.h = game.img.rockButton.naturalHeight * shrink
 
   toolbelt.score.x =
-    toolbelt.codex.x + (cam.portrait ? toolbelt.rock.w + spacePx : 0)
+    toolbelt.codex.x + (cam.portrait ? toolbelt.codex.w + spacePx : 0)
   toolbelt.score.y =
-    toolbelt.codex.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
+    toolbelt.codex.y + (cam.portrait ? 0 : toolbelt.codex.h + spacePx)
   toolbelt.score.w = game.img.rockButton.naturalWidth * shrink
   toolbelt.score.h = game.img.rockButton.naturalHeight * shrink
+
+  toolbelt.shop.x =
+    toolbelt.score.x + (cam.portrait ? toolbelt.score.w + spacePx : 0)
+  toolbelt.shop.y =
+    toolbelt.score.y + (cam.portrait ? 0 : toolbelt.score.h + spacePx)
+  toolbelt.shop.w = game.img.shopButton.naturalWidth * shrink
+  toolbelt.shop.h = game.img.shopButton.naturalHeight * shrink
 }

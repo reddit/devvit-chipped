@@ -36,7 +36,8 @@ export type Assets = {
       | 'prevButton'
       | 'rockButton'
       | 'rockMinButton'
-      | 'scoreButton']: HTMLImageElement
+      | 'scoreButton'
+      | 'shopButton']: HTMLImageElement
   }
 }
 
@@ -72,6 +73,7 @@ export async function Assets(): Promise<Assets> {
     rockButton,
     rockMinButton,
     scoreButton,
+    shopButton,
     font
   ] = await Promise.all([
     loadAudio('assets/audio/break-0.ogg'),
@@ -104,6 +106,7 @@ export async function Assets(): Promise<Assets> {
     loadImage('assets/images/rock-button.webp'),
     loadImage('assets/images/rock-min-button.webp'),
     loadImage('assets/images/score-button.webp'),
+    loadImage('assets/images/shop-button.webp'),
     new FontFace(fontFamily, 'url(assets/patrick-hand-regular.ttf)').load()
   ])
 
@@ -140,7 +143,8 @@ export async function Assets(): Promise<Assets> {
       prevButton,
       rockButton,
       rockMinButton,
-      scoreButton
+      scoreButton,
+      shopButton
     },
     font
   }

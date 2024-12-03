@@ -85,8 +85,10 @@ export function scoreboardLevelEntDraw(
     c2d.arc(x + r, y + r / 2, r, 0, 2 * Math.PI)
     c2d.lineWidth = lineWidth
     c2d.strokeStyle = paletteBlack
+    c2d.fillStyle = paletteWhite
+    c2d.fill()
     c2d.stroke()
-    c2d.rect(x + r, y - r, 2 * r, 2 * r)
+    c2d.rect(x, y - r / 2, 2 * r, r)
     c2d.clip()
     c2d.drawImage(snoovatar, x, y + cardWH.h / 2 - h / 2 + h / 8, w, h)
     c2d.restore()
@@ -100,7 +102,7 @@ export function scoreboardLevelEntDraw(
       strokeWidth: 6,
       origin: 'MidLeft'
     })
-    drawText(c2d, `${(players[i]!.minerals / 1024).toFixed(1)} c`, {
+    drawText(c2d, `${(players[i]!.minerals / 1024).toFixed(1)} ¢`, {
       x: x + cardWH.w - spacePx,
       y: y + cardWH.h / 2,
       size: 20 * zoom,
