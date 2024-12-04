@@ -19,7 +19,6 @@ console.log(`${pkg.name} v${pkg.version}`)
 
 if (noDevvit) {
   const rnd = new Random((Date.now() % randomEndSeed) as Seed)
-  rnd.seed = 1920764398
   // rnd.seed = 1 as Seed
   console.log(`seed=${rnd.seed}`)
   const seed = PostSeed(rnd)

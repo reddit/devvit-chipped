@@ -101,6 +101,7 @@ function WebView(
       backgroundColor={paletteWhite}
     >
       <webview
+        id='web-view'
         onMessage={msg =>
           onMsg(
             ctx,
@@ -150,7 +151,7 @@ async function onMsg(
         if (player) scoreboard.push(player)
       }
 
-      ctx.ui.webView.postMessage<DevvitMessage>({
+      ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
         author: {
           snoovatarURL: (await author?.getSnoovatarUrl()) ?? anonSnoovatarURL,
