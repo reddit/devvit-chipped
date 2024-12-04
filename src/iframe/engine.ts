@@ -6,6 +6,7 @@ import {type UTCMillis, utcMillisNow} from '../shared/types/time.ts'
 import {CursorEnt} from './ents/cursor-ent.ts'
 import {EIDFactory} from './ents/eid.ts'
 import {RockLevelEnt} from './ents/levels/rock-level-ent.ts'
+import {ToolbeltEnt} from './ents/toolbelt-ent.ts'
 import {Zoo} from './ents/zoo.ts'
 import {Input} from './input/input.ts'
 import {Looper} from './looper.ts'
@@ -42,22 +43,23 @@ export class Engine {
     const ctrl = new Input(cam, canvas)
     ctrl.mapDefault()
     const eid = new EIDFactory()
+    const zoo = new Zoo()
     this._game = {
       audio: audio.ctx,
       debug: false,
       cam,
       canvas,
       chips: 0,
-      codex: {found: undefined, foundTriggered: false, index: 0},
+      codex: {found: undefined, foundTriggered: false},
       ctrl,
-      cursor: CursorEnt(assets, eid),
+      cursor: CursorEnt(eid),
       eid,
       img: assets.img,
       now: 0 as UTCMillis,
-      scoreboardIndex: 0,
       snoovatar: {},
       sound: audio,
-      zoo: new Zoo()
+      toolbelt: ToolbeltEnt(cam, eid),
+      zoo
     }
 
     this.#looper = new Looper(
@@ -100,7 +102,7 @@ export class Engine {
     this._game.zoo.draw(this._game)
   }
 
-  _onMsg = (ev: MessageEvent<DevvitSystemMessage>): void => {
+  _onMsg = async (ev: MessageEvent<DevvitSystemMessage>): Promise<void> => {
     // hack: filter unknown messages.
     if (ev.data.type !== 'devvit-message') return
 
@@ -123,16 +125,15 @@ export class Engine {
           msg.p1.profile.snoovatarURL,
           ...msg.scoreboard.map(player => player.profile.snoovatarURL)
         ]
-        Promise.all(urls.map(url => loadImage(url))).then(imgs => {
-          this._game.snoovatar = imgs.reduce(
-            (sum, img) => ({
-              // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
-              ...sum,
-              [img.src]: img
-            }),
-            {}
-          )
-        })
+        const imgs = await Promise.all(urls.map(url => loadImage(url)))
+        this._game.snoovatar = imgs.reduce(
+          (sum, img) => ({
+            // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+            ...sum,
+            [img.src]: img
+          }),
+          {}
+        )
 
         if (!isInitGame(this._game)) throw Error('no init game')
 

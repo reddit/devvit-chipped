@@ -1,6 +1,6 @@
 import type {Cell} from 'voronoi'
 import Voronoi from 'voronoi'
-import {lineWidth, minCanvasWH, paletteBlack} from '../theme.ts'
+import {minCanvasWH, paletteBlack, thickStroke} from '../theme.ts'
 import type {XY} from './2d.ts'
 import type {Random} from './random.ts'
 
@@ -170,7 +170,7 @@ function newRockSVG(edges: readonly (readonly Readonly<XY>[])[]): string {
       const path = edge
         .map(({x, y}, index) => (index ? `L${x},${y}` : `M${x},${y}`))
         .join(' ')
-      return `<path d="${path}" stroke="${paletteBlack}" stroke-linecap="round"  stroke-width="${lineWidth / 2}" />`
+      return `<path d="${path}" stroke="${paletteBlack}" stroke-linecap="round"  stroke-width="${thickStroke / 2}" />`
     })
     .join('')
   return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${minCanvasWH.w} ${minCanvasWH.h}">${paths}</svg>`

@@ -1,5 +1,4 @@
 import {type Box, type WH, type XY, boxHits} from '../../shared/types/2d.js'
-import type {Assets} from '../types/assets.js'
 import type {Game, InitGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
 import type {EID, EIDFactory} from './eid.js'
@@ -11,12 +10,9 @@ export type CursorEnt = Box & {
   readonly eid: EID
 }
 
-const hitbox: Readonly<Box> = {x: 0, y: 0, w: 2, h: 2}
+const hitbox: Readonly<Box> = {x: 0, y: 0, w: 1, h: 1}
 
-export function CursorEnt(
-  _assets: Readonly<Assets>,
-  eid: EIDFactory
-): CursorEnt {
+export function CursorEnt(eid: EIDFactory): CursorEnt {
   return {
     eid: eid.new(),
     hidden: true,
@@ -24,26 +20,27 @@ export function CursorEnt(
     type: 'Cursor',
     x: 0,
     y: 0,
-    w: 1, //assets.img.cursor.naturalWidth / 2,
-    h: 1 //assets.img.cursor.naturalHeight
+    w: 1,
+    h: 1
   }
 }
 
 export function cursorEntHitbox(
   game: Readonly<InitGame>,
-  coords: 'Level' | 'Client' = 'Level'
+  coords: 'Level' | 'Client'
 ): Box {
+  const {cam, ctrl, cursor} = game
   const lvl = coords === 'Level'
-  if (game.cursor.hidden)
-    return {
-      x: game.ctrl[lvl ? 'point' : 'clientPoint'].x - hitbox.w / 2,
-      y: game.ctrl[lvl ? 'point' : 'clientPoint'].y - hitbox.h / 2,
-      w: hitbox.w,
-      h: hitbox.h
-    }
+  if (game.cursor.hidden) {
+    // to-do: how to correlate with innerWidth * devicePixelRatio? should this
+    //        be in Pointer.clientPoint?
+    const x = lvl ? ctrl.point.x : ctrl.clientPoint.x * devicePixelRatio
+    const y = lvl ? ctrl.point.y : ctrl.clientPoint.y * devicePixelRatio
+    return {x: x - hitbox.w / 2, y: y - hitbox.h / 2, w: hitbox.w, h: hitbox.h}
+  }
   return {
-    x: game.cursor.x + (lvl ? game.cam.x : 0) + hitbox.x,
-    y: game.cursor.y + (lvl ? game.cam.y : 0) + hitbox.y,
+    x: cursor.x + (lvl ? cam.x : 0) + hitbox.x,
+    y: cursor.y + (lvl ? cam.y : 0) + hitbox.y,
     w: hitbox.w,
     h: hitbox.h
   }
@@ -52,7 +49,7 @@ export function cursorEntHitbox(
 export function cursorEntHits(
   game: Readonly<InitGame>,
   box: Readonly<XY & Partial<WH>>,
-  coords: 'Level' | 'Client' = 'Level'
+  coords: 'Level' | 'Client'
 ): boolean {
   return boxHits(cursorEntHitbox(game, coords), box)
 }

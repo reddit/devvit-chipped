@@ -19,6 +19,7 @@ console.log(`${pkg.name} v${pkg.version}`)
 
 if (noDevvit) {
   const rnd = new Random((Date.now() % randomEndSeed) as Seed)
+  rnd.seed = 1920764398
   // rnd.seed = 1 as Seed
   console.log(`seed=${rnd.seed}`)
   const seed = PostSeed(rnd)
@@ -37,6 +38,10 @@ if (noDevvit) {
     )!
     p1.codex[seed.ima] = Specimen(facet, seed, noT3)
   }
+  p1.minerals = Object.values(p1.codex).reduce(
+    (sum, specimen) => sum + specimen.chips,
+    0
+  )
   const profiles: Profile[] = [
     {
       snoovatarURL:
@@ -102,7 +107,7 @@ if (noDevvit) {
   const scoreboard = profiles.map(profile => ({
     chips: rnd.num * 1024 * 10_000,
     codex: {},
-    minerals: rnd.num * 1024 * 1000,
+    minerals: rnd.num * 1024 * 100,
     profile,
     rocks: Array(Math.round(rnd.num * 10_000)).fill(noT3)
   }))

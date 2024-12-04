@@ -17,8 +17,15 @@ export const fontDefaultSize: number = 24
 
 export const playButtonWidth: number = 160
 
-export const toolbeltSmallIconSize: number = 48
-
-export const lineWidth: number = 4
+export const extraThickStroke: number = 9
+export const thickStroke: number = 6
+export const thinStroke: number = 2
 
 export const scoreboardSize: number = 10
+
+export const radius: number = spacePx
+
+export const minButtonSize: number = 48
+
+export const normalTextSize: number = 14
+export const largeTextSize: number = 24

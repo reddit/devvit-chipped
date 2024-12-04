@@ -1,211 +1,123 @@
-import {
-  minCanvasWH,
-  paletteBlack,
-  spacePx,
-  toolbeltSmallIconSize
-} from '../../shared/theme.js'
+import {paletteBlack, spacePx} from '../../shared/theme.js'
 import type {Box} from '../../shared/types/2d.js'
-import {type Cam, camScale} from '../types/cam.js'
-import {drawText} from '../types/draw.js'
-import type {Game, LoadedGame} from '../types/game.js'
+import type {Cam} from '../types/cam.js'
+import type {Game} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
+import {ButtonEnt, buttonSize} from './button-ent.js'
 import {cursorEntHits} from './cursor-ent.js'
-import type {EID} from './eid.js'
+import type {EID, EIDFactory} from './eid.js'
 import {CodexLevelEnt} from './levels/codex-level-ent.js'
 import {RockLevelEnt} from './levels/rock-level-ent.js'
 import {ScoreboardLevelEnt} from './levels/scoreboard-level-ent.js'
 
 export type ToolbeltEnt = Box & {
-  layer: Layer
-  codex: Box
-  rock: Box
-  score: Box
-  shop: Box
-  readonly type: 'Toolbelt'
   readonly eid: EID
+  ents: {
+    new: ButtonEnt
+    rock: ButtonEnt
+    score: ButtonEnt
+    shop: ButtonEnt
+    codex: ButtonEnt
+  }
+  layer: Layer
+  readonly type: 'Toolbelt'
 }
 
-const chipsW: number = 64
-export function ToolbeltEnt(game: LoadedGame): ToolbeltEnt {
-  const toolbelt: ToolbeltEnt = {
-    eid: game.eid.new(),
-    layer: 'UI',
-    codex: {
-      x: 0,
-      y: 0,
-      w: game.img.codexButton.naturalWidth,
-      h: game.img.codexButton.naturalHeight
+export function ToolbeltEnt(cam: Readonly<Cam>, eid: EIDFactory): ToolbeltEnt {
+  const belt: ToolbeltEnt = {
+    ents: {
+      codex: ButtonEnt(eid, 'codexButton', 'codex'),
+      new: ButtonEnt(eid, 'newButton', 'new'),
+      rock: ButtonEnt(eid, 'rockButton', 'rock'),
+      score: ButtonEnt(eid, 'scoreButton', 'score'),
+      shop: ButtonEnt(eid, 'shopButton', 'shop')
     },
-    rock: {
-      x: 0,
-      y: 0,
-      w: game.img.rockButton.naturalWidth,
-      h: game.img.rockButton.naturalHeight
-    },
-    score: {
-      x: 0,
-      y: 0,
-      w: game.img.scoreButton.naturalWidth,
-      h: game.img.scoreButton.naturalHeight
-    },
-    shop: {
-      x: 0,
-      y: 0,
-      w: game.img.shopButton.naturalWidth,
-      h: game.img.shopButton.naturalHeight
-    },
+    eid: eid.new(),
+    layer: 'UIBg',
     type: 'Toolbelt',
     x: 0,
     y: 0,
     w: 0,
     h: 0
   }
-  updateBox(toolbelt, game)
-  return toolbelt
+  updateBox(belt, cam)
+  return belt
 }
 
 export function toolbeltEntDraw(
-  toolbelt: Readonly<ToolbeltEnt>,
+  belt: Readonly<ToolbeltEnt>,
   game: Readonly<Game>
 ): void {
-  const {c2d, cam, codex, img, chips} = game
-  const zoom = Math.min(2, camScale(minCanvasWH, 1, 0, false))
-
-  c2d.save()
-  c2d.translate(-cam.x, -cam.y)
-
+  const {c2d, draw} = game
   c2d.beginPath()
-  c2d.roundRect(toolbelt.x, toolbelt.y, toolbelt.w, toolbelt.h, spacePx)
-  c2d.fillStyle = game.draw.bg
+  c2d.roundRect(belt.x, belt.y, belt.w, belt.h, spacePx)
+  c2d.fillStyle = draw.bg
   c2d.fill()
   c2d.lineWidth = 1
   c2d.strokeStyle = paletteBlack
   c2d.stroke()
-
-  const pad = {w: spacePx, h: spacePx}
-  drawText(c2d, `${(chips / 1024).toFixed(1)} ¢`, {
-    x: Math.round(toolbelt.x + (spacePx * 2 + chipsW * zoom) / 2),
-    y: Math.round(
-      toolbelt.y + (toolbeltSmallIconSize * zoom + spacePx * 2) / 2
-    ),
-    size: 24 * zoom,
-    fill: paletteBlack,
-    origin: 'Center',
-    pad
-  })
-
-  c2d.beginPath()
-  c2d.drawImage(
-    codex.found == null ? img.rockButton : img.rockMinButton,
-    toolbelt.rock.x,
-    toolbelt.rock.y,
-    toolbelt.rock.w,
-    toolbelt.rock.h
-  )
-  c2d.beginPath()
-  c2d.drawImage(
-    img.codexButton,
-    toolbelt.codex.x,
-    toolbelt.codex.y,
-    toolbelt.codex.w,
-    toolbelt.codex.h
-  )
-  c2d.beginPath()
-  c2d.drawImage(
-    img.scoreButton,
-    toolbelt.score.x,
-    toolbelt.score.y,
-    toolbelt.score.w,
-    toolbelt.score.h
-  )
-  c2d.beginPath()
-  c2d.drawImage(
-    img.shopButton,
-    toolbelt.shop.x,
-    toolbelt.shop.y,
-    toolbelt.shop.w,
-    toolbelt.shop.h
-  )
-  c2d.restore()
 }
 
-export function toolbeltEntUpdate(toolbelt: ToolbeltEnt, game: Game): void {
+export function toolbeltEntUpdate(belt: ToolbeltEnt, game: Game): void {
   const {cam, ctrl, zoo} = game
-  updateBox(toolbelt, game)
+  const {rock, codex, score, shop, new: newGame} = belt.ents
+  updateBox(belt, cam)
 
-  if (!ctrl.isOnStart('A')) return
+  codex.img = game.codex.found == null ? 'codexButton' : 'codexMinButton'
 
-  if (cursorEntHits(game, toolbelt.rock) && zoo.lvl?.type !== 'RockLevel') {
-    ctrl.handled = true
+  if (rock.onStart && !rock.selected) {
     zoo.replace(RockLevelEnt(game))
-    return
-  }
-
-  if (cursorEntHits(game, toolbelt.codex) && zoo.lvl?.type !== 'CodexLevel') {
-    ctrl.handled = true
+    select(belt, 'rock')
+  } else if (codex.onStart && !codex.selected) {
     zoo.replace(CodexLevelEnt(game))
-    return
-  }
-
-  if (
-    cursorEntHits(game, toolbelt.score) &&
-    zoo.lvl?.type !== 'ScoreboardLevel'
-  ) {
-    ctrl.handled = true
+    select(belt, 'codex')
+  } else if (score.onStart && !score.selected) {
     zoo.replace(ScoreboardLevelEnt(game))
-    return
+    select(belt, 'score')
+  } else if (shop.onStart && !shop.selected) {
+    console.log('hello')
+    select(belt, 'shop')
+  } else if (newGame.onStart && !newGame.selected) {
+    console.log('hello2')
+    select(belt, 'new')
   }
 
-  if (cursorEntHits(game, toolbelt)) ctrl.handled = true
+  ctrl.handled ||= cursorEntHits(game, belt, 'Client')
 }
 
-function updateBox(toolbelt: ToolbeltEnt, game: Readonly<LoadedGame>): void {
-  const {cam} = game
-  const zoom = Math.min(2, camScale(minCanvasWH, 1, 0, false))
-  const shrink = 1 / (3 - zoom)
+function select(belt: ToolbeltEnt, select: keyof ToolbeltEnt['ents']): void {
+  for (const ent of Object.values(belt.ents)) ent.selected = false
+  belt.ents[select].selected = true
+}
 
-  const pad = {w: spacePx, h: spacePx}
-  // to-do: want to use cam.minWH not minCanvasWH.
-  const toolbeltSmallSide = toolbeltSmallIconSize * zoom + 2 * spacePx
-  const stuff = 273 * zoom
-  const wh = cam.portrait
-    ? {w: stuff, h: toolbeltSmallSide}
-    : {w: toolbeltSmallSide, h: stuff}
-  const lead = cam.lead(wh, cam.portrait ? 'South' : 'West', {pad})
-  toolbelt.x = lead.x
-  toolbelt.y = lead.y
-  toolbelt.w = lead.w
-  toolbelt.h = lead.h
+function updateBox(belt: ToolbeltEnt, cam: Readonly<Cam>): void {
+  const {rock, codex, score, shop, new: newGame} = belt.ents
+  const short = buttonSize() + 2 * spacePx
+  const long = 5 * buttonSize() + 6 * spacePx
+  if (cam.portrait) {
+    belt.x = cam.w / 2 - long / 2
+    belt.y = cam.h - short - spacePx
+    belt.w = long
+    belt.h = short
+  } else {
+    belt.x = spacePx
+    belt.y = cam.h / 2 - long / 2
+    belt.w = short
+    belt.h = long
+  }
 
-  toolbelt.rock.x =
-    toolbelt.x +
-    (cam.portrait ? chipsW * zoom : 0) +
-    (cam.portrait ? 0 : spacePx)
-  toolbelt.rock.y =
-    toolbelt.y +
-    (cam.portrait ? 0 : chipsW * zoom) +
-    (cam.portrait ? spacePx : 0)
-  toolbelt.rock.w = game.img.codexButton.naturalWidth * shrink
-  toolbelt.rock.h = game.img.codexButton.naturalHeight * shrink
+  rock.x = belt.x + spacePx
+  rock.y = belt.y + spacePx
 
-  toolbelt.codex.x =
-    toolbelt.rock.x + (cam.portrait ? toolbelt.rock.w + spacePx : 0)
-  toolbelt.codex.y =
-    toolbelt.rock.y + (cam.portrait ? 0 : toolbelt.rock.h + spacePx)
-  toolbelt.codex.w = game.img.rockButton.naturalWidth * shrink
-  toolbelt.codex.h = game.img.rockButton.naturalHeight * shrink
+  codex.x = rock.x + (cam.portrait ? rock.w + spacePx : 0)
+  codex.y = rock.y + (cam.portrait ? 0 : rock.h + spacePx)
 
-  toolbelt.score.x =
-    toolbelt.codex.x + (cam.portrait ? toolbelt.codex.w + spacePx : 0)
-  toolbelt.score.y =
-    toolbelt.codex.y + (cam.portrait ? 0 : toolbelt.codex.h + spacePx)
-  toolbelt.score.w = game.img.rockButton.naturalWidth * shrink
-  toolbelt.score.h = game.img.rockButton.naturalHeight * shrink
+  score.x = codex.x + (cam.portrait ? codex.w + spacePx : 0)
+  score.y = codex.y + (cam.portrait ? 0 : codex.h + spacePx)
 
-  toolbelt.shop.x =
-    toolbelt.score.x + (cam.portrait ? toolbelt.score.w + spacePx : 0)
-  toolbelt.shop.y =
-    toolbelt.score.y + (cam.portrait ? 0 : toolbelt.score.h + spacePx)
-  toolbelt.shop.w = game.img.shopButton.naturalWidth * shrink
-  toolbelt.shop.h = game.img.shopButton.naturalHeight * shrink
+  shop.x = score.x + (cam.portrait ? score.w + spacePx : 0)
+  shop.y = score.y + (cam.portrait ? 0 : score.h + spacePx)
+
+  newGame.x = shop.x + (cam.portrait ? shop.w + spacePx : 0)
+  newGame.y = shop.y + (cam.portrait ? 0 : shop.h + spacePx)
 }

@@ -3141,7 +3141,7 @@
   "Blg": {
     "ima": "Blg",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "bellingerite"
   },
@@ -3610,7 +3610,7 @@
   "Bpd-NaNa": {
     "ima": "Bpd-NaNa",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "betpakdalite-NaNa"
   },
@@ -4290,7 +4290,7 @@
   "Byg": {
     "ima": "Byg",
     "localities": [
-      "Q15107508"
+      "Falun Mine"
     ],
     "name": "botryogen"
   },
@@ -4617,7 +4617,7 @@
   "Cata": {
     "ima": "Cata",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "clinoatacamite"
   },
@@ -5022,7 +5022,7 @@
   "Cct": {
     "ima": "Cct",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "chalcanthite"
   },
@@ -6961,7 +6961,7 @@
   "Cucpi": {
     "ima": "Cucpi",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "cuprocopiapite"
   },
@@ -6982,7 +6982,7 @@
   "Cug": {
     "ima": "Cug",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "clinoungemachite"
   },
@@ -11495,7 +11495,7 @@
   "Ghn": {
     "ima": "Ghn",
     "localities": [
-      "Q15107508"
+      "Falun Mine"
     ],
     "name": "gahnite"
   },
@@ -15814,7 +15814,7 @@
   "Khk": {
     "ima": "Khk",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "kröhnkite"
   },
@@ -17678,7 +17678,7 @@
   "Lgh": {
     "ima": "Lgh",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "leightonite"
   },
@@ -17699,7 +17699,7 @@
   "Lgr": {
     "ima": "Lgr",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "lindgrenite"
   },
@@ -19229,7 +19229,7 @@
   "Mdz-KCa": {
     "ima": "Mdz-KCa",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "mendozavilite-KCa"
   },
@@ -19639,7 +19639,7 @@
   "Mhoh": {
     "ima": "Mhoh",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "metahohmannite"
   },
@@ -21915,7 +21915,7 @@
   "Nch": {
     "ima": "Nch",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "natrochalcite"
   },
@@ -22606,7 +22606,7 @@
   "Nsm": {
     "ima": "Nsm",
     "localities": [
-      "Q15107508"
+      "Falun Mine"
     ],
     "name": "nordströmite"
   },
@@ -22918,21 +22918,21 @@
   "Obr-KCu": {
     "ima": "Obr-KCu",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "obradovicite-KCu"
   },
   "Obr-NaCu": {
     "ima": "Obr-NaCu",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "obradovicite-NaCu"
   },
   "Obr-NaNa": {
     "ima": "Obr-NaNa",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "obradovicite-NaNa"
   },
@@ -23871,7 +23871,7 @@
     "ima": "Pbtl",
     "localities": [
       "Alcaparrosa mine",
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "parabutlerite"
   },
@@ -28864,7 +28864,7 @@
   "Sls": {
     "ima": "Sls",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "salesite"
   },
@@ -28975,7 +28975,7 @@
   "Smp": {
     "ima": "Smp",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "sampleite"
   },
@@ -32214,7 +32214,7 @@
   "Ugm": {
     "ima": "Ugm",
     "localities": [
-      "SUUUU"
+      "Chuquicamata"
     ],
     "name": "ungemachite"
   },

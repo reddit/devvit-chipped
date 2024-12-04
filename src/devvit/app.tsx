@@ -100,9 +100,7 @@ function WebView(
       alignment='middle center'
       backgroundColor={paletteWhite}
     >
-      {/* to-do: migrate to no-ID postMessage(). */}
       <webview
-        id='web-view'
         onMessage={msg =>
           onMsg(
             ctx,
@@ -152,7 +150,7 @@ async function onMsg(
         if (player) scoreboard.push(player)
       }
 
-      ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
+      ctx.ui.webView.postMessage<DevvitMessage>({
         type: 'Init',
         author: {
           snoovatarURL: (await author?.getSnoovatarUrl()) ?? anonSnoovatarURL,

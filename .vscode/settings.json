@@ -2,5 +2,6 @@
   "editor.defaultFormatter": "biomejs.biome",
   "typescript.tsdk": "node_modules/typescript/lib",
   // check typing for all files, not only open files.
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "editor.codeActionsOnSave": { "source.organizeImports.biome": "explicit" }
 }

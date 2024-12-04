@@ -1,14 +1,9 @@
 import {Specimen} from '../../shared/save.js'
 import {
-  lineWidth,
   minCanvasWH,
-  paletteAnotherWhite,
   paletteBlack,
-  paletteBlack2,
-  paletteBlack3,
   paletteBlack22,
-  paletteWhite,
-  paletteWhitest
+  thickStroke
 } from '../../shared/theme.js'
 import {
   type Facet,
@@ -82,7 +77,7 @@ export function facetEntDraw(
     let v = halfedges[0]!.getStartpoint()
     c2d.moveTo(scale * v.x, scale * v.y)
 
-    c2d.lineWidth = lineWidth
+    c2d.lineWidth = thickStroke
     c2d.strokeStyle = paletteBlack
     for (const half of halfedges) {
       v = half.getEndpoint()
@@ -98,26 +93,26 @@ export function facetEntDraw(
   }
 }
 
-export function facetEntUpdate(facet: FacetEnt, game: Game): void {
+export function facetEntUpdate(ent: FacetEnt, game: Game): void {
   const {ctrl, rnd, sound} = game
 
   const scale = camScale(minCanvasWH, 1, 0, false)
-  const cur = cursorEntHitbox(game)
+  const cur = cursorEntHitbox(game, 'Level')
 
   const hits =
     !ctrl.handled &&
     ctrl.isOnStart('A') &&
-    facet.facet.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
+    ent.facet.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
   if (!hits) return
-  const priorState = facet.facet.state
-  if (!facetKaput(facet.facet) && rnd.num > 0.6) facetHammer(facet.facet)
+  const priorState = ent.facet.state
+  if (!facetKaput(ent.facet) && rnd.num > 0.6) facetHammer(ent.facet)
   let fx
-  switch (facet.facet.state) {
+  switch (ent.facet.state) {
     case undefined:
     case 'Invisible':
       return
     case 'Solid':
-      if (facetHitable(facet.facet))
+      if (facetHitable(ent.facet))
         fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
       else fx = sound.miss[Math.trunc(rnd.num * sound.miss.length)]!
       break
@@ -125,44 +120,45 @@ export function facetEntUpdate(facet: FacetEnt, game: Game): void {
       fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
       break
     case 'Chipped':
-      if (priorState !== facet.facet.state) {
+      if (priorState !== ent.facet.state) {
         fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
-        if (facet.facet.specimen) {
+        if (ent.facet.specimen) {
           fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
           const collect =
-            facet.facet.chips > (game.p1.codex[game.seed.ima]?.chips ?? 0)
-          if (collect) {
-            game.p1.minerals +=
-              facet.facet.chips - (game.p1.codex[game.seed.ima]?.chips ?? 0)
-          } else {
-            game.chips += facet.facet.chips
-            game.p1.chips += facet.facet.chips
-          }
-
+            ent.facet.chips > (game.p1.codex[game.seed.ima]?.chips ?? 0)
           if (collect) {
             game.p1.codex[game.seed.ima] = Specimen(
-              facet.facet,
+              ent.facet,
               game.seed,
               game.t3
             )
+            game.p1.minerals = Object.values(game.p1.codex).reduce(
+              (sum, specimen) => sum + specimen.chips,
+              0
+            )
+            console.log('collect', game.p1.minerals, ent.facet.chips)
+          } else {
+            game.chips += ent.facet.chips
+            game.p1.chips += ent.facet.chips
           }
+
           game.codex.found = Object.keys(game.p1.codex)
             .sort((lhs, rhs) => lhs.localeCompare(rhs))
             .indexOf(game.seed.ima)
           game.codex.foundTriggered = true
         } else {
-          game.chips += facet.facet.chips
-          game.p1.chips += facet.facet.chips
+          game.chips += ent.facet.chips
+          game.p1.chips += ent.facet.chips
         }
         postMessage({type: 'Save', p1: game.p1})
       }
       break
     case 'Shattered':
-      if (priorState !== facet.facet.state)
+      if (priorState !== ent.facet.state)
         fx = sound.break[Math.trunc(rnd.num * sound.break.length)]!
       break
     default:
-      facet.facet.state satisfies never
+      ent.facet.state satisfies never
       return
   }
   if (fx) audioPlay(game.audio, fx)

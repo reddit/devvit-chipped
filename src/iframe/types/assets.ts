@@ -32,10 +32,12 @@ export type Assets = {
   img: {
     [name in
       | 'codexButton'
+      | 'codexMinButton'
+      | 'mineral'
       | 'nextButton'
+      | 'newButton'
       | 'prevButton'
       | 'rockButton'
-      | 'rockMinButton'
       | 'scoreButton'
       | 'shopButton']: HTMLImageElement
   }
@@ -68,10 +70,12 @@ export async function Assets(): Promise<Assets> {
     miss3,
     miss4,
     codexButton,
+    codexMinButton,
+    mineral,
     nextButton,
+    newButton,
     prevButton,
     rockButton,
-    rockMinButton,
     scoreButton,
     shopButton,
     font
@@ -101,10 +105,12 @@ export async function Assets(): Promise<Assets> {
     loadAudio('assets/audio/miss-3.ogg'),
     loadAudio('assets/audio/miss-4.ogg'),
     loadImage('assets/images/codex-button.webp'),
+    loadImage('assets/images/codex-min-button.webp'),
+    loadImage('assets/images/mineral.webp'),
     loadImage('assets/images/next-button.webp'),
+    loadImage('assets/images/new-button.webp'),
     loadImage('assets/images/prev-button.webp'),
     loadImage('assets/images/rock-button.webp'),
-    loadImage('assets/images/rock-min-button.webp'),
     loadImage('assets/images/score-button.webp'),
     loadImage('assets/images/shop-button.webp'),
     new FontFace(fontFamily, 'url(assets/patrick-hand-regular.ttf)').load()
@@ -139,10 +145,12 @@ export async function Assets(): Promise<Assets> {
     },
     img: {
       codexButton,
+      codexMinButton,
+      mineral,
       nextButton,
+      newButton,
       prevButton,
       rockButton,
-      rockMinButton,
       scoreButton,
       shopButton
     },
