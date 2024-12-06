@@ -7,9 +7,15 @@ import {
 } from '@devvit/public-api'
 import {App} from './devvit/app.tsx'
 import {r2CreatePost, r2OpenPost} from './devvit/r2.tsx'
-import {redisQueryP1, redisSetPlayer, redisSetPost} from './devvit/redis.ts'
+import {
+  redisQueryP1,
+  redisQueryPost,
+  redisSetPlayer,
+  redisSetPost
+} from './devvit/redis.ts'
 import {PostSave, PostSeed} from './shared/save.ts'
 import {Random, type Seed, randomEndSeed} from './shared/types/random.ts'
+import {T2} from './shared/types/tid.ts'
 
 const newPostScheduleJob: string = 'NewPostSchedule'
 
@@ -59,7 +65,7 @@ async function onSavePostSchedule(
 
   await ctx.scheduler.runJob({
     name: newPostScheduleJob,
-    cron: `*/${mins} */${hours} * * *`
+    cron: `*${mins ? `/${mins}` : ''} *${hours ? `/${hours}` : ''} * * *`
   })
   ctx.ui.showToast(
     `Scheduled recurring Chipped rock posts every ${hours} hour(s) and ${mins} minute(s).`
@@ -92,13 +98,17 @@ async function createPost(
     new Random(Math.trunc(Math.random() * randomEndSeed) as Seed)
   )
   const r2Post = await r2CreatePost(ctx, seed)
+  console.log('made r2 post', r2Post.id)
   const post = PostSave(r2Post, seed)
-  const p1 = await redisQueryP1(ctx)
+  console.log('post save', JSON.stringify(post))
+  const p1 = await redisQueryP1(ctx, T2(ctx.userId ?? 't2_1eapexg1kr'))
   p1.rocks.push(post.t3)
   await Promise.all([
     redisSetPost(ctx.redis, post),
     redisSetPlayer(ctx.redis, p1)
   ])
+  console.log('done')
+  console.log('query', await redisQueryPost(ctx.redis, post.t3))
   if (mode === 'UI') r2OpenPost(ctx as Context, r2Post, post)
 }
 

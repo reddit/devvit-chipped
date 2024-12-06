@@ -1,5 +1,17 @@
 import {type Box, type WH, type XY, boxHits} from '../../shared/types/2d.ts'
 
+/** position relative the camera's bounding box. */
+export type FollowCamOrientation =
+  | 'North'
+  | 'Northeast'
+  | 'East'
+  | 'Southeast'
+  | 'South'
+  | 'Southwest'
+  | 'West'
+  | 'Northwest'
+  | 'Center'
+
 export class Cam {
   minWH: WH = {w: 256, h: 256} // ints when intScale.
   minScale: number = 1 // int when intScale.
@@ -93,7 +105,7 @@ export class Cam {
 
     this.#scale = camScale(this.minWH, this.minScale, zoomOut, this.intScale)
     if (this.intScale) this.#scale = Math.trunc(this.#scale)
-    const native = nativeWH()
+    const native = camNativeWH()
     this.#w = Math.ceil(native.w / this.#scale)
     this.#h = Math.ceil(native.h / this.#scale)
   }
@@ -123,7 +135,7 @@ export function camScale(
   zoomOut: number | undefined,
   int: boolean
 ): number {
-  const native = nativeWH()
+  const native = camNativeWH()
   let scale = Math.max(
     minScale,
     Math.min(native.w / minWH.w, native.h / minWH.h) - (zoomOut ?? 0) // default is to zoom in as much as possible.
@@ -132,19 +144,7 @@ export function camScale(
   return scale
 }
 
-/** position relative the camera's bounding box. */
-export type FollowCamOrientation =
-  | 'North'
-  | 'Northeast'
-  | 'East'
-  | 'Southeast'
-  | 'South'
-  | 'Southwest'
-  | 'West'
-  | 'Northwest'
-  | 'Center'
-
-function nativeWH(): WH {
+export function camNativeWH(): WH {
   return {
     w: Math.ceil(innerWidth * devicePixelRatio), // physical.
     h: Math.ceil(innerHeight * devicePixelRatio)

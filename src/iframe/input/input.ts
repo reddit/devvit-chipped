@@ -59,6 +59,7 @@ export class Input<T extends string> {
     return (this.#bits & bits) === bits
   }
 
+  // to-do: it seems like all of these should check handled.
   isOnStart(...buttons: readonly T[]): boolean {
     return this.isOn(...buttons) && this.isAnyStart(...buttons)
   }

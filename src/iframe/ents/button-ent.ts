@@ -1,7 +1,6 @@
 import {
+  fontMSize,
   minButtonSize,
-  minCanvasWH,
-  normalTextSize,
   paletteAnotherWhite,
   paletteBlack,
   paletteBlack22,
@@ -13,10 +12,10 @@ import {
 } from '../../shared/theme.js'
 import type {Box} from '../../shared/types/2d.js'
 import type {Assets} from '../types/assets.js'
-import {camScale} from '../types/cam.js'
 import {drawText} from '../types/draw.js'
 import type {Game} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
+import {uiScale} from '../ui.js'
 import {cursorEntHits} from './cursor-ent.js'
 import type {EID, EIDFactory} from './eid.js'
 
@@ -25,16 +24,18 @@ export type ButtonEnt = Box & {
   layer: Layer
   onStart: boolean
   selected: boolean
-  img: keyof Assets['img']
+  img: keyof Assets['img'] | ''
   text: string
+  textOrigin: 'Bottom' | 'Center'
   readonly type: 'Button'
   readonly eid: EID
 }
 
 export function ButtonEnt(
   eid: EIDFactory,
-  img: keyof Assets['img'],
-  text: string
+  img: keyof Assets['img'] | '',
+  text: string,
+  textOrigin: 'Bottom' | 'Center' = 'Bottom'
 ): ButtonEnt {
   const size = buttonSize()
   return {
@@ -45,6 +46,7 @@ export function ButtonEnt(
     onStart: false,
     selected: false,
     text,
+    textOrigin,
     type: 'Button',
     x: 0,
     y: 0,
@@ -57,7 +59,7 @@ export function buttonEntDraw(
   btn: Readonly<ButtonEnt>,
   game: Readonly<Game>
 ): void {
-  const {c2d, ctrl} = game
+  const {c2d, ctrl, img} = game
 
   const hover = !btn.disabled && cursorEntHits(game, btn, 'Client')
   c2d.beginPath()
@@ -76,13 +78,13 @@ export function buttonEntDraw(
   c2d.save()
   c2d.beginPath()
   c2d.globalAlpha = btn.disabled ? 0.25 : 1
-  c2d.drawImage(game.img[btn.img], btn.x, btn.y, btn.w, btn.h)
+  if (btn.img) c2d.drawImage(img[btn.img], btn.x, btn.y, btn.w, btn.h)
   c2d.restore()
 
-  const textSize = normalTextSize * uiScale()
+  const textSize = fontMSize * uiScale()
   drawText(c2d, btn.text, {
     x: btn.x + btn.w / 2,
-    y: btn.y + btn.h / 2 + textSize,
+    y: btn.y + btn.h / 2 + (btn.textOrigin === 'Bottom' ? textSize : 0),
     fill: paletteBlack,
     origin: 'Center',
     size: textSize
@@ -96,10 +98,6 @@ export function buttonEntUpdate(btn: ButtonEnt, game: Game): void {
     btn.onStart = !ctrl.handled && !btn.disabled && ctrl.isOnStart('A')
     ctrl.handled = !btn.disabled
   }
-}
-
-export function uiScale(max: number = 4): number {
-  return Math.min(max, camScale(minCanvasWH, 1, 0, false))
 }
 
 export function buttonSize(): number {

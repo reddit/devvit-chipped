@@ -1,7 +1,7 @@
 import {chipsFmt} from '../../shared/chip-util.js'
 import {
   extraThickStroke,
-  largeTextSize,
+  fontXLSize,
   paletteBlack,
   paletteWhite,
   spacePx
@@ -9,7 +9,7 @@ import {
 import {drawText} from '../types/draw.js'
 import type {Game, InitGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
-import {uiScale} from './button-ent.js'
+import {uiScale} from '../ui.js'
 import type {EID} from './eid.js'
 
 export type RockStatusEnt = {
@@ -32,23 +32,22 @@ export function rockStatusEntDraw(
   const text = drawText(c2d, chipsFmt(chips, 'Short'), {
     fill: paletteBlack,
     x: Math.round(cam.w / 2),
-    y: spacePx * 2,
+    y: spacePx * 4 * scale,
     origin: 'TopCenter',
-    size: largeTextSize * scale,
+    size: fontXLSize * scale,
     stroke: paletteWhite,
     strokeWidth: extraThickStroke
   })
 
   if (game.codex.found != null) {
     c2d.beginPath()
-    const mineralW = 11.4
-    const hToW = 85 / 57
+    const mineralW = 57 * scale
     c2d.drawImage(
       img.mineral,
-      text.x - spacePx - mineralW * scale,
-      Math.max(largeTextSize, 7 * scale),
-      mineralW * scale,
-      mineralW * hToW * scale
+      text.x - 3 * spacePx - mineralW,
+      spacePx + spacePx * 3 * scale,
+      mineralW,
+      85 * scale
     )
   }
 }

@@ -19,6 +19,11 @@ import {
   scoreboardLevelEntDraw,
   scoreboardLevelEntUpdate
 } from './levels/scoreboard-level-ent.ts'
+import {
+  type ShopLevelEnt,
+  shopLevelEntDraw,
+  shopLevelEntUpdate
+} from './levels/shop-level-ent.ts'
 import {type PagerEnt, pagerEntDraw, pagerEntUpdate} from './pager-ent.ts'
 import {
   type RockStatusEnt,
@@ -33,16 +38,18 @@ import {
 
 export type Ent =
   | ButtonEnt
-  | CodexLevelEnt
   | CursorEnt
   | FacetEnt
+  | LevelEnt
   | PagerEnt
-  | RockLevelEnt
   | RockStatusEnt
-  | ScoreboardLevelEnt
   | ToolbeltEnt
 
-export type LevelEnt = CodexLevelEnt | RockLevelEnt | ScoreboardLevelEnt
+export type LevelEnt =
+  | CodexLevelEnt
+  | RockLevelEnt
+  | ScoreboardLevelEnt
+  | ShopLevelEnt
 
 type EntByID = {[eid: EID]: Ent}
 type EntsByLayer = {[layer in Layer]: EntByID}
@@ -92,6 +99,9 @@ export class Zoo {
             break
           case 'ScoreboardLevel':
             scoreboardLevelEntDraw(ent, game)
+            break
+          case 'ShopLevel':
+            shopLevelEntDraw(ent, game)
             break
           case 'Toolbelt':
             toolbeltEntDraw(ent, game)
@@ -149,6 +159,9 @@ export class Zoo {
           break
         case 'ScoreboardLevel':
           scoreboardLevelEntUpdate(ent, game)
+          break
+        case 'ShopLevel':
+          shopLevelEntUpdate(ent, game)
           break
         case 'Toolbelt':
           toolbeltEntUpdate(ent, game)

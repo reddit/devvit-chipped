@@ -1,7 +1,9 @@
 import {chipsFmt} from '../../../shared/chip-util.ts'
 import {minCat} from '../../../shared/min-cat/min-cat.ts'
 import {
-  normalTextSize,
+  fontLSize,
+  fontMSize,
+  fontXLSize,
   paletteBlack,
   paletteWhite,
   spacePx
@@ -10,7 +12,8 @@ import type {Box, WH} from '../../../shared/types/2d.ts'
 import {drawText} from '../../types/draw.ts'
 import type {Game, InitGame} from '../../types/game.ts'
 import type {Layer} from '../../types/layer.ts'
-import {buttonSize, uiScale} from '../button-ent.ts'
+import {uiScale} from '../../ui.ts'
+import {buttonSize} from '../button-ent.ts'
 import type {EID} from '../eid.ts'
 import {PagerEnt} from '../pager-ent.ts'
 
@@ -23,7 +26,7 @@ export type CodexLevelEnt = {
 }
 
 const margin: number = spacePx / 2
-const cardWH1x: Readonly<WH> = {w: 132, h: 156}
+const cardWH1x: Readonly<WH> = {w: 500, h: 700}
 
 export function CodexLevelEnt(game: Game): CodexLevelEnt {
   const {cursor, eid, toolbelt, zoo} = game
@@ -47,7 +50,7 @@ export function codexLevelEntDraw(
   const {c2d, cam} = game
   const {pager} = lvl.ents
 
-  const scale = uiScale(2)
+  const scale = uiScale()
 
   const cardWH = {w: cardWH1x.w * scale, h: cardWH1x.h * scale}
 
@@ -80,18 +83,19 @@ export function codexLevelEntDraw(
       c2d.stroke()
 
       c2d.beginPath()
+      const minScale = scale * 6
       const offset = {
-        x: x - min.origin.x * scale + cardWH.w / 2 - (min.w * scale) / 2,
-        y: y - min.origin.y * scale + cardWH.h / 2 - (min.h * scale) / 2
+        x: x - min.origin.x * minScale + cardWH.w / 2 - (min.w * minScale) / 2,
+        y: y - min.origin.y * minScale + cardWH.h / 2 - (min.h * minScale) / 2
       }
 
       c2d.moveTo(
-        min.poly[0]!.x * scale + offset.x,
-        min.poly[0]!.y * scale + offset.y
+        min.poly[0]!.x * minScale + offset.x,
+        min.poly[0]!.y * minScale + offset.y
       )
       // review old impl. consider data svg.
       for (const xy of min.poly)
-        c2d.lineTo(xy.x * scale + offset.x, xy.y * scale + offset.y)
+        c2d.lineTo(xy.x * minScale + offset.x, xy.y * minScale + offset.y)
       c2d.closePath()
       c2d.fillStyle = paletteBlack
       c2d.fill()
@@ -104,7 +108,7 @@ export function codexLevelEntDraw(
         y: Math.round(y),
         fill: paletteBlack,
         stroke: paletteWhite,
-        size: 20 * scale,
+        size: fontXLSize * scale,
         origin: 'TopCenter'
       })
 
@@ -114,7 +118,7 @@ export function codexLevelEntDraw(
         y: Math.round(y + imaBox!.h),
         fill: paletteBlack,
         stroke: paletteWhite,
-        size: 14 * scale,
+        size: fontMSize * scale,
         origin: 'TopCenter'
       })
       drawText(c2d, chipsFmt(min.chips, 'Long'), {
@@ -122,7 +126,7 @@ export function codexLevelEntDraw(
         y: Math.round(y + cardWH.h - spacePx),
         fill: paletteBlack,
         stroke: paletteWhite,
-        size: 24 * scale,
+        size: fontXLSize * scale,
         origin: 'BottomCenter'
       })
 
@@ -134,7 +138,7 @@ export function codexLevelEntDraw(
     x: cam.w,
     y: 0,
     pad: {w: spacePx, h: spacePx},
-    size: normalTextSize * scale,
+    size: fontLSize * scale,
     stroke: paletteWhite,
     origin: 'TopRight',
     fill: paletteBlack
@@ -149,7 +153,7 @@ function updateGrid(lvl: CodexLevelEnt, game: InitGame): void {
   const {cam, p1, toolbelt} = game
   const {pager} = lvl.ents
 
-  const scale = uiScale(2)
+  const scale = uiScale()
 
   if (cam.portrait) {
     lvl.grid.x = spacePx

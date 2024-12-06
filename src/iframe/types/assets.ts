@@ -31,11 +31,13 @@ export type Assets = {
   font: FontFace
   img: {
     [name in
+      | 'chippys'
       | 'codexButton'
       | 'codexMinButton'
       | 'mineral'
       | 'nextButton'
       | 'newButton'
+      | 'piggy'
       | 'prevButton'
       | 'rockButton'
       | 'scoreButton'
@@ -69,11 +71,13 @@ export async function Assets(): Promise<Assets> {
     miss2,
     miss3,
     miss4,
+    chippys,
     codexButton,
     codexMinButton,
     mineral,
     nextButton,
     newButton,
+    piggy,
     prevButton,
     rockButton,
     scoreButton,
@@ -104,11 +108,13 @@ export async function Assets(): Promise<Assets> {
     loadAudio('assets/audio/miss-2.ogg'),
     loadAudio('assets/audio/miss-3.ogg'),
     loadAudio('assets/audio/miss-4.ogg'),
+    loadImage('assets/images/chippys.webp'),
     loadImage('assets/images/codex-button.webp'),
     loadImage('assets/images/codex-min-button.webp'),
     loadImage('assets/images/mineral.webp'),
     loadImage('assets/images/next-button.webp'),
     loadImage('assets/images/new-button.webp'),
+    loadImage('assets/images/piggy.webp'),
     loadImage('assets/images/prev-button.webp'),
     loadImage('assets/images/rock-button.webp'),
     loadImage('assets/images/score-button.webp'),
@@ -144,11 +150,13 @@ export async function Assets(): Promise<Assets> {
       miss4
     },
     img: {
+      chippys,
       codexButton,
       codexMinButton,
       mineral,
       nextButton,
       newButton,
+      piggy,
       prevButton,
       rockButton,
       scoreButton,

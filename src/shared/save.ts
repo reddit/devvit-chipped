@@ -29,8 +29,6 @@ export type PlaySave = {
 }
 
 export type PostSeed = {
-  /** rock color. */
-  color: string
   ima: IMA
   /** rock location. */
   locality: string
@@ -61,8 +59,6 @@ export type Specimen = {
   ima: IMA
   /** px². */
   chips: number
-  /** rock color. */
-  color: string
   /** min XY of poly. */
   origin: XY
   /** mineral shape. */
@@ -116,7 +112,6 @@ export function PostSeed(rnd: Random): PostSeed {
   const ima = cat[Math.trunc(rnd.num * cat.length)]!.ima
   return {
     seed: Math.trunc(rnd.num * randomEndSeed) as Seed,
-    color: `hsl(${rnd.num * 360}deg ${10 + rnd.num * 40}% ${95 + rnd.num * 5}%)`,
     ima,
     locality:
       minCat[ima]!.localities[
@@ -127,7 +122,7 @@ export function PostSeed(rnd: Random): PostSeed {
 
 export function Specimen(
   facet: Readonly<Facet>,
-  seed: Readonly<PostSeed>,
+  seed: {readonly ima: IMA; readonly seed: Seed},
   t3: T3
 ): Specimen {
   const minMax = facet.cell.halfedges.reduce(
@@ -150,7 +145,6 @@ export function Specimen(
 
   return {
     chips: facet.chips,
-    color: seed.color,
     h: minMax.max.y - minMax.min.y,
     ima: seed.ima,
     origin: minMax.min,

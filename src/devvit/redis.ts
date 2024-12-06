@@ -51,9 +51,7 @@ export async function redisQueryPlayer(
   if (json) return JSON.parse(json)
 }
 
-export async function redisQueryP1(ctx: JobContext): Promise<Player> {
-  if (!ctx.userId) throw Error('no T2')
-  const t2 = T2(ctx.userId)
+export async function redisQueryP1(ctx: JobContext, t2: T2): Promise<Player> {
   return (
     (await redisQueryPlayer(ctx.redis, t2)) ?? (await r2Player(ctx.reddit, t2))
   )
@@ -89,11 +87,9 @@ export async function redisQueryPlay(
 }
 
 export async function redisQueryLeaderboard(redis: RedisClient): Promise<T2[]> {
-  const range = await redis.zRange(
-    t2SpecimenZKey,
-    -Number.MAX_VALUE,
-    Number.MAX_VALUE,
-    {by: 'score', reverse: true}
-  )
+  const range = await redis.zRange(t2SpecimenZKey, 0, '+inf', {
+    by: 'score',
+    reverse: true
+  })
   return range.map(({member}) => T2(member))
 }

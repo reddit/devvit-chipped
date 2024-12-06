@@ -1,3 +1,4 @@
+import {minCat} from '../shared/min-cat/min-cat.ts'
 import {minCanvasWH} from '../shared/theme.ts'
 import {newFacets} from '../shared/types/facet.ts'
 import type {DevvitSystemMessage} from '../shared/types/message.ts'
@@ -13,7 +14,7 @@ import {Looper} from './looper.ts'
 import {postMessage} from './mail.ts'
 import {Assets, loadImage} from './types/assets.ts'
 import {Audio} from './types/audio.ts'
-import {Cam, camScale} from './types/cam.ts'
+import {Cam, camNativeWH, camScale} from './types/cam.ts'
 import {drawClear} from './types/draw.ts'
 import {type LoadedGame, isGame, isInitGame} from './types/game.ts'
 
@@ -115,8 +116,36 @@ export class Engine {
         this._game.debug = msg.debug
         this._game.seed = msg.seed
         this._game.rnd = new Random(msg.seed.seed)
-        const {facets} = newFacets(this._game.rnd)
-        this._game.facets = facets
+        this._game.facets = newFacets(this._game.rnd, msg.seed.ima).facets
+        const cat = Object.values(minCat)
+        this._game.shop = {
+          rocks: [
+            {
+              bought: false,
+              dud: this._game.rnd.num < 0.9,
+              crap: newFacets(
+                this._game.rnd,
+                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+              )
+            },
+            {
+              bought: false,
+              dud: this._game.rnd.num < 0.9,
+              crap: newFacets(
+                this._game.rnd,
+                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+              )
+            },
+            {
+              bought: false,
+              dud: this._game.rnd.num < 0.9,
+              crap: newFacets(
+                this._game.rnd,
+                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+              )
+            }
+          ]
+        }
         this._game.p1 = msg.p1
         this._game.t3 = msg.t3
         this._game.scoreboard = msg.scoreboard
@@ -128,7 +157,7 @@ export class Engine {
         const imgs = await Promise.all(urls.map(url => loadImage(url)))
         this._game.snoovatar = imgs.reduce(
           (sum, img) => ({
-            // biome-ignore lint/performance/noAccumulatingSpread: <explanation>
+            // biome-ignore lint/performance/noAccumulatingSpread:
             ...sum,
             [img.src]: img
           }),
@@ -156,10 +185,7 @@ export class Engine {
   #onResize = (): void => {
     const {cam} = this._game
 
-    cam.minWH = {
-      w: innerWidth * devicePixelRatio,
-      h: innerHeight * devicePixelRatio
-    }
+    cam.minWH = camNativeWH()
 
     // don't truncate xy to avoid sawtooth movement.
     // cam.x = p1.x - Math.trunc(canvas.width / 2)

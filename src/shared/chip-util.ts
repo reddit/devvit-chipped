@@ -1,3 +1,7 @@
-export function chipsFmt(chips: number, detail: 'Short' | 'Long'): string {
-  return `${(chips / 1024).toFixed(detail === 'Short' ? 1 : 3)} ¢`
+export function chipsFmt(
+  chips: number,
+  detail: 'Short' | 'Terse' | 'Long'
+): string {
+  const khips = chips / 1024
+  return `${detail === 'Terse' ? Math.round(khips) : khips.toFixed(detail === 'Short' ? 1 : 3)} ¢`
 }

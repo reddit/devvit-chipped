@@ -29,7 +29,6 @@ export type DevvitSystemMessage = {
 
 /** a window message from the iframe to devvit. */
 export type WebViewMessage =
-  | {readonly type: 'EndGame'; p1: Player}
   | {readonly type: 'Loaded'}
   | {readonly type: 'NewGame'; p1: Player}
   | {readonly type: 'Save'; p1: Player}

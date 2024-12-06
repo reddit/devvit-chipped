@@ -2,7 +2,8 @@ import type {Cell} from 'voronoi'
 import Voronoi from 'voronoi'
 import {minCanvasWH, paletteBlack, thickStroke} from '../theme.ts'
 import type {XY} from './2d.ts'
-import type {Random} from './random.ts'
+import type {IMA} from './ima.ts'
+import type {Random, Seed} from './random.ts'
 
 export type Facet = {
   cell: Cell
@@ -20,7 +21,16 @@ export type FacetState =
   | 'Chipped'
   | 'Shattered'
 
-export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
+export type CrappyThing = {
+  facets: Facet[]
+  rock: XY[][]
+  seed: {ima: IMA; seed: Seed}
+  svg: string
+  chips: number
+}
+
+export function newFacets(rnd: Random, ima: IMA): CrappyThing {
+  const seed = rnd.seed
   const voronoi = new Voronoi()
   const sites = []
   // to-do: const ez = 60, medium = 100, hard = 500, hardest = 1500
@@ -90,7 +100,12 @@ export function newFacets(rnd: Random): {facets: Facet[]; svg: string} {
       {x: edge.vb.x, y: edge.vb.y}
     ])
 
-  return {facets, svg: newRockSVG(edges)}
+  const chips = facets.reduce(
+    (sum, facet) => sum + (kaputState[facet.state] ? 0 : facet.chips),
+    0
+  )
+
+  return {chips, facets, rock: edges, seed: {ima, seed}, svg: newRockSVG(edges)}
 }
 
 export const kaputState: {readonly [state in Facet['state']]: boolean} = {
@@ -174,4 +189,8 @@ function newRockSVG(edges: readonly (readonly Readonly<XY>[])[]): string {
     })
     .join('')
   return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${minCanvasWH.w} ${minCanvasWH.h}">${paths}</svg>`
+}
+
+export function randomColor(rnd: Random): string {
+  return `hsl(${rnd.num * 360}deg ${10 + rnd.num * 40}% ${95 + rnd.num * 5}%)`
 }

@@ -1,6 +1,8 @@
 import {chipsFmt} from '../../../shared/chip-util.ts'
 import type {Profile} from '../../../shared/save.ts'
 import {
+  fontLSize,
+  fontMSize,
   paletteBlack,
   paletteWhite,
   spacePx,
@@ -10,7 +12,8 @@ import type {Box, WH} from '../../../shared/types/2d.ts'
 import {drawText} from '../../types/draw.ts'
 import type {Game, InitGame} from '../../types/game.ts'
 import type {Layer} from '../../types/layer.ts'
-import {buttonSize, uiScale} from '../button-ent.ts'
+import {uiScale} from '../../ui.ts'
+import {buttonSize} from '../button-ent.ts'
 import type {EID} from '../eid.ts'
 import {PagerEnt} from '../pager-ent.ts'
 
@@ -23,7 +26,8 @@ export type ScoreboardLevelEnt = {
   readonly type: 'ScoreboardLevel'
 }
 
-const cardWH1x: Readonly<WH> = {w: 240, h: 20}
+const cardWH1x: Readonly<WH> = {w: 720, h: 60}
+const iconSize: number = 144
 
 export function ScoreboardLevelEnt(game: Game): ScoreboardLevelEnt {
   const {cursor, eid, p1, scoreboard, toolbelt, zoo} = game
@@ -57,7 +61,7 @@ export function scoreboardLevelEntDraw(
 ): void {
   const {c2d} = game
 
-  const scale = uiScale(3)
+  const scale = uiScale()
 
   const bg = {w: cardWH1x.w * scale, h: cardWH1x.h * scale}
   const cardWH = {w: cardWH1x.w * scale, h: bg.h}
@@ -89,8 +93,8 @@ export function scoreboardLevelEntDraw(
     c2d.save()
     c2d.beginPath()
     const wToH = snoovatar.naturalWidth / snoovatar.naturalHeight
-    const w = Math.min(48 * scale, 48 * scale * wToH)
-    const h = Math.min(48 * scale, (48 * scale) / wToH)
+    const w = Math.min(iconSize * scale, iconSize * scale * wToH)
+    const h = Math.min(iconSize * scale, (iconSize * scale) / wToH)
     // c2d.rect(x + 2 * spacePx, y, r, r)
     c2d.arc(x + r, y + r / 2, r, 0, 2 * Math.PI)
     c2d.lineWidth = thickStroke
@@ -112,7 +116,7 @@ export function scoreboardLevelEntDraw(
     drawText(c2d, player.profile.username, {
       x: x + spacePx + 1.75 * r + spacePx,
       y: y + cardWH.h / 2,
-      size: 16 * scale,
+      size: fontMSize * scale,
       fill: paletteBlack,
       stroke: paletteWhite,
       strokeWidth: 6,
@@ -121,7 +125,7 @@ export function scoreboardLevelEntDraw(
     drawText(c2d, chipsFmt(player.minerals, 'Short'), {
       x: x + cardWH.w - spacePx,
       y: y + cardWH.h / 2,
-      size: 20 * scale,
+      size: fontLSize * scale,
       fill: paletteBlack,
       stroke: paletteWhite,
       strokeWidth: 6,
@@ -149,10 +153,17 @@ function updateGrid(lvl: ScoreboardLevelEnt, game: InitGame): void {
     lvl.grid.h = cam.h - toolbelt.h - 8 * spacePx - buttonSize()
   } else {
     lvl.grid.x = toolbelt.w + 2 * spacePx
-    lvl.grid.y = buttonSize() + 4 * spacePx
+    lvl.grid.y = buttonSize() + 6 * spacePx
     lvl.grid.w = cam.w - toolbelt.w - 3 * spacePx
     lvl.grid.h = cam.h - 8 * spacePx - buttonSize()
   }
 
-  lvl.ents.pager.page = 3 //Math.trunc(lvl.grid.h / cardWH.h)
+  const scale = uiScale()
+
+  const bg = {w: cardWH1x.w * scale, h: cardWH1x.h * scale}
+  const cardWH = {w: cardWH1x.w * scale, h: bg.h}
+  const r = (7 * bg.h) / 8
+  const margin = {w: spacePx * 2, h: r + spacePx}
+
+  lvl.ents.pager.page = Math.trunc(lvl.grid.h / (cardWH.h + margin.h))
 }

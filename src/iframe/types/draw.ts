@@ -1,5 +1,4 @@
 import {
-  fontDefaultSize,
   fontFamily,
   paletteBlack,
   paletteBlack2,
@@ -78,7 +77,7 @@ export function drawText(
         | 'TopRight'
         | 'TopCenter' // to-do: align terminology with cam.
       fill?: string
-      size?: number
+      size: number
       stroke?: string
       strokeWidth?: number
       pad?: Partial<WH> | undefined
@@ -86,7 +85,7 @@ export function drawText(
   >
 ): Box {
   if (opts.fill) c2d.fillStyle = opts.fill
-  c2d.font = `${opts.size ? opts.size : fontDefaultSize}px ${fontFamily}`
+  c2d.font = `${opts.size}px ${fontFamily}`
   if (opts.stroke) c2d.strokeStyle = opts.stroke
   c2d.lineWidth = opts.strokeWidth ?? 4
   c2d.beginPath()

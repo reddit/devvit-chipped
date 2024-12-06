@@ -12,10 +12,12 @@ import {
   facetKaput,
   kaputState
 } from '../../shared/types/facet.js'
+import type {IMA} from '../../shared/types/ima.js'
+import type {Seed} from '../../shared/types/random.js'
 import {postMessage} from '../mail.js'
 import {audioPlay} from '../types/audio.js'
 import {camScale} from '../types/cam.js'
-import type {Game, LoadedGame} from '../types/game.js'
+import type {Game, InitGame, LoadedGame} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
 import {cursorEntHitbox} from './cursor-ent.js'
 import type {EID} from './eid.js'
@@ -120,38 +122,7 @@ export function facetEntUpdate(ent: FacetEnt, game: Game): void {
       fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
       break
     case 'Chipped':
-      if (priorState !== ent.facet.state) {
-        fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
-        if (ent.facet.specimen) {
-          fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
-          const collect =
-            ent.facet.chips > (game.p1.codex[game.seed.ima]?.chips ?? 0)
-          if (collect) {
-            game.p1.codex[game.seed.ima] = Specimen(
-              ent.facet,
-              game.seed,
-              game.t3
-            )
-            game.p1.minerals = Object.values(game.p1.codex).reduce(
-              (sum, specimen) => sum + specimen.chips,
-              0
-            )
-            console.log('collect', game.p1.minerals, ent.facet.chips)
-          } else {
-            game.chips += ent.facet.chips
-            game.p1.chips += ent.facet.chips
-          }
-
-          game.codex.found = Object.keys(game.p1.codex)
-            .sort((lhs, rhs) => lhs.localeCompare(rhs))
-            .indexOf(game.seed.ima)
-          game.codex.foundTriggered = true
-        } else {
-          game.chips += ent.facet.chips
-          game.p1.chips += ent.facet.chips
-        }
-        postMessage({type: 'Save', p1: game.p1})
-      }
+      if (priorState !== ent.facet.state) facetGet(ent.facet, game, game.seed)
       break
     case 'Shattered':
       if (priorState !== ent.facet.state)
@@ -162,4 +133,37 @@ export function facetEntUpdate(ent: FacetEnt, game: Game): void {
       return
   }
   if (fx) audioPlay(game.audio, fx)
+}
+
+export function facetGet(
+  facet: Facet,
+  game: InitGame,
+  seed: {ima: IMA; seed: Seed}
+): void {
+  const {audio, rnd, sound} = game
+  let fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
+  if (facet.specimen) {
+    fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
+    const collect = facet.chips > (game.p1.codex[seed.ima]?.chips ?? 0)
+    if (collect) {
+      game.p1.codex[seed.ima] = Specimen(facet, seed, game.t3)
+      game.p1.minerals = Object.values(game.p1.codex).reduce(
+        (sum, specimen) => sum + specimen.chips,
+        0
+      )
+    } else {
+      game.chips += facet.chips
+      game.p1.chips += facet.chips
+    }
+
+    game.codex.found = Object.keys(game.p1.codex)
+      .sort((lhs, rhs) => lhs.localeCompare(rhs))
+      .indexOf(seed.ima)
+    game.codex.foundTriggered = true
+  } else {
+    game.chips += facet.chips
+    game.p1.chips += facet.chips
+  }
+  postMessage({type: 'Save', p1: game.p1})
+  audioPlay(audio, fx)
 }

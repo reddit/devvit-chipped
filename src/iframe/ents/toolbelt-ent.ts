@@ -1,5 +1,6 @@
 import {paletteBlack, spacePx} from '../../shared/theme.js'
 import type {Box} from '../../shared/types/2d.js'
+import {postMessage} from '../mail.js'
 import type {Cam} from '../types/cam.js'
 import type {Game} from '../types/game.js'
 import type {Layer} from '../types/layer.js'
@@ -9,6 +10,7 @@ import type {EID, EIDFactory} from './eid.js'
 import {CodexLevelEnt} from './levels/codex-level-ent.js'
 import {RockLevelEnt} from './levels/rock-level-ent.js'
 import {ScoreboardLevelEnt} from './levels/scoreboard-level-ent.js'
+import {ShopLevelEnt} from './levels/shop-level-ent.js'
 
 export type ToolbeltEnt = Box & {
   readonly eid: EID
@@ -75,11 +77,12 @@ export function toolbeltEntUpdate(belt: ToolbeltEnt, game: Game): void {
     zoo.replace(ScoreboardLevelEnt(game))
     select(belt, 'score')
   } else if (shop.onStart && !shop.selected) {
-    console.log('hello')
+    zoo.replace(ShopLevelEnt(game))
     select(belt, 'shop')
   } else if (newGame.onStart && !newGame.selected) {
-    console.log('hello2')
+    postMessage({type: 'NewGame', p1: game.p1})
     select(belt, 'new')
+    newGame.disabled = true
   }
 
   ctrl.handled ||= cursorEntHits(game, belt, 'Client')

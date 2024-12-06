@@ -13,7 +13,9 @@ export const spacePx: number = 8
 export const minCanvasWH: Readonly<WH> = {w: 288, h: 320}
 
 export const fontFamily: string = 'Patrick Hand Regular'
-export const fontDefaultSize: number = 24
+export const fontXLSize: number = 72
+export const fontLSize: number = 60
+export const fontMSize: number = 42
 
 export const playButtonWidth: number = 160
 
@@ -25,7 +27,6 @@ export const scoreboardSize: number = 10
 
 export const radius: number = spacePx
 
-export const minButtonSize: number = 48
+export const minButtonSize: number = 144
 
-export const normalTextSize: number = 14
-export const largeTextSize: number = 24
+export const uiScaleMax: number = 4

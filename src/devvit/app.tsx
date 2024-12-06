@@ -29,7 +29,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
   const [post] = useState2(redisQueryPost(ctx.redis, T3(ctx.postId)))
   if (!post) throw Error('no post record')
 
-  // PlayerRecord is a irreconcilable save slot. defer loading to decrease the
+  // PlayerRecord is an irreconcilable save slot. defer loading to decrease the
   // chance of overwriting another session.
   const [p1, setP1] = useState2<Player | undefined>(undefined)
 
@@ -49,7 +49,9 @@ export function App(ctx: Devvit.Context): JSX.Element {
   //       (DXC-914) and no single quotes (DXC-912). also, the compute logger
   //       will truncate the URL if you try to log it. finally, post previews
   //       don't support Context or useState() so you have to pass by prop.
-  const [svg] = useState2(() => newFacets(new Random(post.seed.seed)).svg)
+  const [svg] = useState2(
+    () => newFacets(new Random(post.seed.seed), post.seed.ima).svg
+  )
 
   if (launch)
     return WebView(
@@ -58,7 +60,8 @@ export function App(ctx: Devvit.Context): JSX.Element {
       [launch, setLaunch],
       [p1, setP1],
       [play, setPlay],
-      post
+      post,
+      t2
     )
 
   return (
@@ -74,7 +77,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
           if (loading) return // hack: disabled isn't fast enough.
           setLoading((loading = true))
           if (play == null) setLaunch((launch = true))
-          else await createPost(ctx, [p1, setP1])
+          else await createPost(ctx, [p1, setP1], t2)
         }}
       >
         {play == null ? 'play' : 'new game'}
@@ -89,7 +92,8 @@ function WebView(
   [launch, setLaunch]: UseStateResult<boolean>,
   [p1, setP1]: UseStateResult<Player | undefined>,
   [play, setPlay]: UseStateResult<PlaySave | undefined>,
-  post: PostSave
+  post: PostSave,
+  t2: T2
 ): JSX.Element {
   return (
     // to-do: zstack with loading gif or even title screen until Loaded message
@@ -110,7 +114,8 @@ function WebView(
             [p1, setP1],
             [play, setPlay],
             post,
-            msg as WebViewMessage
+            msg as WebViewMessage,
+            t2
           )
         }
         url='index.html'
@@ -128,7 +133,8 @@ async function onMsg(
   [p1, setP1]: UseStateResult<Player | undefined>,
   [play, setPlay]: UseStateResult<PlaySave | undefined>,
   post: PostSave,
-  msg: WebViewMessage
+  msg: WebViewMessage,
+  t2: T2
 ): Promise<void> {
   if (debug)
     console.log(
@@ -137,7 +143,7 @@ async function onMsg(
 
   switch (msg.type) {
     case 'Loaded': {
-      p1 = await redisQueryP1(ctx)
+      p1 = await redisQueryP1(ctx, t2)
       p1.rocks.push(post.t3)
       setP1(p1)
       setPlay((play = PlaySave(p1.profile.t2, post.t3)))
@@ -167,16 +173,12 @@ async function onMsg(
       })
       break
     }
-    case 'EndGame':
-      setLaunch((_launch = false))
-      setP1((p1 = msg.p1))
-      await redisSetPlayer(ctx.redis, msg.p1)
-      break
     case 'NewGame': {
-      const post = await createPost(ctx, [msg.p1, setP1])
+      setLaunch((_launch = false))
+      const post = await createPost(ctx, [msg.p1, setP1], t2)
       msg.p1.rocks.push(post.t3)
-      await redisSetPlayer(ctx.redis, msg.p1)
       setP1((p1 = msg.p1))
+      await redisSetPlayer(ctx.redis, msg.p1)
       // to-do: notify in game UI too and disable button.
       break
     }
@@ -193,14 +195,15 @@ async function onMsg(
 // to-do: add loading state to cue user.
 async function createPost(
   ctx: Context,
-  [p1, setP1]: UseStateResult<Player | undefined>
+  [p1, setP1]: UseStateResult<Player | undefined>,
+  t2: T2
 ): Promise<PostSave> {
   const seed = PostSeed(
     new Random(Math.trunc(Math.random() * randomEndSeed) as Seed)
   )
   const r2Post = await r2CreatePost(ctx, seed)
   const post = PostSave(r2Post, seed)
-  if (!p1) p1 = await redisQueryP1(ctx)
+  if (!p1) p1 = await redisQueryP1(ctx, t2)
   p1.rocks.push(post.t3)
   setP1(p1)
   await Promise.all([

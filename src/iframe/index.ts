@@ -20,6 +20,7 @@ console.log(`${pkg.name} v${pkg.version}`)
 if (noDevvit) {
   const rnd = new Random((Date.now() % randomEndSeed) as Seed)
   // rnd.seed = 1 as Seed
+  // rnd.seed = 272401928
   console.log(`seed=${rnd.seed}`)
   const seed = PostSeed(rnd)
   const delay = rnd.num * 1_000
@@ -29,10 +30,10 @@ if (noDevvit) {
     t2: 't2_k6ldbjh3',
     username: 'stephenoid'
   })
-  p1.chips = rnd.num * 99999
+  p1.chips = rnd.num * 999999
   while (rnd.num > 0.01) {
     const seed = PostSeed(rnd)
-    const facet = newFacets(new Random(seed.seed)).facets.find(
+    const facet = newFacets(new Random(seed.seed), seed.ima).facets.find(
       facet => facet.specimen
     )!
     p1.codex[seed.ima] = Specimen(facet, seed, noT3)

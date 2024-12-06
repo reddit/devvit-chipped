@@ -1,5 +1,5 @@
 import type {Player, PostSeed} from '../../shared/save.ts'
-import type {Facet} from '../../shared/types/facet.ts'
+import type {CrappyThing, Facet} from '../../shared/types/facet.ts'
 import type {Random} from '../../shared/types/random.ts'
 import type {T3} from '../../shared/types/tid.ts'
 import type {UTCMillis} from '../../shared/types/time.ts'
@@ -37,8 +37,8 @@ export type InitGame = LoadedGame & Init
 export type Game = LoadedGame & Init & Drawable
 
 type Init = {
-  /** rock color. */
   facets: Facet[]
+  shop: {rocks: {bought: boolean; dud: boolean; crap: CrappyThing}[]}
   p1: Player
   rnd: Random
   scoreboard: Player[]

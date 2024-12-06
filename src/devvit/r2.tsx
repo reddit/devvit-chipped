@@ -22,7 +22,7 @@ export async function r2CreatePost(
 
   // requires special permission: post as viewer.
   const post = await ctx.reddit.submitPost({
-    preview: <Preview seed={seed.seed} />,
+    preview: <Preview ima={seed.ima} seed={seed.seed} />,
     subredditName: ctx.subredditName,
     title: `Rock ${hex}${seed.locality ? ` at ${seed.locality}` : ''}`
   })

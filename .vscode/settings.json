@@ -4,4 +4,10 @@
   // check typing for all files, not only open files.
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "editor.codeActionsOnSave": { "source.organizeImports.biome": "explicit" }
+
+  // "[javascript]": {
+  //   "editor.codeActionsOnSave": {
+  //   },
+  //   "editor.defaultFormatter": "biomejs.biome"
+  // }
 }
