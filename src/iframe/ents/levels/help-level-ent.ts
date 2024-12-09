@@ -27,7 +27,6 @@ find the mineral in the rock to fill your codex.
 • spend chips at chippy's store for another chance at a mineral.
 • each post is a shareable rock that may be played once per player. tap the new hammer to create a new post.
 `.trim()
-// example: the leftmost chip may be collected because it's the smallest. if either of the connecting chips is broken, the entire cluster of visible and hidden chips will be lost.
 
 export function HelpLevelEnt(game: Game): HelpLevelEnt {
   const {cursor, eid, toolbelt, zoo} = game

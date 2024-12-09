@@ -22,7 +22,7 @@
     "clean": "rm -rf dist webroot/index.js",
     "devvit:install": "npm run clean && npm run build && devvit upload && devvit install r/chippedgame",
     "devvit:logs": "devvit logs --log-runtime r/chippeddev",
-    "devvit:playtest": "devvit playtest --log-runtime r/chippeddev|grep --invert --line-buffered '\\[api\\]'",
+    "devvit:playtest": "devvit playtest --config=devvit.dev.yaml --log-runtime r/chippeddev|grep --invert --line-buffered '\\[api\\]'",
     "format": "npm run formatter -- --fix",
     "formatter": "biome check --error-on-warnings",
     "playtest": "trap 'kill 0' exit; npm start& npm run build -- --watch=forever& npm run devvit:playtest& wait",
