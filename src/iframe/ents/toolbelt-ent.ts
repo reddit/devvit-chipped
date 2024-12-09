@@ -8,6 +8,7 @@ import {ButtonEnt, buttonSize} from './button-ent.js'
 import {cursorEntHits} from './cursor-ent.js'
 import type {EID, EIDFactory} from './eid.js'
 import {CodexLevelEnt} from './levels/codex-level-ent.js'
+import {HelpLevelEnt} from './levels/help-level-ent.js'
 import {RockLevelEnt} from './levels/rock-level-ent.js'
 import {ScoreboardLevelEnt} from './levels/scoreboard-level-ent.js'
 import {ShopLevelEnt} from './levels/shop-level-ent.js'
@@ -15,11 +16,12 @@ import {ShopLevelEnt} from './levels/shop-level-ent.js'
 export type ToolbeltEnt = Box & {
   readonly eid: EID
   ents: {
-    new: ButtonEnt
     rock: ButtonEnt
+    codex: ButtonEnt
     score: ButtonEnt
     shop: ButtonEnt
-    codex: ButtonEnt
+    new: ButtonEnt
+    help: ButtonEnt
   }
   layer: Layer
   readonly type: 'Toolbelt'
@@ -32,7 +34,8 @@ export function ToolbeltEnt(cam: Readonly<Cam>, eid: EIDFactory): ToolbeltEnt {
       new: ButtonEnt(eid, 'newButton', 'new'),
       rock: ButtonEnt(eid, 'rockButton', 'rock'),
       score: ButtonEnt(eid, 'scoreButton', 'score'),
-      shop: ButtonEnt(eid, 'shopButton', 'shop')
+      shop: ButtonEnt(eid, 'shopButton', 'shop'),
+      help: ButtonEnt(eid, 'helpButton', 'help')
     },
     eid: eid.new(),
     layer: 'UIBg',
@@ -62,7 +65,7 @@ export function toolbeltEntDraw(
 
 export function toolbeltEntUpdate(belt: ToolbeltEnt, game: Game): void {
   const {cam, ctrl, zoo} = game
-  const {rock, codex, score, shop, new: newGame} = belt.ents
+  const {rock, codex, help, score, shop, new: newGame} = belt.ents
   updateBox(belt, cam)
 
   codex.img = game.codex.found == null ? 'codexButton' : 'codexMinButton'
@@ -83,6 +86,9 @@ export function toolbeltEntUpdate(belt: ToolbeltEnt, game: Game): void {
     postMessage({type: 'NewGame', p1: game.p1})
     select(belt, 'new')
     newGame.disabled = true
+  } else if (help.onStart && !help.selected) {
+    zoo.replace(HelpLevelEnt(game))
+    select(belt, 'help')
   }
 
   ctrl.handled ||= cursorEntHits(game, belt, 'Client')
@@ -94,9 +100,9 @@ function select(belt: ToolbeltEnt, select: keyof ToolbeltEnt['ents']): void {
 }
 
 function updateBox(belt: ToolbeltEnt, cam: Readonly<Cam>): void {
-  const {rock, codex, score, shop, new: newGame} = belt.ents
+  const {rock, codex, score, shop, new: newGame, help} = belt.ents
   const short = buttonSize() + 2 * spacePx
-  const long = 5 * buttonSize() + 6 * spacePx
+  const long = 6 * buttonSize() + 7 * spacePx
   if (cam.portrait) {
     belt.x = cam.w / 2 - long / 2
     belt.y = cam.h - short - spacePx
@@ -123,4 +129,7 @@ function updateBox(belt: ToolbeltEnt, cam: Readonly<Cam>): void {
 
   newGame.x = shop.x + (cam.portrait ? shop.w + spacePx : 0)
   newGame.y = shop.y + (cam.portrait ? 0 : shop.h + spacePx)
+
+  help.x = newGame.x + (cam.portrait ? newGame.w + spacePx : 0)
+  help.y = newGame.y + (cam.portrait ? 0 : newGame.h + spacePx)
 }

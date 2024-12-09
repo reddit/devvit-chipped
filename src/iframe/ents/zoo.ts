@@ -10,6 +10,11 @@ import {
   codexLevelEntUpdate
 } from './levels/codex-level-ent.ts'
 import {
+  type HelpLevelEnt,
+  helpLevelEntDraw,
+  helpLevelEntUpdate
+} from './levels/help-level-ent.ts'
+import {
   type RockLevelEnt,
   rockLevelEntDraw,
   rockLevelEntUpdate
@@ -47,6 +52,7 @@ export type Ent =
 
 export type LevelEnt =
   | CodexLevelEnt
+  | HelpLevelEnt
   | RockLevelEnt
   | ScoreboardLevelEnt
   | ShopLevelEnt
@@ -87,6 +93,9 @@ export class Zoo {
             break
           case 'Facet':
             facetEntDraw(ent, game)
+            break
+          case 'HelpLevel':
+            helpLevelEntDraw(ent, game)
             break
           case 'Pager':
             pagerEntDraw(ent, game)
@@ -147,6 +156,9 @@ export class Zoo {
           break
         case 'Facet':
           facetEntUpdate(ent, game)
+          break
+        case 'HelpLevel':
+          helpLevelEntUpdate(ent, game)
           break
         case 'Pager':
           pagerEntUpdate(ent, game)

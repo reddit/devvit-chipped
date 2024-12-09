@@ -17,6 +17,8 @@ export const fontXLSize: number = 72
 export const fontLSize: number = 60
 export const fontMSize: number = 42
 
+export const textMaxW: number = 1024
+
 export const playButtonWidth: number = 160
 
 export const extraThickStroke: number = 9

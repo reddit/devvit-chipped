@@ -20,7 +20,7 @@ console.log(`${pkg.name} v${pkg.version}`)
 if (noDevvit) {
   const rnd = new Random((Date.now() % randomEndSeed) as Seed)
   // rnd.seed = 1 as Seed
-  // rnd.seed = 272401928
+  // rnd.seed = 687724419
   console.log(`seed=${rnd.seed}`)
   const seed = PostSeed(rnd)
   const delay = rnd.num * 1_000

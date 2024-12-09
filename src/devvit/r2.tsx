@@ -24,7 +24,7 @@ export async function r2CreatePost(
   const post = await ctx.reddit.submitPost({
     preview: <Preview ima={seed.ima} seed={seed.seed} />,
     subredditName: ctx.subredditName,
-    title: `Rock ${hex}${seed.locality ? ` at ${seed.locality}` : ''}`
+    title: `🪨 Rock ${hex}${seed.locality ? ` at ${seed.locality}` : ''}`
   })
 
   const user = await ctx.reddit.getCurrentUser()

@@ -64,11 +64,14 @@ export function App(ctx: Devvit.Context): JSX.Element {
       t2
     )
 
+  // hack: DXC-967 no way to set border color. DXC-966 color scheme is always
+  //       undefined so I can't even alter the appearance from
+  //       bordered (light) to secondary (dark). this ruins the aesthetics.
   return (
     <Title svg={svg}>
       {/* biome-ignore lint/a11y/useButtonType: */}
       <button
-        appearance='bordered'
+        appearance='secondary'
         disabled={loading}
         size='large'
         minWidth={`${playButtonWidth}px`}

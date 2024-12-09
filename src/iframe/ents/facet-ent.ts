@@ -143,6 +143,7 @@ export function facetGet(
   const {audio, rnd, sound} = game
   let fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
   if (facet.specimen) {
+    navigator.vibrate?.(10)
     fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
     const collect = facet.chips > (game.p1.codex[seed.ima]?.chips ?? 0)
     if (collect) {

@@ -152,6 +152,69 @@ export function drawText(
   return {x, y: y - h, w: c2d.lineWidth * 2 + metrics.width, h}
 }
 
+export function drawText2(
+  c2d: C2D,
+  text: string,
+  opts: Readonly<XY> & {
+    fill: string
+    maxW: number
+    lineHeight: number
+    size: number
+  }
+): void {
+  let y = opts.y
+  for (const line of text.split('\n')) {
+    y = wrapLine(c2d, line, {
+      fill: opts.fill,
+      x: opts.x,
+      y,
+      maxW: opts.maxW,
+      lineHeight: opts.lineHeight,
+      size: opts.size
+    })
+  }
+}
+
+function wrapLine(
+  c2d: C2D,
+  text: string,
+  opts: Readonly<XY> & {
+    fill: string
+    maxW: number
+    lineHeight: number
+    size: number
+  }
+): number {
+  c2d.font = `${opts.size}px ${fontFamily}`
+  const bulleted = text.startsWith('• ')
+  const bulletW = c2d.measureText('• ').width
+  let line = ''
+  let y = opts.y
+  for (const [i, word] of text.split(' ').entries()) {
+    const test = `${line}${word} `
+    const w = c2d.measureText(test).width
+
+    if (w > opts.maxW && i) {
+      c2d.fillText(
+        line,
+        opts.x + (!bulleted || line.startsWith('• ') ? 0 : bulletW),
+        y
+      )
+      line = `${word} `
+      y += opts.lineHeight
+    } else {
+      line = test
+    }
+  }
+
+  c2d.fillText(
+    line,
+    opts.x + (!bulleted || line.startsWith('• ') ? 0 : bulletW),
+    y
+  )
+  return y + opts.lineHeight
+}
+
 function newPattern(
   dstC2D: CanvasRenderingContext2D,
   spacing: number,
