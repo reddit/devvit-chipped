@@ -24,6 +24,7 @@ const instructions: string = `
 find the mineral in the rock to fill your codex.
 • tap rock edges to look for the mineral.
 • keep tapping to break off a chip. if the chip is the smallest of any it touches, it's collected. if not, the cluster is lost.
+• listen to the soothing sounds of chipping to guide your hammer.
 • spend chips at chippy's store for another chance at a mineral.
 • each post is a shareable rock that may be played once per player. tap the new hammer to create a new post.
 `.trim()
