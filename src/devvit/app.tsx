@@ -6,7 +6,13 @@ import {paletteWhite, playButtonWidth, scoreboardSize} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
-import {T2, T3, anonSnoovatarURL, anonUsername} from '../shared/types/tid.js'
+import {
+  T2,
+  T3,
+  anonSnoovatarURL,
+  anonUsername,
+  noT2
+} from '../shared/types/tid.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
 import {
   T3T2,
@@ -33,8 +39,8 @@ export function App(ctx: Devvit.Context): JSX.Element {
   // chance of overwriting another session.
   const [p1, setP1] = useState2<Player | undefined>(undefined)
 
-  if (!ctx.userId) throw Error('no T2')
-  const t2 = T2(ctx.userId)
+  // default to no T2 so logged out renders but they can't click.
+  const t2 = T2(ctx.userId ?? noT2)
   const [play, setPlay] = useState2(
     redisQueryPlay(ctx.redis, T3T2(post.t3, t2))
   )
