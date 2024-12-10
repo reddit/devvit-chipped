@@ -61,7 +61,7 @@ async function onSavePostSchedule(
 
   await ctx.scheduler.runJob({
     name: newPostScheduleJob,
-    cron: `*${mins ? `/${mins}` : ''} *${hours ? `/${hours}` : ''} * * *`
+    cron: `${mins ? `*/${mins}` : '0'} ${hours ? `*/${hours}` : '0'} * * *`
   })
   ctx.ui.showToast(
     `Scheduled recurring Chipped rock posts every ${hours} hour(s) and ${mins} minute(s).`

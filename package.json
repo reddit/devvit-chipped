@@ -26,7 +26,7 @@
     "format": "npm run formatter -- --fix",
     "formatter": "biome check --error-on-warnings",
     "playtest": "trap 'kill 0' exit; npm start& npm run build -- --watch=forever& npm run devvit:playtest& wait",
-    "start": "npm run build -- --banner:js='new globalThis.EventSource(\"/esbuild\").addEventListener(\"change\", () => location.reload());' --serve=1234 --servedir=webroot --watch=forever",
+    "start": "npm run build -- --banner:js='new EventSource(\"/esbuild\").addEventListener(\"change\", () => location.reload());' --serve=1234 --servedir=webroot --watch=forever",
     "test": "npm run test:format && npm run test:types && npm run test:unit",
     "test:format": "npm run formatter",
     "test:types": "tsc --build",
