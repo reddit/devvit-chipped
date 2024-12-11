@@ -1,11 +1,16 @@
 // biome-ignore lint/style/useImportType: Devvit is a functional dependency of JSX.
 import {Devvit} from '@devvit/public-api'
 import type {Context, UseStateResult} from '@devvit/public-api'
-import {PlaySave, type Player, PostSave, PostSeed} from '../shared/save.js'
+import {
+  PlaySave,
+  type Player,
+  PostSave,
+  PostSeedFromNothing
+} from '../shared/save.js'
 import {paletteWhite, playButtonWidth, scoreboardSize} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
-import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
+import {Random} from '../shared/types/random.js'
 import {
   T2,
   T3,
@@ -81,15 +86,15 @@ export function App(ctx: Devvit.Context): JSX.Element {
         disabled={loading}
         size='large'
         minWidth={`${playButtonWidth}px`}
-        icon={play == null ? 'play-outline' : 'new-outline'}
+        icon={play ? 'new-outline' : 'play-outline'}
         onPress={async () => {
           if (loading) return // hack: disabled isn't fast enough.
           setLoading((loading = true))
-          if (play == null) setLaunch((launch = true))
-          else await createPost(ctx, [p1, setP1], t2)
+          if (play) await createPost(ctx, [p1, setP1], t2)
+          else setLaunch((launch = true))
         }}
       >
-        {play == null ? 'play' : 'new game'}
+        {play ? 'new game' : 'play'}
       </button>
     </Title>
   )
@@ -201,15 +206,14 @@ async function onMsg(
   }
 }
 
+/** keep aligned to createPost() in main.ts. */
 // to-do: add loading state to cue user.
 async function createPost(
   ctx: Context,
   [p1, setP1]: UseStateResult<Player | undefined>,
   t2: T2
 ): Promise<PostSave> {
-  const seed = PostSeed(
-    new Random(Math.trunc(Math.random() * randomEndSeed) as Seed)
-  )
+  const seed = PostSeedFromNothing()
   const r2Post = await r2CreatePost(ctx, seed)
   const post = PostSave(r2Post, seed)
   if (!p1) p1 = await redisQueryP1(ctx, t2)

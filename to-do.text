@@ -1,3 +1,12 @@
+when you tap a chip, show visual feedback.
+when you buy a rock, show visual feedback.
+implement zoom for mobile.
+show loading animation when web view itself is loading.
+page scoreboard in and support lazy loading.
+show loading cue when creating a post.
+customize loading animation.
+evolve the gameplay.
+add more art to chippys.
 integrate with mindat if license permits.
   currently not licensed for commercial use.
   access the API.

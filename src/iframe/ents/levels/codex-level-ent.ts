@@ -93,7 +93,7 @@ export function codexLevelEntDraw(
         min.poly[0]!.x * minScale + offset.x,
         min.poly[0]!.y * minScale + offset.y
       )
-      // review old impl. consider data svg.
+      // to-do: consolidate mineral poly logic.
       for (const xy of min.poly)
         c2d.lineTo(xy.x * minScale + offset.x, xy.y * minScale + offset.y)
       c2d.closePath()

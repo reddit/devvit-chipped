@@ -51,6 +51,7 @@ export async function redisQueryPlayer(
   if (json) return JSON.parse(json)
 }
 
+/** get or create P1. */
 export async function redisQueryP1(ctx: JobContext, t2: T2): Promise<Player> {
   return (
     (await redisQueryPlayer(ctx.redis, t2)) ?? (await r2Player(ctx.reddit, t2))

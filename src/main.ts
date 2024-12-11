@@ -8,8 +8,7 @@ import {
 import {App} from './devvit/app.tsx'
 import {r2CreatePost, r2OpenPost} from './devvit/r2.tsx'
 import {redisQueryP1, redisSetPlayer, redisSetPost} from './devvit/redis.ts'
-import {PostSave, PostSeed} from './shared/save.ts'
-import {Random, type Seed, randomEndSeed} from './shared/types/random.ts'
+import {PostSave, PostSeedFromNothing} from './shared/save.ts'
 import {T2} from './shared/types/tid.ts'
 
 const newPostScheduleJob: string = 'NewPostSchedule'
@@ -87,13 +86,12 @@ Devvit.addMenuItem({
 // upgrade trigger to avoid having to partition across scheduled jobs? should
 // include post.setCustomPostPreview(…).
 
+/** keep aligned to createPost() in app.tsx. */
 async function createPost(
   ctx: Context | JobContext,
   mode: 'UI' | 'NoUI'
 ): Promise<void> {
-  const seed = PostSeed(
-    new Random(Math.trunc(Math.random() * randomEndSeed) as Seed)
-  )
+  const seed = PostSeedFromNothing()
   const r2Post = await r2CreatePost(ctx, seed)
   const post = PostSave(r2Post, seed)
   const p1 = await redisQueryP1(ctx, T2(ctx.userId ?? 't2_1eapexg1kr'))

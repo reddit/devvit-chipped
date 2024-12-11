@@ -2,7 +2,7 @@ import {minCat} from './min-cat/min-cat.ts'
 import type {XY} from './types/2d.ts'
 import type {Facet} from './types/facet.ts'
 import type {IMA} from './types/ima.ts'
-import {type Random, type Seed, randomEndSeed} from './types/random.ts'
+import {Random, type Seed, randomEndSeed} from './types/random.ts'
 import type {T2, T3} from './types/tid.ts'
 import {type UTCMillis, utcMillisNow} from './types/time.ts'
 
@@ -104,9 +104,13 @@ export function PostSave(
 }
 
 /**
- * don't use the original seed to generate the next since play is too
+ * don't use the original seed to generate the next since play is probably too
  * deterministic and may generate duplicate rocks.
  */
+export function PostSeedFromNothing(): PostSeed {
+  return PostSeed(new Random(Math.trunc(Math.random() * randomEndSeed) as Seed))
+}
+
 export function PostSeed(rnd: Random): PostSeed {
   const cat = Object.values(minCat)
   const ima = cat[Math.trunc(rnd.num * cat.length)]!.ima

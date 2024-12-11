@@ -5,8 +5,6 @@ import type {IMA} from '../shared/types/ima.js'
 import {Random, type Seed} from '../shared/types/random.js'
 import {Title} from './title.js'
 
-export const previewVersion: number = 0
-
 export function Preview(props: {ima: IMA; seed: Seed}): JSX.Element {
   const svg = newFacets(new Random(props.seed), props.ima).svg
   return (
