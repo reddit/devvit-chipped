@@ -2,7 +2,7 @@ import type {Player, PostSeed, Profile} from '../save.ts'
 import type {T3} from './tid.ts'
 import type {UTCMillis} from './time.ts'
 
-/** a window message from blocks to the iframe. */
+/** a message from blocks to the iframe. */
 export type DevvitMessage = {
   /** rock discoverer. */
   author: Profile
@@ -27,7 +27,7 @@ export type DevvitSystemMessage = {
   data: {message: DevvitMessage}
 }
 
-/** a window message from the iframe to devvit. */
+/** a message from the iframe to devvit. */
 export type WebViewMessage =
   | {readonly type: 'Loaded'}
   | {readonly type: 'NewGame'; p1: Player}

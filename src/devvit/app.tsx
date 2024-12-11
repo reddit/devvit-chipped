@@ -15,7 +15,7 @@ import {
 } from '../shared/types/tid.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
 import {
-  T3T2,
+  PlayID,
   redisCreatePlay,
   redisQueryLeaderboard,
   redisQueryP1,
@@ -35,14 +35,14 @@ export function App(ctx: Devvit.Context): JSX.Element {
   const [post] = useState2(redisQueryPost(ctx.redis, T3(ctx.postId)))
   if (!post) throw Error('no post record')
 
-  // PlayerRecord is an irreconcilable save slot. defer loading to decrease the
-  // chance of overwriting another session.
+  // Player is an irreconcilable save slot. defer loading to decrease the chance
+  // of overwriting another session.
   const [p1, setP1] = useState2<Player | undefined>(undefined)
 
-  // default to no T2 so logged out renders but they can't click.
+  // default to noT2 so logged out renders (but they can't click).
   const t2 = T2(ctx.userId ?? noT2)
   const [play, setPlay] = useState2(
-    redisQueryPlay(ctx.redis, T3T2(post.t3, t2))
+    redisQueryPlay(ctx.redis, PlayID(post.t3, t2))
   )
 
   let [launch, setLaunch] = useState2(false)
