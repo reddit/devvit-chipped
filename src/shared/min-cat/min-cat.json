@@ -9266,7 +9266,7 @@
   "Fafr": {
     "ima": "Fafr",
     "localities": [
-      "Hatrurim"
+      "Hatrurim formation"
     ],
     "name": "fluoralforsite"
   },
@@ -10061,7 +10061,7 @@
   "Fky": {
     "ima": "Fky",
     "localities": [
-      "Hatrurim"
+      "Hatrurim formation"
     ],
     "name": "fluorkyuygenite"
   },
@@ -12723,7 +12723,7 @@
   "Hcls": {
     "ima": "Hcls",
     "localities": [
-      "Hatrurim"
+      "Hatrurim formation"
     ],
     "name": "hexacelsian"
   },
@@ -21801,8 +21801,8 @@
     "localities": [],
     "name": "nabiasite"
   },
-  "Nbix-Mn": {
-    "ima": "Nbix-Mn",
+  "Nbix-Mn²⁺": {
+    "ima": "Nbix-Mn²⁺",
     "localities": [],
     "name": "nioboixiolite-(Mn²⁺)"
   },
@@ -28742,7 +28742,7 @@
   "Sla": {
     "ima": "Sla",
     "localities": [
-      "Hatrurim"
+      "Hatrurim formation"
     ],
     "name": "shulamitite"
   },
@@ -35096,5 +35096,11 @@
       "São Luiz river alluvials"
     ],
     "name": "deltanitrogen"
+  },
+  "Nbix-Mn": {
+    "deprecated": true,
+    "ima": "Nbix-Mn",
+    "localities": [],
+    "name": "nioboixiolite-(Mn²⁺)"
   }
 }

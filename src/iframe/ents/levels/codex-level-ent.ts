@@ -1,5 +1,5 @@
 import {chipsFmt} from '../../../shared/chip-util.ts'
-import {minCat} from '../../../shared/min-cat/min-cat.ts'
+import {minCat, minCatSet} from '../../../shared/min-cat/min-cat.ts'
 import {
   fontLSize,
   fontMSize,
@@ -112,8 +112,8 @@ export function codexLevelEntDraw(
         origin: 'TopCenter'
       })
 
-      const cat = minCat[min.ima]!
-      drawText(c2d, `${trunc(cat.name)}`, {
+      const catMin = minCat[min.ima]!
+      drawText(c2d, `${trunc(catMin.name)}`, {
         x: Math.round(x + cardWH.w / 2),
         y: Math.round(y + imaBox!.h),
         fill: paletteBlack,
@@ -134,7 +134,9 @@ export function codexLevelEntDraw(
     }
   }
 
-  drawText(c2d, `${codex.length} / ${Object.keys(minCat).length}`, {
+  // it's possible to have more minerals than the set size if deprecated have
+  // been collected.
+  drawText(c2d, `${codex.length} / ${minCatSet.length}`, {
     x: cam.w,
     y: 0,
     pad: {w: spacePx, h: spacePx},

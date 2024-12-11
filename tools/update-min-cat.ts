@@ -88,11 +88,15 @@ function unique<T>(lhs: T[] | undefined, rhs: T | undefined): T[] {
   return [...new Set([...(lhs ?? []), ...(rhs ? [rhs] : [])])]
 }
 
+const minCat = parseMineralWikidata(await fetchMineralWikidata())
+minCat['Nbix-Mn' as IMA] = {
+  deprecated: true,
+  ima: 'Nbix-Mn' as IMA,
+  localities: [],
+  name: 'nioboixiolite-(Mn²⁺)'
+}
+
 writeFileSync(
   'src/shared/min-cat/min-cat.json', // CSV saves ~60 KiB gzipped.
-  JSON.stringify(
-    parseMineralWikidata(await fetchMineralWikidata()),
-    undefined,
-    2
-  )
+  JSON.stringify(minCat, undefined, 2)
 )

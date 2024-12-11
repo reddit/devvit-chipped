@@ -1,4 +1,4 @@
-import {minCat} from './min-cat/min-cat.ts'
+import {minCat, minCatSet} from './min-cat/min-cat.ts'
 import type {XY} from './types/2d.ts'
 import type {Facet} from './types/facet.ts'
 import type {IMA} from './types/ima.ts'
@@ -112,8 +112,7 @@ export function PostSeedFromNothing(): PostSeed {
 }
 
 export function PostSeed(rnd: Random): PostSeed {
-  const cat = Object.values(minCat)
-  const ima = cat[Math.trunc(rnd.num * cat.length)]!.ima
+  const ima = minCatSet[Math.trunc(rnd.num * minCatSet.length)]!.ima
   return {
     seed: Math.trunc(rnd.num * randomEndSeed) as Seed,
     ima,

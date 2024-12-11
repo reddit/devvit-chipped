@@ -1,4 +1,4 @@
-import {minCat} from '../shared/min-cat/min-cat.ts'
+import {minCatSet} from '../shared/min-cat/min-cat.ts'
 import {minCanvasWH} from '../shared/theme.ts'
 import {newFacets} from '../shared/types/facet.ts'
 import type {DevvitSystemMessage} from '../shared/types/message.ts'
@@ -117,7 +117,6 @@ export class Engine {
         this._game.seed = msg.seed
         this._game.rnd = new Random(msg.seed.seed)
         this._game.facets = newFacets(this._game.rnd, msg.seed.ima).facets
-        const cat = Object.values(minCat)
         this._game.shop = {
           rocks: [
             {
@@ -125,7 +124,8 @@ export class Engine {
               dud: this._game.rnd.num < 0.9,
               crap: newFacets(
                 this._game.rnd,
-                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+                minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
+                  .ima
               )
             },
             {
@@ -133,7 +133,8 @@ export class Engine {
               dud: this._game.rnd.num < 0.9,
               crap: newFacets(
                 this._game.rnd,
-                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+                minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
+                  .ima
               )
             },
             {
@@ -141,7 +142,8 @@ export class Engine {
               dud: this._game.rnd.num < 0.9,
               crap: newFacets(
                 this._game.rnd,
-                cat[Math.trunc(this._game.rnd.num * cat.length)]!.ima
+                minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
+                  .ima
               )
             }
           ]
