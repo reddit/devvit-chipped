@@ -123,6 +123,7 @@ export function facetEntUpdate(ent: FacetEnt, game: Game): void {
       break
     case 'Chipped':
       if (priorState !== ent.facet.state) facetGet(ent.facet, game, game.seed)
+      postMessage({type: 'Save', p1: game.p1})
       break
     case 'Shattered':
       if (priorState !== ent.facet.state)
@@ -165,6 +166,5 @@ export function facetGet(
     game.chips += facet.chips
     game.p1.chips += facet.chips
   }
-  postMessage({type: 'Save', p1: game.p1})
   audioPlay(audio, fx)
 }

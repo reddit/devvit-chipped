@@ -5,6 +5,8 @@ show loading animation when web view itself is loading.
 page scoreboard in and support lazy loading.
 show loading cue when creating a post.
 customize loading animation.
+add hard mode.
+keep the PRNG for rock / level gen pristine and separate from superficial PRNG.
 evolve the gameplay.
 add more art to chippys.
 integrate with mindat if license permits.

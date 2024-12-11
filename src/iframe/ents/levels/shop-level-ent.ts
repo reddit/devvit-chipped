@@ -33,7 +33,7 @@ export function ShopLevelEnt(game: Game): ShopLevelEnt {
     const btn = ButtonEnt(
       eid,
       '',
-      chipsFmt(Math.ceil((0.3 * rock.crap.chips) / 1024) * 1024, 'Terse'),
+      chipsFmt(Math.ceil((0.2 * rock.crap.chips) / 1024) * 1024, 'Terse'),
       'Center'
     )
     btn.disabled = rock.bought
@@ -137,7 +137,7 @@ function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
     const i = Number.parseInt(key)
     const rock = shop.rocks[i]!
     if (btn.onStart) {
-      const cost = Math.ceil((0.3 * rock.crap.chips) / 1024) * 1024
+      const cost = Math.ceil((0.2 * rock.crap.chips) / 1024) * 1024
       if (p1.chips >= cost) {
         p1.chips -= cost
         const specimen = rock.crap.facets.find(facet => facet.specimen)
@@ -149,6 +149,7 @@ function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
         else facetGet(specimen, game, rock.crap.seed)
         rock.bought = true
         btn.disabled = true
+        postMessage({type: 'Save', p1: game.p1})
       }
       break
     }

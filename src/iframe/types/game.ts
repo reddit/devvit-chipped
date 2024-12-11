@@ -37,7 +37,7 @@ export type InitGame = LoadedGame & Init
 export type Game = LoadedGame & Init & Drawable
 
 type Init = {
-  facets: Facet[]
+  facets: Facet[] // fix
   shop: {rocks: {bought: boolean; dud: boolean; crap: CrappyThing}[]}
   p1: Player
   rnd: Random
