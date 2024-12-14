@@ -27,8 +27,7 @@ export async function r2CreatePost(
     title: `🪨 Rock ${hex}${seed.locality ? ` at ${seed.locality}` : ''}`
   })
 
-  const user = await ctx.reddit.getCurrentUser()
-  console.log(`rock ${hex} posted by ${user?.username ?? 'yourfriendchippy'}`)
+  console.log(`rock ${hex} posted by ${ctx.userId ?? 'yourfriendchippy'}`)
 
   return post
 }
