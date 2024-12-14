@@ -1,11 +1,9 @@
-import type {Player, PostSeed, Profile} from '../save.ts'
+import type {Player, PostSeed} from '../save.ts'
 import type {T3} from './tid.ts'
 import type {UTCMillis} from './time.ts'
 
 /** a message from blocks to the iframe. */
 export type DevvitMessage = {
-  /** rock discoverer. */
-  author: Profile
   /** rock discovery timestamp. */
   created: UTCMillis
   /**

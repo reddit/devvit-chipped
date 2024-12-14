@@ -11,13 +11,7 @@ import {paletteWhite, playButtonWidth, scoreboardSize} from '../shared/theme.js'
 import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import {Random} from '../shared/types/random.js'
-import {
-  T2,
-  T3,
-  anonSnoovatarURL,
-  anonUsername,
-  noT2
-} from '../shared/types/tid.js'
+import {T2, T3, anonUsername, noT2} from '../shared/types/tid.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
 import {
   PlayID,
@@ -162,7 +156,6 @@ async function onMsg(
       setP1(p1)
       setPlay((play = PlaySave(p1.profile.t2, post.t3)))
       await redisCreatePlay(ctx.redis, play, p1.profile.t2)
-      const author = await ctx.reddit.getUserById(post.author)
 
       const t2s = await redisQueryLeaderboard(ctx.redis)
       const scoreboard = []
@@ -173,11 +166,6 @@ async function onMsg(
 
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
-        author: {
-          snoovatarURL: (await author?.getSnoovatarUrl()) ?? anonSnoovatarURL,
-          t2: post.author,
-          username: author?.username ?? anonUsername
-        },
         created: post.created,
         debug,
         p1,

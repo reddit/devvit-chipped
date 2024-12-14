@@ -121,12 +121,6 @@ if (noDevvit) {
             type: 'devvit-message',
             data: {
               message: {
-                author: {
-                  snoovatarURL:
-                    'https://i.redd.it/snoovatar/avatars/d87d7eb2-f063-424a-8e30-f02e3347ef0e.png',
-                  t2: 't2_reyi3nllt',
-                  username: 'likeoid'
-                },
                 created: 1731902370070 as UTCMillis,
                 debug: true,
                 seed,
