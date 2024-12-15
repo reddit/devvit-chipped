@@ -1,5 +1,7 @@
 # 🪨 chipped
 
+# moved to https://github.com/reddit/devvit-chipped
+
 All mineral data provided by the Wikidata community distributed under public domain ([CC0](https://www.wikidata.org/wiki/Wikidata:Licensing)).
 
 [Javascript-Voronoi](https://github.com/gorhill/Javascript-Voronoi) © 2010 - 2013 Raymond Hill, used to generate all Voronoi mineral diagrams, distributed under the MIT license.
