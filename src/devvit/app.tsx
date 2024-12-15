@@ -29,12 +29,10 @@ import {useState2} from './use-state2.js'
 export function App(ctx: Devvit.Context): JSX.Element {
   const debug = 'chipped' in ctx.debug
 
-  const [post] = useState2(async () => {
-    if (!ctx.postId) throw Error('no T3')
-    const post = await redisQueryPost(ctx.redis, T3(ctx.postId))
-    if (!post) throw Error('no post record')
-    return post
-  })
+  if (!ctx.postId) throw Error('no T3')
+  const t3 = T3(ctx.postId)
+  const [post] = useState2(() => redisQueryPost(ctx.redis, t3))
+  if (!post) throw Error('no post record')
 
   // Player is an irreconcilable save slot. defer loading to decrease the chance
   // of overwriting another session.
@@ -153,17 +151,14 @@ async function onMsg(
 
   switch (msg.type) {
     case 'Loaded': {
-      p1 = await redisQueryPlayer(ctx, t2)
-      p1.rocks.push(post.t3)
-      setP1(p1)
+      setP1((p1 = await redisQueryPlayer(ctx, t2)))
       setPlay((play = PlaySave(p1.profile.t2, post.t3)))
       await redisCreatePlay(ctx.redis, play, p1.profile.t2)
 
       const t2s = await redisQueryLeaderboard(ctx.redis)
       const scoreboard = []
-      for (let i = 0; i < scoreboardSize && i < t2s.length; i++) {
+      for (let i = 0; i < scoreboardSize && i < t2s.length; i++)
         scoreboard.push(await redisQueryPlayer(ctx, t2s[i]!))
-      }
 
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
