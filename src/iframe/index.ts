@@ -33,10 +33,10 @@ if (noDevvit) {
   p1.chips = rnd.num * 999999
   while (rnd.num > 0.01) {
     const seed = PostSeed(rnd)
-    const facet = Rock(new Random(seed.seed), seed.ima).chips.find(
-      facet => facet.specimen
+    const chip = Rock(new Random(seed.seed), seed.ima).chips.find(
+      chip => chip.specimen
     )!
-    p1.codex[seed.ima] = Specimen(facet, seed, noT3)
+    p1.codex[seed.ima] = Specimen(chip, seed, noT3)
   }
   p1.minerals = Object.values(p1.codex).reduce(
     (sum, specimen) => sum + specimen.chips,

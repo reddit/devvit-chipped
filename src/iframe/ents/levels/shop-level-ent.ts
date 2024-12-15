@@ -13,8 +13,8 @@ import type {Game, InitGame} from '../../types/game.ts'
 import type {Layer} from '../../types/layer.ts'
 import {uiScale} from '../../ui.ts'
 import {ButtonEnt, buttonSize} from '../button-ent.ts'
+import {chipGet} from '../chip-ent.ts'
 import type {EID} from '../eid.ts'
-import {facetGet} from '../facet-ent.ts'
 
 export type ShopLevelEnt = {
   readonly eid: EID
@@ -140,13 +140,13 @@ function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
       const cost = Math.ceil((0.2 * rock.rock.area) / 1024) * 1024
       if (p1.chips >= cost) {
         p1.chips -= cost
-        const specimen = rock.rock.chips.find(facet => facet.specimen)
+        const specimen = rock.rock.chips.find(chip => chip.specimen)
         if (!specimen || rock.dud)
           audioPlay(
             game.audio,
             sound.break[Math.trunc(rnd.num * sound.break.length)]!
           )
-        else facetGet(specimen, game, rock.rock.seed)
+        else chipGet(specimen, game, rock.rock.seed)
         rock.bought = true
         btn.disabled = true
         postMessage({type: 'Save', p1: game.p1})

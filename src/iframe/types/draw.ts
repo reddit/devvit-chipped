@@ -12,7 +12,7 @@ import type {Cam} from './cam.ts'
 export type C2D = CanvasRenderingContext2D
 export type Canvas = HTMLCanvasElement
 
-export type Draw = {bg: CanvasPattern; c2d: C2D; facets: CanvasPattern[]}
+export type Draw = {bg: CanvasPattern; c2d: C2D; chips: CanvasPattern[]}
 
 export function Draw(canvas: HTMLCanvasElement, rnd: Random): Draw | undefined {
   const c2d =
@@ -21,7 +21,7 @@ export function Draw(canvas: HTMLCanvasElement, rnd: Random): Draw | undefined {
   if (!c2d) return
   const bg = newPattern(c2d, 6, 130, paletteBlack2, 1, paletteWhite)
   if (!bg) return
-  const facets = []
+  const chips = []
   // to-do: more variation. explore halftones and dither patterns.
   for (let i = 0; i < 32; i++) {
     // to-do: don't re-randomize if context is lost.
@@ -33,9 +33,9 @@ export function Draw(canvas: HTMLCanvasElement, rnd: Random): Draw | undefined {
       1 + rnd.num * 2
     )
     if (!pattern) return
-    facets.push(pattern)
+    chips.push(pattern)
   }
-  return {bg, c2d, facets}
+  return {bg, c2d, chips}
 }
 
 export function drawClear(c2d: C2D, cam: Readonly<Cam>): void {
