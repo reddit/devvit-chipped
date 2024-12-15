@@ -1,7 +1,7 @@
 import {expect, test} from 'vitest'
 import type {Cell, Halfedge} from 'voronoi'
 import type {XY} from './2d.js'
-import {cellArea} from './facet.js'
+import {cellArea} from './rock.js'
 
 test('cellArea()', () => {
   const Halfedge = (xy: Readonly<XY>): Halfedge =>

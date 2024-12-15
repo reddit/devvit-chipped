@@ -29,11 +29,11 @@ export function ShopLevelEnt(game: Game): ShopLevelEnt {
   zoo.clear()
   zoo.replace(cursor, toolbelt)
 
-  const btns = shop.rocks.map((rock, i) => {
+  const btns = shop.inven.map((rock, i) => {
     const btn = ButtonEnt(
       eid,
       '',
-      chipsFmt(Math.ceil((0.2 * rock.crap.chips) / 1024) * 1024, 'Terse'),
+      chipsFmt(Math.ceil((0.2 * rock.rock.area) / 1024) * 1024, 'Terse'),
       'Center'
     )
     btn.disabled = rock.bought
@@ -96,8 +96,8 @@ export function shopLevelEntDraw(
     x: lvl.grid.x + (lvl.grid.w - (3 * rockWH.w + 4 * spacePx)) / 2,
     y: lvl.grid.y + lvl.grid.h / 2 - rockWH.h
   }
-  for (let i = 0; i < shop.rocks.length; i++) {
-    const rock = shop.rocks[i]!.crap.rock
+  for (let i = 0; i < shop.inven.length; i++) {
+    const rock = shop.inven[i]!.rock.poly
     c2d.beginPath()
     const x = offset.x + i * rockWH.w + i * 2 * spacePx
     for (const [start, end] of rock) {
@@ -135,18 +135,18 @@ function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
 
   for (const [key, btn] of Object.entries(lvl.ents)) {
     const i = Number.parseInt(key)
-    const rock = shop.rocks[i]!
+    const rock = shop.inven[i]!
     if (btn.onStart) {
-      const cost = Math.ceil((0.2 * rock.crap.chips) / 1024) * 1024
+      const cost = Math.ceil((0.2 * rock.rock.area) / 1024) * 1024
       if (p1.chips >= cost) {
         p1.chips -= cost
-        const specimen = rock.crap.facets.find(facet => facet.specimen)
+        const specimen = rock.rock.chips.find(facet => facet.specimen)
         if (!specimen || rock.dud)
           audioPlay(
             game.audio,
             sound.break[Math.trunc(rnd.num * sound.break.length)]!
           )
-        else facetGet(specimen, game, rock.crap.seed)
+        else facetGet(specimen, game, rock.rock.seed)
         rock.bought = true
         btn.disabled = true
         postMessage({type: 'Save', p1: game.p1})

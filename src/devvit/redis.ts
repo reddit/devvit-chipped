@@ -1,4 +1,4 @@
-import {Devvit, type JobContext, type RedisClient} from '@devvit/public-api'
+import type {JobContext, RedisClient} from '@devvit/public-api'
 import type {PlaySave, Player, PostSave} from '../shared/save.js'
 import {T2, type T3} from '../shared/types/tid.js'
 import {r2Player} from './r2.js'
@@ -22,8 +22,6 @@ const playByT3T2Key: string = 'play_by_t3_t2'
 /** user IDs ordered by specimens found and size; player leaderboard. */
 const t2SpecimenZKey: string = 't2_specimen_z'
 
-Devvit.configure({redis: true})
-
 export function PlayID(t3: T3, t2: T2): PlayID {
   return `${t3}:${t2}`
 }
@@ -43,19 +41,14 @@ export async function redisQueryPost(
   if (json) return JSON.parse(json)
 }
 
+/** get or create player. */
 export async function redisQueryPlayer(
-  redis: RedisClient,
+  ctx: JobContext,
   t2: T2
-): Promise<Player | undefined> {
-  const json = await redis.hGet(playerByT2Key, t2)
+): Promise<Player> {
+  const json = await ctx.redis.hGet(playerByT2Key, t2)
   if (json) return JSON.parse(json)
-}
-
-/** get or create P1. */
-export async function redisQueryP1(ctx: JobContext, t2: T2): Promise<Player> {
-  return (
-    (await redisQueryPlayer(ctx.redis, t2)) ?? (await r2Player(ctx.reddit, t2))
-  )
+  return await r2Player(ctx.reddit, t2)
 }
 
 export async function redisSetPlayer(

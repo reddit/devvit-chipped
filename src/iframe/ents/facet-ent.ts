@@ -5,15 +5,14 @@ import {
   paletteBlack22,
   thickStroke
 } from '../../shared/theme.js'
-import {
-  type Facet,
-  facetHammer,
-  facetHitable,
-  facetKaput,
-  kaputState
-} from '../../shared/types/facet.js'
 import type {IMA} from '../../shared/types/ima.js'
 import type {Seed} from '../../shared/types/random.js'
+import {
+  type Chip,
+  chipHit,
+  chipHitable,
+  chipIsStatic
+} from '../../shared/types/rock.js'
 import {postMessage} from '../mail.js'
 import {audioPlay} from '../types/audio.js'
 import {camScale} from '../types/cam.js'
@@ -23,13 +22,13 @@ import {cursorEntHitbox} from './cursor-ent.js'
 import type {EID} from './eid.js'
 
 export type FacetEnt = {
-  facet: Facet
+  facet: Chip
   layer: Layer
   readonly type: 'Facet'
   readonly eid: EID
 }
 
-export function FacetEnt(game: LoadedGame, facet: Facet): FacetEnt {
+export function FacetEnt(game: LoadedGame, facet: Chip): FacetEnt {
   return {eid: game.eid.new(), layer: 'Default', type: 'Facet', facet}
 }
 
@@ -74,7 +73,7 @@ export function facetEntDraw(
   c2d.fill()
   if (facet.state === 'Cracked') c2d.stroke()
 
-  if (facet.state === 'Solid' || kaputState[facet.state]) {
+  if (facet.state === 'Solid' || chipIsStatic(facet)) {
     c2d.beginPath()
     let v = halfedges[0]!.getStartpoint()
     c2d.moveTo(scale * v.x, scale * v.y)
@@ -84,9 +83,9 @@ export function facetEntDraw(
     for (const half of halfedges) {
       v = half.getEndpoint()
       if (
-        game.facets[half.edge.lSite.voronoiId]!.state === 'Invisible' ||
+        game.chips[half.edge.lSite.voronoiId]!.state === 'Invisible' ||
         half.edge.rSite == null ||
-        game.facets[half.edge.rSite.voronoiId]!.state === 'Invisible'
+        game.chips[half.edge.rSite.voronoiId]!.state === 'Invisible'
       )
         c2d.lineTo(scale * v.x, scale * v.y)
       else c2d.moveTo(scale * v.x, scale * v.y)
@@ -107,14 +106,14 @@ export function facetEntUpdate(ent: FacetEnt, game: Game): void {
     ent.facet.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
   if (!hits) return
   const priorState = ent.facet.state
-  if (!facetKaput(ent.facet) && rnd.num > 0.6) facetHammer(ent.facet)
+  if (!chipIsStatic(ent.facet) && rnd.num > 0.6) chipHit(ent.facet)
   let fx
   switch (ent.facet.state) {
     case undefined:
     case 'Invisible':
       return
     case 'Solid':
-      if (facetHitable(ent.facet))
+      if (chipHitable(ent.facet))
         fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
       else fx = sound.miss[Math.trunc(rnd.num * sound.miss.length)]!
       break
@@ -137,7 +136,7 @@ export function facetEntUpdate(ent: FacetEnt, game: Game): void {
 }
 
 export function facetGet(
-  facet: Facet,
+  facet: Chip,
   game: InitGame,
   seed: {ima: IMA; seed: Seed}
 ): void {
@@ -146,7 +145,7 @@ export function facetGet(
   if (facet.specimen) {
     navigator.vibrate?.(10)
     fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
-    const collect = facet.chips > (game.p1.codex[seed.ima]?.chips ?? 0)
+    const collect = facet.area > (game.p1.codex[seed.ima]?.chips ?? 0)
     if (collect) {
       game.p1.codex[seed.ima] = Specimen(facet, seed, game.t3)
       game.p1.minerals = Object.values(game.p1.codex).reduce(
@@ -154,8 +153,8 @@ export function facetGet(
         0
       )
     } else {
-      game.chips += facet.chips
-      game.p1.chips += facet.chips
+      game.area += facet.area
+      game.p1.chips += facet.area
     }
 
     game.codex.found = Object.keys(game.p1.codex)
@@ -163,8 +162,8 @@ export function facetGet(
       .indexOf(seed.ima)
     game.codex.foundTriggered = true
   } else {
-    game.chips += facet.chips
-    game.p1.chips += facet.chips
+    game.area += facet.area
+    game.p1.chips += facet.area
   }
   audioPlay(audio, fx)
 }

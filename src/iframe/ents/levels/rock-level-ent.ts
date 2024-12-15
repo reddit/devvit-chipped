@@ -11,7 +11,7 @@ export type RockLevelEnt = {
 }
 
 export function RockLevelEnt(game: InitGame): RockLevelEnt {
-  const {cursor, facets, toolbelt, zoo} = game
+  const {cursor, chips: facets, toolbelt, zoo} = game
   // state.ctrl.allowContextMenu = false
   zoo.clear()
   zoo.replace(

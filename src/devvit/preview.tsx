@@ -1,12 +1,12 @@
 import {Devvit} from '@devvit/public-api'
 import {playButtonWidth} from '../shared/theme.js'
-import {newFacets} from '../shared/types/facet.js'
 import type {IMA} from '../shared/types/ima.js'
 import {Random, type Seed} from '../shared/types/random.js'
+import {Rock} from '../shared/types/rock.js'
 import {Title} from './title.js'
 
 export function Preview(props: {ima: IMA; seed: Seed}): JSX.Element {
-  const svg = newFacets(new Random(props.seed), props.ima).svg
+  const svg = Rock(new Random(props.seed), props.ima).svg
   return (
     <Title svg={svg}>
       <vstack alignment='middle center' width={`${playButtonWidth}px`}>

@@ -2,9 +2,9 @@ import '../shared/types/voronoi.d.ts' // https://github.com/microsoft/TypeScript
 
 import pkg from '../../package.json' with {type: 'json'}
 import {Player, PostSeed, type Profile, Specimen} from '../shared/save.ts'
-import {newFacets} from '../shared/types/facet.ts'
 import type {DevvitSystemMessage} from '../shared/types/message.js'
 import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
+import {Rock} from '../shared/types/rock.ts'
 import {noT3} from '../shared/types/tid.ts'
 import type {UTCMillis} from '../shared/types/time.js'
 import {Engine} from './engine.js'
@@ -33,7 +33,7 @@ if (noDevvit) {
   p1.chips = rnd.num * 999999
   while (rnd.num > 0.01) {
     const seed = PostSeed(rnd)
-    const facet = newFacets(new Random(seed.seed), seed.ima).facets.find(
+    const facet = Rock(new Random(seed.seed), seed.ima).chips.find(
       facet => facet.specimen
     )!
     p1.codex[seed.ima] = Specimen(facet, seed, noT3)
