@@ -29,9 +29,12 @@ import {useState2} from './use-state2.js'
 export function App(ctx: Devvit.Context): JSX.Element {
   const debug = 'chipped' in ctx.debug
 
-  if (!ctx.postId) throw Error('no T3')
-  const [post] = useState2(redisQueryPost(ctx.redis, T3(ctx.postId)))
-  if (!post) throw Error('no post record')
+  const [post] = useState2(async () => {
+    if (!ctx.postId) throw Error('no T3')
+    const post = await redisQueryPost(ctx.redis, T3(ctx.postId))
+    if (!post) throw Error('no post record')
+    return post
+  })
 
   // Player is an irreconcilable save slot. defer loading to decrease the chance
   // of overwriting another session.
