@@ -11742,7 +11742,6 @@
   "Gm": {
     "ima": "Gm",
     "localities": [
-      "Q22418900",
       "Rapid creek"
     ],
     "name": "gormanite"
@@ -20900,9 +20899,6 @@
   },
   "Mrć": {
     "ima": "Mrć",
-    "localities": [
-      "Q22418900"
-    ],
     "name": "marićite"
   },
   "Ms": {
@@ -22081,9 +22077,6 @@
   },
   "Nhp": {
     "ima": "Nhp",
-    "localities": [
-      "Q22418900"
-    ],
     "name": "nahpoite"
   },
   "Ni": {
@@ -28896,9 +28889,6 @@
   },
   "Sly": {
     "ima": "Sly",
-    "localities": [
-      "Q22418900"
-    ],
     "name": "satterlyite"
   },
   "Slz": {
@@ -33571,9 +33561,6 @@
   },
   "Wic": {
     "ima": "Wic",
-    "localities": [
-      "Q22418900"
-    ],
     "name": "wicksite"
   },
   "Wik": {

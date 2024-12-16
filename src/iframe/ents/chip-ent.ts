@@ -106,7 +106,7 @@ export function chipEntUpdate(ent: ChipEnt, game: Game): void {
     ent.chip.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
   if (!hits) return
   const priorState = ent.chip.state
-  if (!chipIsStatic(ent.chip) && rnd.num < .4) chipHit(ent.chip)
+  if (!chipIsStatic(ent.chip) && rnd.num < 0.4) chipHit(ent.chip)
   let fx
   switch (ent.chip.state) {
     case undefined:
@@ -140,30 +140,31 @@ export function chipGet(
   game: InitGame,
   seed: {ima: IMA; seed: Seed}
 ): void {
-  const {audio, rnd, sound} = game
+  const {audio, codex, p1, rnd, sound, t3} = game
   let fx = sound.hit[Math.trunc(rnd.num * sound.hit.length)]!
   if (chip.specimen) {
     navigator.vibrate?.(10)
     fx = sound.collect[Math.trunc(rnd.num * sound.collect.length)]!
-    const collect = chip.area > (game.p1.codex[seed.ima]?.chips ?? 0)
+    const collect = chip.area > (p1.codex[seed.ima]?.chips ?? 0)
     if (collect) {
-      game.p1.codex[seed.ima] = Specimen(chip, seed, game.t3)
-      game.p1.minerals = Object.values(game.p1.codex).reduce(
+      p1.chips += p1.codex[seed.ima]?.chips ?? 0 // reclaim any old chips.
+      p1.codex[seed.ima] = Specimen(chip, seed, t3)
+      p1.minerals = Object.values(p1.codex).reduce(
         (sum, specimen) => sum + specimen.chips,
         0
       )
     } else {
       game.area += chip.area
-      game.p1.chips += chip.area
+      p1.chips += chip.area
     }
 
-    game.codex.found = Object.keys(game.p1.codex)
+    codex.found = Object.keys(p1.codex)
       .sort((lhs, rhs) => lhs.localeCompare(rhs))
       .indexOf(seed.ima)
-    game.codex.foundTriggered = true
+    codex.foundTriggered = true
   } else {
     game.area += chip.area
-    game.p1.chips += chip.area
+    p1.chips += chip.area
   }
   audioPlay(audio, fx)
 }

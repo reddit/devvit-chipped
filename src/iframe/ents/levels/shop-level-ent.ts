@@ -7,6 +7,7 @@ import {
   spacePx
 } from '../../../shared/theme.ts'
 import type {Box} from '../../../shared/types/2d.ts'
+import {postMessage} from '../../mail.ts'
 import {audioPlay} from '../../types/audio.ts'
 import {drawText} from '../../types/draw.ts'
 import type {Game, InitGame} from '../../types/game.ts'
@@ -119,7 +120,7 @@ export function shopLevelEntUpdate(lvl: ShopLevelEnt, game: Game): void {
 }
 
 function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
-  const {cam, shop, toolbelt, p1, rnd, sound} = game
+  const {audio, cam, shop, toolbelt, p1, rnd, sound} = game
 
   if (cam.portrait) {
     lvl.grid.x = spacePx
@@ -143,13 +144,13 @@ function updateGrid(lvl: ShopLevelEnt, game: InitGame): void {
         const specimen = rock.rock.chips.find(chip => chip.specimen)
         if (!specimen || rock.dud)
           audioPlay(
-            game.audio,
+            audio,
             sound.break[Math.trunc(rnd.num * sound.break.length)]!
           )
         else chipGet(specimen, game, rock.rock.seed)
         rock.bought = true
         btn.disabled = true
-        postMessage({type: 'Save', p1: game.p1})
+        postMessage({type: 'Save', p1})
       }
       break
     }
