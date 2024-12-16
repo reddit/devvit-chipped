@@ -106,7 +106,7 @@ export function chipEntUpdate(ent: ChipEnt, game: Game): void {
     ent.chip.cell.pointIntersection(cur.x / scale, cur.y / scale) > 0
   if (!hits) return
   const priorState = ent.chip.state
-  if (!chipIsStatic(ent.chip) && rnd.num < .4) chipHit(ent.chip)
+  if (!chipIsStatic(ent.chip) && rnd.num < 0.4) chipHit(ent.chip)
   let fx
   switch (ent.chip.state) {
     case undefined:

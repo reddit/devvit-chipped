@@ -181,8 +181,8 @@ async function onMsg(
       break
     }
     case 'Save':
-      await redisSetPlayer(ctx.redis, msg.p1)
       setP1((p1 = msg.p1))
+      await redisSetPlayer(ctx.redis, msg.p1)
       break
     default:
       msg satisfies never
