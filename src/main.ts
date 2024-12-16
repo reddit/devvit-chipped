@@ -7,7 +7,7 @@ import {
 } from '@devvit/public-api'
 import {App} from './devvit/app.tsx'
 import {r2CreatePost, r2OpenPost} from './devvit/r2.tsx'
-import {redisQueryP1, redisSetPlayer, redisSetPost} from './devvit/redis.ts'
+import {redisQueryPlayer, redisSetPlayer, redisSetPost} from './devvit/redis.ts'
 import {PostSave, PostSeedFromNothing} from './shared/save.ts'
 import {T2} from './shared/types/tid.ts'
 
@@ -94,7 +94,7 @@ async function createPost(
   const seed = PostSeedFromNothing()
   const r2Post = await r2CreatePost(ctx, seed)
   const post = PostSave(r2Post, seed)
-  const p1 = await redisQueryP1(ctx, T2(ctx.userId ?? 't2_1eapexg1kr'))
+  const p1 = await redisQueryPlayer(ctx, T2(ctx.userId ?? 't2_1eapexg1kr'))
   p1.rocks.push(post.t3)
   await Promise.all([
     redisSetPost(ctx.redis, post),

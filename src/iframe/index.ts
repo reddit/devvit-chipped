@@ -2,9 +2,9 @@ import '../shared/types/voronoi.d.ts' // https://github.com/microsoft/TypeScript
 
 import pkg from '../../package.json' with {type: 'json'}
 import {Player, PostSeed, type Profile, Specimen} from '../shared/save.ts'
-import {newFacets} from '../shared/types/facet.ts'
 import type {DevvitSystemMessage} from '../shared/types/message.js'
 import {Random, type Seed, randomEndSeed} from '../shared/types/random.js'
+import {Rock} from '../shared/types/rock.ts'
 import {noT3} from '../shared/types/tid.ts'
 import type {UTCMillis} from '../shared/types/time.js'
 import {Engine} from './engine.js'
@@ -20,7 +20,7 @@ console.log(`${pkg.name} v${pkg.version}`)
 if (noDevvit) {
   const rnd = new Random((Date.now() % randomEndSeed) as Seed)
   // rnd.seed = 1 as Seed
-  // rnd.seed = 687724419
+  // rnd.seed = 687724419 for the sub image
   console.log(`seed=${rnd.seed}`)
   const seed = PostSeed(rnd)
   const delay = rnd.num * 1_000
@@ -33,10 +33,10 @@ if (noDevvit) {
   p1.chips = rnd.num * 999999
   while (rnd.num > 0.01) {
     const seed = PostSeed(rnd)
-    const facet = newFacets(new Random(seed.seed), seed.ima).facets.find(
-      facet => facet.specimen
+    const chip = Rock(new Random(seed.seed), seed.ima).chips.find(
+      chip => chip.specimen
     )!
-    p1.codex[seed.ima] = Specimen(facet, seed, noT3)
+    p1.codex[seed.ima] = Specimen(chip, seed, noT3)
   }
   p1.minerals = Object.values(p1.codex).reduce(
     (sum, specimen) => sum + specimen.chips,

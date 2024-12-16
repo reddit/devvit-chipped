@@ -1,8 +1,8 @@
 import {minCatSet} from '../shared/min-cat/min-cat.ts'
 import {minCanvasWH} from '../shared/theme.ts'
-import {newFacets} from '../shared/types/facet.ts'
 import type {DevvitSystemMessage} from '../shared/types/message.ts'
 import {Random} from '../shared/types/random.ts'
+import {Rock} from '../shared/types/rock.ts'
 import {type UTCMillis, utcMillisNow} from '../shared/types/time.ts'
 import {CursorEnt} from './ents/cursor-ent.ts'
 import {EIDFactory} from './ents/eid.ts'
@@ -50,7 +50,7 @@ export class Engine {
       debug: false,
       cam,
       canvas,
-      chips: 0,
+      area: 0,
       codex: {found: undefined, foundTriggered: false},
       ctrl,
       cursor: CursorEnt(eid),
@@ -116,13 +116,13 @@ export class Engine {
         this._game.debug = msg.debug
         this._game.seed = msg.seed
         this._game.rnd = new Random(msg.seed.seed)
-        this._game.facets = newFacets(this._game.rnd, msg.seed.ima).facets
+        this._game.chips = Rock(this._game.rnd, msg.seed.ima).chips
         this._game.shop = {
-          rocks: [
+          inven: [
             {
               bought: false,
               dud: this._game.rnd.num < 0.9,
-              crap: newFacets(
+              rock: Rock(
                 this._game.rnd,
                 minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
                   .ima
@@ -131,7 +131,7 @@ export class Engine {
             {
               bought: false,
               dud: this._game.rnd.num < 0.9,
-              crap: newFacets(
+              rock: Rock(
                 this._game.rnd,
                 minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
                   .ima
@@ -140,7 +140,7 @@ export class Engine {
             {
               bought: false,
               dud: this._game.rnd.num < 0.9,
-              crap: newFacets(
+              rock: Rock(
                 this._game.rnd,
                 minCatSet[Math.trunc(this._game.rnd.num * minCatSet.length)]!
                   .ima

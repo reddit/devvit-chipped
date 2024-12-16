@@ -71,7 +71,7 @@ export function scoreboardLevelEntDraw(
   let i = lvl.ents.pager.index
   for (
     let y = lvl.grid.y;
-    y + cardWH.h < lvl.grid.y + lvl.grid.h;
+    y + (cardWH.h + margin.h) < lvl.grid.y + lvl.grid.h;
     y += cardWH.h + margin.h
   ) {
     const x = lvl.grid.x + (lvl.grid.w - (cardWH.w + margin.w)) / 2

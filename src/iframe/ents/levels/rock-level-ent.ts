@@ -1,7 +1,7 @@
 import type {Game, InitGame} from '../../types/game.ts'
 import type {Layer} from '../../types/layer.ts'
+import {ChipEnt} from '../chip-ent.ts'
 import type {EID} from '../eid.ts'
-import {FacetEnt} from '../facet-ent.ts'
 import {RockStatusEnt} from '../rock-status.ts'
 
 export type RockLevelEnt = {
@@ -11,12 +11,12 @@ export type RockLevelEnt = {
 }
 
 export function RockLevelEnt(game: InitGame): RockLevelEnt {
-  const {cursor, facets, toolbelt, zoo} = game
+  const {cursor, chips, toolbelt, zoo} = game
   // state.ctrl.allowContextMenu = false
   zoo.clear()
   zoo.replace(
     cursor,
-    ...facets.map(facet => FacetEnt(game, facet)),
+    ...chips.map(chip => ChipEnt(game, chip)),
     RockStatusEnt(game),
     toolbelt
   )

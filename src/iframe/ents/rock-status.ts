@@ -26,7 +26,7 @@ export function rockStatusEntDraw(
   _stat: Readonly<RockStatusEnt>,
   game: Readonly<Game>
 ): void {
-  const {c2d, cam, chips, img} = game
+  const {c2d, cam, area: chips, img} = game
   const scale = uiScale()
 
   const text = drawText(c2d, chipsFmt(chips, 'Short'), {

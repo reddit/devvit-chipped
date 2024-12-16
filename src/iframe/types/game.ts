@@ -1,6 +1,6 @@
 import type {Player, PostSeed} from '../../shared/save.ts'
-import type {CrappyThing, Facet} from '../../shared/types/facet.ts'
 import type {Random} from '../../shared/types/random.ts'
+import type {Chip, Rock} from '../../shared/types/rock.ts'
 import type {T3} from '../../shared/types/tid.ts'
 import type {UTCMillis} from '../../shared/types/time.ts'
 import type {CursorEnt} from '../ents/cursor-ent.ts'
@@ -18,10 +18,10 @@ import type {C2D, Canvas, Draw} from './draw.ts'
 export type LoadedGame = Pick<Assets, 'img'> &
   Partial<Init> &
   Partial<Drawable> & {
+    area: number
     audio: AudioContext
     cam: Cam
     canvas: Canvas
-    chips: number
     codex: {found: number | undefined; foundTriggered: boolean}
     ctrl: Input<DefaultButton>
     cursor: CursorEnt
@@ -37,8 +37,8 @@ export type InitGame = LoadedGame & Init
 export type Game = LoadedGame & Init & Drawable
 
 type Init = {
-  facets: Facet[] // fix
-  shop: {rocks: {bought: boolean; dud: boolean; crap: CrappyThing}[]}
+  chips: Chip[]
+  shop: {inven: {bought: boolean; dud: boolean; rock: Rock}[]}
   p1: Player
   rnd: Random
   scoreboard: Player[]

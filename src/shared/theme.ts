@@ -25,7 +25,7 @@ export const extraThickStroke: number = 9
 export const thickStroke: number = 6
 export const thinStroke: number = 2
 
-export const scoreboardSize: number = 10
+export const scoreboardSize: number = 25
 
 export const radius: number = spacePx
 

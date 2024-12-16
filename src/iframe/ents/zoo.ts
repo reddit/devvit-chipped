@@ -1,9 +1,9 @@
 import type {Game} from '../types/game.ts'
 import {type Layer, layerDrawOrder} from '../types/layer.ts'
 import {type ButtonEnt, buttonEntDraw, buttonEntUpdate} from './button-ent.ts'
+import {type ChipEnt, chipEntDraw, chipEntUpdate} from './chip-ent.ts'
 import {type CursorEnt, cursorEntDraw, cursorEntUpdate} from './cursor-ent.ts'
 import type {EID} from './eid.ts'
-import {type FacetEnt, facetEntDraw, facetEntUpdate} from './facet-ent.ts'
 import {
   type CodexLevelEnt,
   codexLevelEntDraw,
@@ -43,8 +43,8 @@ import {
 
 export type Ent =
   | ButtonEnt
+  | ChipEnt
   | CursorEnt
-  | FacetEnt
   | LevelEnt
   | PagerEnt
   | RockStatusEnt
@@ -85,14 +85,14 @@ export class Zoo {
           case 'Button':
             buttonEntDraw(ent, game)
             break
+          case 'Chip':
+            chipEntDraw(ent, game)
+            break
           case 'CodexLevel':
             codexLevelEntDraw(ent, game)
             break
           case 'Cursor':
             cursorEntDraw(ent, game)
-            break
-          case 'Facet':
-            facetEntDraw(ent, game)
             break
           case 'HelpLevel':
             helpLevelEntDraw(ent, game)
@@ -148,14 +148,14 @@ export class Zoo {
         case 'Button':
           buttonEntUpdate(ent, game)
           break
+        case 'Chip':
+          chipEntUpdate(ent, game)
+          break
         case 'CodexLevel':
           codexLevelEntUpdate(ent, game)
           break
         case 'Cursor':
           cursorEntUpdate(ent, game)
-          break
-        case 'Facet':
-          facetEntUpdate(ent, game)
           break
         case 'HelpLevel':
           helpLevelEntUpdate(ent, game)

@@ -8,16 +8,15 @@ import {
   PostSeedFromNothing
 } from '../shared/save.js'
 import {paletteWhite, playButtonWidth, scoreboardSize} from '../shared/theme.js'
-import {newFacets} from '../shared/types/facet.js'
 import type {DevvitMessage, WebViewMessage} from '../shared/types/message.js'
 import {Random} from '../shared/types/random.js'
+import {Rock} from '../shared/types/rock.js'
 import {T2, T3, anonUsername, noT2} from '../shared/types/tid.js'
 import {r2CreatePost, r2OpenPost} from './r2.js'
 import {
   PlayID,
   redisCreatePlay,
   redisQueryLeaderboard,
-  redisQueryP1,
   redisQueryPlay,
   redisQueryPlayer,
   redisQueryPost,
@@ -31,7 +30,8 @@ export function App(ctx: Devvit.Context): JSX.Element {
   const debug = 'chipped' in ctx.debug
 
   if (!ctx.postId) throw Error('no T3')
-  const [post] = useState2(redisQueryPost(ctx.redis, T3(ctx.postId)))
+  const t3 = T3(ctx.postId)
+  const [post] = useState2(() => redisQueryPost(ctx.redis, t3))
   if (!post) throw Error('no post record')
 
   // Player is an irreconcilable save slot. defer loading to decrease the chance
@@ -55,7 +55,7 @@ export function App(ctx: Devvit.Context): JSX.Element {
   //       will truncate the URL if you try to log it. finally, post previews
   //       don't support Context or useState() so you have to pass by prop.
   const [svg] = useState2(
-    () => newFacets(new Random(post.seed.seed), post.seed.ima).svg
+    () => Rock(new Random(post.seed.seed), post.seed.ima).svg
   )
 
   if (launch)
@@ -151,18 +151,14 @@ async function onMsg(
 
   switch (msg.type) {
     case 'Loaded': {
-      p1 = await redisQueryP1(ctx, t2)
-      p1.rocks.push(post.t3)
-      setP1(p1)
+      setP1((p1 = await redisQueryPlayer(ctx, t2)))
       setPlay((play = PlaySave(p1.profile.t2, post.t3)))
       await redisCreatePlay(ctx.redis, play, p1.profile.t2)
 
       const t2s = await redisQueryLeaderboard(ctx.redis)
       const scoreboard = []
-      for (let i = 0; i < scoreboardSize && i < t2s.length; i++) {
-        const player = await redisQueryPlayer(ctx.redis, t2s[i]!)
-        if (player) scoreboard.push(player)
-      }
+      for (let i = 0; i < scoreboardSize && i < t2s.length; i++)
+        scoreboard.push(await redisQueryPlayer(ctx, t2s[i]!))
 
       ctx.ui.webView.postMessage<DevvitMessage>('web-view', {
         type: 'Init',
@@ -204,7 +200,7 @@ async function createPost(
   const seed = PostSeedFromNothing()
   const r2Post = await r2CreatePost(ctx, seed)
   const post = PostSave(r2Post, seed)
-  if (!p1) p1 = await redisQueryP1(ctx, t2)
+  if (!p1) p1 = await redisQueryPlayer(ctx, t2)
   p1.rocks.push(post.t3)
   setP1(p1)
   await Promise.all([

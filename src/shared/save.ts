@@ -1,8 +1,8 @@
 import {minCat, minCatSet} from './min-cat/min-cat.ts'
 import type {XY} from './types/2d.ts'
-import type {Facet} from './types/facet.ts'
 import type {IMA} from './types/ima.ts'
 import {Random, type Seed, randomEndSeed} from './types/random.ts'
+import type {Chip} from './types/rock.ts'
 import type {T2, T3} from './types/tid.ts'
 import {type UTCMillis, utcMillisNow} from './types/time.ts'
 
@@ -124,11 +124,11 @@ export function PostSeed(rnd: Random): PostSeed {
 }
 
 export function Specimen(
-  facet: Readonly<Facet>,
+  chip: Readonly<Chip>,
   seed: {readonly ima: IMA; readonly seed: Seed},
   t3: T3
 ): Specimen {
-  const minMax = facet.cell.halfedges.reduce(
+  const minMax = chip.cell.halfedges.reduce(
     (sum, half) => {
       const xy = half.getEndpoint()
       return {
@@ -139,15 +139,15 @@ export function Specimen(
     {min: {x: Infinity, y: Infinity}, max: {x: -Infinity, y: -Infinity}}
   )
 
-  const start = facet.cell.halfedges[0]!.getStartpoint()
+  const start = chip.cell.halfedges[0]!.getStartpoint()
   const poly = [{x: start.x, y: start.y}]
-  for (const half of facet.cell.halfedges) {
+  for (const half of chip.cell.halfedges) {
     const pt = half.getEndpoint()
     poly.push({x: pt.x, y: pt.y})
   }
 
   return {
-    chips: facet.chips,
+    chips: chip.area,
     h: minMax.max.y - minMax.min.y,
     ima: seed.ima,
     origin: minMax.min,
