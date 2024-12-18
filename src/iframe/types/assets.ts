@@ -48,30 +48,7 @@ export type Assets = {
 
 export async function Assets(): Promise<Assets> {
   const [
-    break0,
-    break1,
-    break2,
-    break3,
-    break4,
-    break5,
-    collect0,
-    collect1,
-    collect2,
-    collect3,
-    collect4,
-    collect5,
-    hit0,
-    hit1,
-    hit2,
-    hit3,
-    hit4,
-    hit5,
-    hit6,
-    miss0,
-    miss1,
-    miss2,
-    miss3,
-    miss4,
+    audioCat,
     chippys,
     codexButton,
     codexMinButton,
@@ -86,30 +63,7 @@ export async function Assets(): Promise<Assets> {
     shopButton,
     font
   ] = await Promise.all([
-    loadAudio('assets/audio/break-0.mp3'),
-    loadAudio('assets/audio/break-1.mp3'),
-    loadAudio('assets/audio/break-2.mp3'),
-    loadAudio('assets/audio/break-3.mp3'),
-    loadAudio('assets/audio/break-4.mp3'),
-    loadAudio('assets/audio/break-5.mp3'),
-    loadAudio('assets/audio/collect-0.mp3'),
-    loadAudio('assets/audio/collect-1.mp3'),
-    loadAudio('assets/audio/collect-2.mp3'),
-    loadAudio('assets/audio/collect-3.mp3'),
-    loadAudio('assets/audio/collect-4.mp3'),
-    loadAudio('assets/audio/collect-5.mp3'),
-    loadAudio('assets/audio/hit-0.mp3'),
-    loadAudio('assets/audio/hit-1.mp3'),
-    loadAudio('assets/audio/hit-2.mp3'),
-    loadAudio('assets/audio/hit-3.mp3'),
-    loadAudio('assets/audio/hit-4.mp3'),
-    loadAudio('assets/audio/hit-5.mp3'),
-    loadAudio('assets/audio/hit-6.mp3'),
-    loadAudio('assets/audio/miss-0.mp3'),
-    loadAudio('assets/audio/miss-1.mp3'),
-    loadAudio('assets/audio/miss-2.mp3'),
-    loadAudio('assets/audio/miss-3.mp3'),
-    loadAudio('assets/audio/miss-4.mp3'),
+    loadAudio('assets/audio.cat'),
     loadImage('assets/images/chippys.webp'),
     loadImage('assets/images/codex-button.webp'),
     loadImage('assets/images/codex-min-button.webp'),
@@ -124,6 +78,31 @@ export async function Assets(): Promise<Assets> {
     loadImage('assets/images/shop-button.webp'),
     new FontFace(fontFamily, 'url(assets/patrick-hand-regular.ttf)').load()
   ])
+
+  const break0 = audioCat.slice(0, 33498)
+  const break1 = audioCat.slice(33498, 59682)
+  const break2 = audioCat.slice(59682, 81687)
+  const break3 = audioCat.slice(81687, 111006)
+  const break4 = audioCat.slice(111006, 152864)
+  const break5 = audioCat.slice(152864, 181138)
+  const collect0 = audioCat.slice(181138, 203143)
+  const collect1 = audioCat.slice(203143, 218878)
+  const collect2 = audioCat.slice(218878, 254466)
+  const collect3 = audioCat.slice(254466, 272291)
+  const collect4 = audioCat.slice(272291, 289071)
+  const collect5 = audioCat.slice(289071, 321525)
+  const hit0 = audioCat.slice(321525, 329946)
+  const hit1 = audioCat.slice(329946, 345681)
+  const hit2 = audioCat.slice(345681, 369775)
+  const hit3 = audioCat.slice(369775, 391780)
+  const hit4 = audioCat.slice(391780, 404380)
+  const hit5 = audioCat.slice(404380, 418025)
+  const hit6 = audioCat.slice(418025, 429581)
+  const miss0 = audioCat.slice(429581, 454720)
+  const miss1 = audioCat.slice(454720, 486129)
+  const miss2 = audioCat.slice(486129, 502909)
+  const miss3 = audioCat.slice(502909, 519689)
+  const miss4 = audioCat.slice(519689)
 
   return {
     audio: {
