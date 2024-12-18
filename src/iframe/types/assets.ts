@@ -63,6 +63,7 @@ export async function Assets(): Promise<Assets> {
     shopButton,
     font
   ] = await Promise.all([
+    // align to preloads in index.html.
     loadAudio('assets/audio.cat'),
     loadImage('assets/images/chippys.webp'),
     loadImage('assets/images/codex-button.webp'),

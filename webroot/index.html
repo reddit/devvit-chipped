@@ -4,6 +4,20 @@
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, maximum-scale=1, minimum-scale=1, user-scalable=no'>
     <title>chipped</title>
+    <link rel='preload' href='assets/audio.cat' as='fetch' />
+    <link rel='preload' href='assets/patrick-hand-regular.ttf' as='font' type='font/woff2' crossorigin />
+    <link rel='preload' href='assets/images/chippys.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/codex-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/codex-min-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/help-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/mineral.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/next-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/new-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/piggy.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/prev-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/rock-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/score-button.webp' as='image' type='image/webp' />
+    <link rel='preload' href='assets/images/shop-button.webp' as='image' type='image/webp' />
     <style>
       :root {
         --palette-white: #f2f2f2;
@@ -42,8 +56,7 @@
     </style>
   </head>
   <body>
-    <!-- hack: set tabIndex to propagate key events. -->
-    <canvas tabIndex='0'></canvas>
-    <script src='index.js' type='module'></script>
+    <canvas tabIndex='0'></canvas> <!-- hack: set tabIndex to propagate key events. -->
+    <script src='index.js' type='module' async></script>
   </body>
 </html>
