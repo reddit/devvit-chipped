@@ -1,8 +1,8 @@
 #!/usr/bin/env -S node --experimental-strip-types --no-warnings=ExperimentalWarning
 
-import {writeFileSync} from 'node:fs'
+import {readFileSync, writeFileSync} from 'node:fs'
 import pkg from '../package.json' with {type: 'json'}
-import type {MinCat} from '../src/shared/min-cat/min-cat.js'
+import type {MinCat, QID} from '../src/shared/min-cat/min-cat.js'
 import type {IMA} from '../src/shared/types/ima.js'
 
 type MineralWikidata = {results: {bindings: QueryBinding[]}}
@@ -11,7 +11,7 @@ type QueryBinding = {
   description?: {value: string}
   formula?: {value: string}
   imaStatusLabel: {value: string}
-  imaSymbol: {value: string}
+  ima: {value: string}
   localityLabel?: {value: string}
   mineral: {value: string}
   mineralLabel: {value: string}
@@ -26,7 +26,7 @@ const query: string = `
   select
     ?mineral
     ?mineralLabel
-    ?imaSymbol
+    ?ima
     ?imaStatusLabel
     ?description
     ?streakColorLabel
@@ -38,7 +38,7 @@ const query: string = `
     values ?type      {wd:Q12089225 wd:Q3965281}
     values ?imaStatus {wd:Q13406846 wd:Q13406835 wd:Q13406860}
     ?mineral wdt:P31    ?type     ;
-             wdt:P10113 ?imaSymbol;
+             wdt:P10113 ?ima      ;
              wdt:P579   ?imaStatus;
 
     optional {?mineral schema:description ?description    .}
@@ -50,10 +50,10 @@ const query: string = `
 
     filter(lang(?description) = "en")
 
-    service wikibase:label {bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".}
+    service wikibase:label {bd:serviceParam wikibase:language "en".}
   }
   order by
-    ?imaSymbol
+    ?ima
     ?crystalSystemLabel
     ?localityLabel
     ?streakColorLabel
@@ -71,14 +71,38 @@ async function fetchMineralWikidata(): Promise<MineralWikidata> {
   return (await rsp.json()) as MineralWikidata
 }
 
+// hack: instead of supporting CSV escapes, | for subfield commas and % columns.
+function minCatToCSV(cat: Readonly<MinCat>): string {
+  let csv = ''
+  for (const min of Object.values(cat)) {
+    if (min.localities.some(val => /\|/.test(val)))
+      throw Error(`${min.q} locality contains |; ${JSON.stringify(min)}`)
+    const vals = [
+      min.ima,
+      min.name,
+      min.deprecated ? 'D' : '',
+      min.localities.join('|')
+    ]
+    if (vals.some(val => val.includes('%')))
+      throw Error(`${min.q} field contains %; ${JSON.stringify(min)}`)
+    csv += `${vals.join('%')}\n`
+  }
+  return csv
+}
+
 function parseMineralWikidata(rsp: Readonly<MineralWikidata>): MinCat {
   const cat: MinCat = {}
   for (const binding of rsp.results.bindings) {
-    const ima = binding.imaSymbol.value as IMA
+    const ima = binding.ima.value as IMA
     cat[ima] = {
+      deprecated: false,
       ima,
       localities: unique(cat[ima]?.localities, binding.localityLabel?.value),
-      name: binding.mineralLabel.value
+      name: binding.mineralLabel.value,
+      q: binding.mineral.value.replace(
+        'http://www.wikidata.org/entity/',
+        ''
+      ) as QID
     }
   }
   return cat
@@ -96,7 +120,13 @@ minCat['Nbix-Mn' as IMA] = {
   name: 'nioboixiolite-(Mn²⁺)'
 }
 
+const template = readFileSync('src/shared/min-cat/min-cat.ts', 'utf8')
+const codegen = `
+// codegen: csv
+export const minCat: Readonly<MinCat> = parseMinCat(\`${minCatToCSV(minCat)}\`)
+`.trim()
+
 writeFileSync(
-  'src/shared/min-cat/min-cat.json', // CSV saves ~60 KiB gzipped.
-  JSON.stringify(minCat, undefined, 2)
+  'src/shared/min-cat/min-cat.ts',
+  template.replace('// codegen: csv', codegen)
 )
